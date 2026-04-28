@@ -114,13 +114,22 @@ function Dashboard({ activePage, onNavigate }) {
       const link = document.createElement('a');
       link.href = url;
       const docJudul = docObj.judul_dokumen ? docObj.judul_dokumen.replace(/[^a-zA-Z0-9 -]/g, '') : 'Dokumen';
-      link.setAttribute('download', `${docJudul}_${docObj.doc_number.replace(/\//g, '_')}.docx`);
+      const fileName = `${docJudul}_${docObj.doc_number.replace(/\//g, '_')}.docx`;
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
     } catch (error) {
       console.error('Error downloading template:', error);
-      alert('Gagal men-download. Pastikan template sudah tersimpan di folder backend/templates.');
+      let errorMsg = 'Gagal men-download.';
+      if (error.response && error.response.data instanceof Blob) {
+        const text = await error.response.data.text();
+        try {
+          const json = JSON.parse(text);
+          errorMsg = json.error || errorMsg;
+        } catch (e) {}
+      }
+      alert(errorMsg + '\n\nPastikan template sudah tersimpan di folder backend/templates dengan nama yang sesuai.');
     }
   };
 
