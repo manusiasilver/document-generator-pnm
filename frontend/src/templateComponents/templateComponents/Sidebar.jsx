@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, XClose } from '@untitledui/icons'
-import { FileText, Clock } from 'lucide-react'
+import { FileText, Clock, LayoutTemplate } from 'lucide-react'
 
 import './templateComponents.css'
 
@@ -15,6 +15,7 @@ function getInitials(name) {
 const navItems = [
   { id: 'form', label: 'Form', Icon: FileText },
   { id: 'history', label: 'History', Icon: Clock },
+  { id: 'templates', label: 'Templates', Icon: LayoutTemplate },
 ]
 
 function Sidebar({

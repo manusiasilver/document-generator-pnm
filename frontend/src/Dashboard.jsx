@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Download, RefreshCw, Edit, Save, X, Copy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, RefreshCw, Edit, Save, X, Copy, ChevronLeft, ChevronRight, Upload, Trash2, FileText } from 'lucide-react';
 
 const API_URL = 'http://localhost:3001/api';
 
@@ -28,6 +28,12 @@ function Dashboard({ activePage, onNavigate }) {
   const [tableLoading, setTableLoading] = useState(false);
   const [generatedDoc, setGeneratedDoc] = useState(null);
   const [editingDoc, setEditingDoc] = useState(null);
+
+  // Template management
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState('');
+  const fileInputRef = useRef(null);
 
   // History pagination & filter
   const [currentPage, setCurrentPage] = useState(1);
@@ -194,6 +200,41 @@ function Dashboard({ activePage, onNavigate }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleTemplateUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.name.endsWith('.docx')) {
+      setUploadError('Hanya file .docx yang diizinkan.');
+      return;
+    }
+    setUploadLoading(true);
+    setUploadError('');
+    setUploadSuccess('');
+    const data = new FormData();
+    data.append('template', file);
+    try {
+      const res = await axios.post(`${API_URL}/templates/upload`, data);
+      setUploadSuccess(res.data.message || 'Template berhasil diupload!');
+      fetchData();
+    } catch (err) {
+      setUploadError(err.response?.data?.error || 'Gagal mengupload template.');
+    } finally {
+      setUploadLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleTemplateDelete = async (name) => {
+    if (!window.confirm(`Hapus template "${name}"?`)) return;
+    try {
+      await axios.delete(`${API_URL}/templates/${encodeURIComponent(name)}`);
+      setUploadSuccess(`Template "${name}" berhasil dihapus.`);
+      fetchData();
+    } catch (err) {
+      setUploadError(err.response?.data?.error || 'Gagal menghapus template.');
+    }
+  };
+
   const getCompanyBadgeClass = (company) => {
     if (company === 'PNM') return 'badge-purple';
     if (company === 'PKS') return 'badge-green';
@@ -210,6 +251,67 @@ function Dashboard({ activePage, onNavigate }) {
   });
   const totalPages = Math.ceil(filteredDocuments.length / pageSize) || 1;
   const currentData = filteredDocuments.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  // ── Templates View ──
+  if (activePage === 'templates') {
+    return (
+      <div className="container">
+        <div className="card glass">
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.5rem' }}>Kelola Template</h2>
+
+          {/* Upload area */}
+          <div style={{ background: '#f8fafc', border: '2px dashed #cbd5e1', borderRadius: '1rem', padding: '2rem', textAlign: 'center', marginBottom: '2rem' }}>
+            <FileText size={40} style={{ color: '#94a3b8', marginBottom: '0.75rem' }} />
+            <p style={{ color: '#64748b', marginBottom: '1rem', fontWeight: 500 }}>Upload file template <strong>.docx</strong> baru</p>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".docx"
+              style={{ display: 'none' }}
+              onChange={handleTemplateUpload}
+            />
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={uploadLoading}
+              onClick={() => { setUploadError(''); setUploadSuccess(''); fileInputRef.current?.click(); }}
+            >
+              {uploadLoading ? <span className="loading-spinner"></span> : <><Upload size={18} /> Pilih & Upload File</>}
+            </button>
+            {uploadError && <p style={{ color: '#dc2626', marginTop: '0.75rem', fontWeight: 500 }}>{uploadError}</p>}
+            {uploadSuccess && <p style={{ color: '#16a34a', marginTop: '0.75rem', fontWeight: 500 }}>{uploadSuccess}</p>}
+          </div>
+
+          {/* Template list */}
+          <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', color: '#374151' }}>
+            Template Tersedia ({templates.length})
+          </h3>
+          {templates.length === 0 ? (
+            <p style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>Belum ada template. Upload file .docx di atas.</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {templates.map(t => (
+                <div key={t} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem 1rem', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <FileText size={20} style={{ color: '#6366f1', flexShrink: 0 }} />
+                    <span style={{ fontWeight: 500, color: '#1e293b' }}>{t}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="btn"
+                    style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', background: '#fee2e2', color: '#991b1b' }}
+                    onClick={() => handleTemplateDelete(t)}
+                  >
+                    <Trash2 size={14} /> Hapus
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // ── Form View ──
   if (activePage === 'form') {

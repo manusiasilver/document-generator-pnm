@@ -9,6 +9,7 @@
     "cors": "^2.8.5",
     "docxtemplater": "^3.55.8",
     "express": "^4.21.2",
+    "multer": "^2.1.1",
     "pizzip": "^3.1.8",
     "sqlite3": "^5.1.7"
   }

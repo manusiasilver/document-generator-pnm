@@ -5,10 +5,25 @@ const path = require('path');
 const fs = require('fs');
 const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const templatesDir = path.resolve(__dirname, 'templates');
+if (!fs.existsSync(templatesDir)) fs.mkdirSync(templatesDir);
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, templatesDir),
+    filename: (req, file, cb) => cb(null, file.originalname),
+  }),
+  fileFilter: (req, file, cb) => {
+    if (file.originalname.endsWith('.docx')) cb(null, true);
+    else cb(new Error('Hanya file .docx yang diizinkan'));
+  },
+});
 
 const dbPath = fs.existsSync(path.join(__dirname, 'database.sqllite'))
   ? path.join(__dirname, 'database.sqllite')
@@ -37,15 +52,28 @@ app.get('/api/data', (req, res) => {
 
 // Get List of Templates
 app.get('/api/templates', (req, res) => {
-    const templatesDir = path.resolve(__dirname, 'templates');
-    if (!fs.existsSync(templatesDir)) {
-        fs.mkdirSync(templatesDir);
-    }
-    
     fs.readdir(templatesDir, (err, files) => {
         if (err) return res.status(500).json({ error: err.message });
         const docxFiles = files.filter(f => f.endsWith('.docx') && !f.startsWith('~$'));
         res.json(docxFiles);
+    });
+});
+
+// Upload Template
+app.post('/api/templates/upload', upload.single('template'), (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'Tidak ada file yang diupload' });
+    res.json({ message: 'Template berhasil diupload', name: req.file.originalname });
+});
+
+// Delete Template
+app.delete('/api/templates/:name', (req, res) => {
+    const name = path.basename(req.params.name);
+    if (!name.endsWith('.docx')) return res.status(400).json({ error: 'Nama file tidak valid' });
+    const filePath = path.join(templatesDir, name);
+    if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Template tidak ditemukan' });
+    fs.unlink(filePath, (err) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Template berhasil dihapus' });
     });
 });
 

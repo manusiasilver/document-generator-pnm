@@ -8,7 +8,8 @@ function App() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activePage, setActivePage] = useState('form')
 
-  const pageTitle = activePage === 'form' ? 'Generate Dokumen' : 'Riwayat Dokumen'
+  const pageTitles = { form: 'Generate Dokumen', history: 'Riwayat Dokumen', templates: 'Kelola Template' }
+  const pageTitle = pageTitles[activePage] ?? 'Generate Dokumen'
 
   return (
     <div className={`dashboard-shell${collapsed ? ' dashboard-shell--sidebar-collapsed' : ''}`}>
