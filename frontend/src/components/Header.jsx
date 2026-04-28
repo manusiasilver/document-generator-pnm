@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import {
   Bell04,
   ChevronDown,
-  Menu01,
   RefreshCw05,
   SearchMd,
   XClose,
@@ -27,11 +26,9 @@ function Header({
     { label: 'Legal', href: '#' },
     { label: 'Product', href: '#' },
   ],
-  onMenuToggle,
   notificationProps,
   onRefresh,
   searchProps,
-  showMenuButton = false,
   departmentFilterProps,
 }) {
   const hasSearch = Boolean(searchProps)
@@ -258,17 +255,6 @@ function Header({
 
       <div className="header-content">
         <div className="header-left">
-          {showMenuButton ? (
-            <button
-              type="button"
-              className="header-menu-button"
-              aria-label="Open sidebar"
-              onClick={onMenuToggle}
-            >
-              <Menu01 size={20} />
-            </button>
-          ) : null}
-
           <div className="header-brand">
             <img src={logoPiagam} alt="Logo Piagam" className="header-brand-logo" />
           </div>
