@@ -6,7 +6,6 @@ const fs = require('fs');
 const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
 const multer = require('multer');
-const { exec } = require('child_process');
 
 const app = express();
 app.use(cors());
@@ -220,7 +219,6 @@ app.post('/api/download', (req, res) => {
     });
 });
 
-// Start server
 const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Backend server running on http://localhost:${PORT}`);
