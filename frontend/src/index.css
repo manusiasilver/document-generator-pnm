@@ -339,3 +339,21 @@ tr:hover {
 
 .mock-line.short { width: 40%; }
 .mock-line.medium { width: 70%; }
+
+/* docx-preview page styling */
+.docx-render .docx-wrapper {
+  background: #d1d5db !important;
+  padding: 1.25rem !important;
+}
+.docx-render .docx-wrapper > section.docx {
+  background: #fff !important;
+  box-shadow: 0 4px 24px rgba(15,23,42,0.14) !important;
+  margin: 0 auto 1.5rem !important;
+  border-radius: 3px;
+}
+.docx-render table {
+  border-collapse: collapse;
+}
+.docx-render td, .docx-render th {
+  word-break: break-word;
+}

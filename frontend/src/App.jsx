@@ -5,9 +5,9 @@ import Sidebar from './components/Sidebar.jsx'
 import BackgroundMain from './components/BackgroundMain.jsx'
 
 // Import View Components
-import HistoryView from './pages/dashboard/HistoryView'
-import FormView from './pages/dashboard/FormView'
-import TemplatesView from './pages/dashboard/TemplatesView'
+import HistoryView from './pages/HistoryView'
+import FormView from './pages/FormView'
+import TemplatesView from './pages/TemplatesView'
 
 const API_URL = 'http://localhost:3001/api';
 
@@ -194,7 +194,7 @@ function App() {
               />
             )}
             {activePage === 'history' && (
-              <HistoryView 
+              <HistoryView
                 filtered={filtered}
                 pageSize={pageSize}
                 setPageSize={setPageSize}
@@ -207,11 +207,11 @@ function App() {
                 setSearchDate={setSearchDate}
                 pageData={pageData}
                 currentPage={currentPage}
-                editingDoc={editingDoc}
                 startDuplicate={startDuplicate}
-                startEdit={startEdit}
                 hDownload={hDownload}
                 totalPages={totalPages}
+                masterData={masterData}
+                templates={templates}
               />
             )}
           </div>
