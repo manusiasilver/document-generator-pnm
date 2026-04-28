@@ -78,11 +78,14 @@ function App() {
       if (editingDoc) {
         const r = await axios.put(`${API_URL}/documents/${editingDoc.id}`, formData);
         alert('Dokumen diperbarui!'); setGeneratedDoc(r.data);
+        await fetchData();
       } else {
-        const r = await axios.post(`${API_URL}/generate`, formData);
-        setGeneratedDoc(r.data); setEditingDoc(r.data);
+        await axios.post(`${API_URL}/generate`, formData);
+        await fetchData();
+        resetForm();
+        setCurrentPage(1);
+        setActivePage('history');
       }
-      fetchData();
     } catch { alert('Gagal memproses dokumen.'); } finally { setLoading(false); }
   };
 

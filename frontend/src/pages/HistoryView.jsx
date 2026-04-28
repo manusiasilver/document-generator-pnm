@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
-import { renderAsync } from 'docx-preview';
-import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, Eye, Save } from 'lucide-react';
+import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, Save } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 
 const API_URL = 'http://localhost:3001/api';
+const getToday = () => new Date().toISOString().split('T')[0];
 
 /* ─── Modal primitives ─── */
 function Overlay({ onClick }) {
@@ -22,7 +22,7 @@ function Overlay({ onClick }) {
   );
 }
 
-function ModalBox({ children, maxWidth = '700px' }) {
+function ModalBox({ children, maxWidth = '700px', scrollable = false }) {
   return (
     <div style={{
       position: 'fixed',
@@ -33,10 +33,12 @@ function ModalBox({ children, maxWidth = '700px' }) {
       borderRadius: '1.1rem',
       boxShadow: '0 30px 80px rgba(15,23,42,0.25)',
       border: `1px solid ${token.border}`,
-      maxHeight: '90vh',
-      overflowY: 'auto',
+      maxHeight: '92vh',
+      display: 'flex',
+      flexDirection: 'column',
       width: '92vw',
       maxWidth,
+      ...(scrollable && { overflowY: 'auto' }),
     }}>
       {children}
     </div>
@@ -66,111 +68,6 @@ function ModalHeader({ title, subtitle, right, onClose }) {
         </button>
       </div>
     </div>
-  );
-}
-
-/* ─── Preview Modal ─── */
-function PreviewModal({ doc, onClose, onDownload }) {
-  const containerRef              = useRef(null);
-  const [docLoading, setDocLoading] = useState(true);
-  const [docError, setDocError]     = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    setDocLoading(true);
-    setDocError(false);
-
-    axios
-      .post(`${API_URL}/download`, { doc_number: doc.doc_number }, { responseType: 'arraybuffer' })
-      .then(async r => {
-        if (cancelled || !containerRef.current) return;
-        containerRef.current.innerHTML = '';
-        await renderAsync(new Blob([r.data]), containerRef.current, null, {
-          className: 'docx-render',
-          inWrapper: true,
-          ignoreWidth: false,
-          ignoreHeight: false,
-          breakPages: true,
-          useBase64URL: true,
-        });
-      })
-      .catch(() => { if (!cancelled) setDocError(true); })
-      .finally(() => { if (!cancelled) setDocLoading(false); });
-
-    return () => { cancelled = true; };
-  }, [doc.doc_number]);
-
-  return (
-    <>
-      <Overlay onClick={onClose} />
-      <ModalBox maxWidth="900px">
-        <ModalHeader
-          subtitle="Preview Dokumen"
-          title={doc.doc_number}
-          onClose={onClose}
-          right={
-            <Btn variant="success" style={{ fontSize: '0.78rem', padding: '0.4rem 0.9rem' }} onClick={() => onDownload(doc)}>
-              <Download size={13} /> Download .docx
-            </Btn>
-          }
-        />
-
-        {/* Info bar */}
-        <div style={{
-          padding: '0.6rem 1.75rem',
-          borderBottom: `1px solid ${token.border}`,
-          display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap',
-          background: 'rgba(26,42,87,0.02)',
-        }}>
-          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.65rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700 }}>
-            {doc.company}
-          </span>
-          {doc.internal_external && (
-            <span style={{ background: 'rgba(99,102,241,0.1)', color: '#4338ca', padding: '0.18rem 0.65rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700 }}>
-              {doc.internal_external}
-            </span>
-          )}
-          {doc.doc_date && <span style={{ fontSize: '0.75rem', color: token.muted }}>{doc.doc_date}</span>}
-          {doc.user_name && <span style={{ fontSize: '0.75rem', color: token.muted }}>· {doc.user_name}</span>}
-          {doc.judul_dokumen && <span style={{ fontSize: '0.75rem', color: token.text, fontWeight: 600 }}>· {doc.judul_dokumen}</span>}
-        </div>
-
-        {/* Document viewer */}
-        <div style={{ padding: '1.25rem', background: '#d1d5db', minHeight: '480px', position: 'relative' }}>
-          {/* Loading overlay */}
-          {docLoading && (
-            <div style={{
-              position: 'absolute', inset: 0,
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              gap: '0.75rem', color: token.muted, background: '#d1d5db', zIndex: 2,
-            }}>
-              <RefreshCw size={22} style={{ animation: 'spin 1s linear infinite' }} />
-              <span style={{ fontSize: '0.83rem' }}>Memuat isi dokumen...</span>
-            </div>
-          )}
-
-          {/* Error state */}
-          {docError && (
-            <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              minHeight: '400px', gap: '0.5rem', color: token.muted,
-            }}>
-              <FileText size={32} style={{ opacity: 0.35 }} />
-              <span style={{ fontSize: '0.83rem' }}>Gagal memuat preview.</span>
-              <Btn variant="success" style={{ marginTop: '0.5rem' }} onClick={() => onDownload(doc)}>
-                <Download size={13} /> Download .docx
-              </Btn>
-            </div>
-          )}
-
-          {/* docx-preview renders here */}
-          <div
-            ref={containerRef}
-            style={{ display: docError ? 'none' : 'block' }}
-          />
-        </div>
-      </ModalBox>
-    </>
   );
 }
 
@@ -230,7 +127,7 @@ function EditModal({ doc, templates, masterData, onClose, onSaved }) {
   return (
     <>
       <Overlay onClick={onClose} />
-      <ModalBox maxWidth="800px">
+      <ModalBox maxWidth="800px" scrollable>
         <ModalHeader subtitle="Edit Dokumen" title={doc.doc_number} onClose={onClose} />
         <form onSubmit={hSubmit} style={{ padding: '1rem 1.75rem 1.5rem' }}>
 
@@ -315,6 +212,145 @@ function EditModal({ doc, templates, masterData, onClose, onSaved }) {
   );
 }
 
+function DuplicateModal({ doc, templates, masterData, onClose, onSaved }) {
+  const [form, setForm] = useState({
+    company:           doc.company,
+    template_name:     doc.template_name || templates[0] || '',
+    judul_dokumen:     doc.judul_dokumen || '',
+    user_name:         doc.user_name || '',
+    division:          doc.division || '',
+    internal_external: doc.internal_external || 'Internal',
+    doc_date:          getToday(),
+    klasifikasi:       doc.klasifikasi || '',
+    perihal:           doc.perihal || '',
+    signed_by:         doc.signed_by || '',
+    keterangan:        doc.keterangan || '',
+    link_document:     doc.link_document || '',
+  });
+  const [saving, setSaving] = useState(false);
+
+  const hChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
+
+  const hUser = e => {
+    const u = masterData.users.find(u => u.name === e.target.value);
+    const div = masterData.divisions.find(d => d.name === u?.division);
+    setForm(p => ({
+      ...p,
+      user_name: e.target.value,
+      division: u?.division || '',
+      klasifikasi: (div?.klasifikasi && div.klasifikasi !== '-') ? div.klasifikasi : p.klasifikasi,
+    }));
+  };
+
+  const hSubmit = async e => {
+    e.preventDefault();
+    if (!form.user_name || !form.doc_date) { alert('Harap isi User dan Tanggal!'); return; }
+    setSaving(true);
+    try {
+      await axios.post(`${API_URL}/generate`, form);
+      onSaved();
+      onClose();
+    } catch {
+      alert('Gagal membuat salinan dokumen.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const taStyle = {
+    width: '100%', padding: '0.6rem 0.8rem',
+    fontSize: '0.88rem', color: token.text,
+    background: token.surface, border: `1px solid ${token.border}`,
+    borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', resize: 'vertical',
+  };
+
+  return (
+    <>
+      <Overlay onClick={onClose} />
+      <ModalBox maxWidth="800px" scrollable>
+        <ModalHeader subtitle="Duplikat Dokumen" title={doc.doc_number} onClose={onClose} />
+        <form onSubmit={hSubmit} style={{ padding: '1rem 1.75rem 1.5rem' }}>
+          <Divider label="Perusahaan" />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <Field label="Template Dokumen">
+              <Sel name="template_name" value={form.template_name} onChange={hChange}>
+                {templates.map(t => <option key={t} value={t}>{t}</option>)}
+              </Sel>
+            </Field>
+            <Field label="Internal / External">
+              <Sel name="internal_external" value={form.internal_external} onChange={hChange}>
+                <option value="Internal">Internal</option>
+                <option value="External">External</option>
+              </Sel>
+            </Field>
+            <Field label="PT">
+              <Inp value={form.company} readOnly />
+            </Field>
+          </div>
+          <div style={{ marginTop: '1rem' }}>
+            <Field label="Judul Dokumen">
+              <Inp type="text" name="judul_dokumen" value={form.judul_dokumen} onChange={hChange} placeholder="Judul dokumen..." />
+            </Field>
+          </div>
+
+          <Divider label="Pengguna & Tanggal" />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
+            <Field label="User *">
+              <Sel name="user_name" value={form.user_name} onChange={hUser} required>
+                <option value="">-- Pilih --</option>
+                {masterData.users.map((u, i) => <option key={i} value={u.name}>{u.name}</option>)}
+              </Sel>
+            </Field>
+            <Field label="Divisi">
+              <Inp value={form.division} readOnly placeholder="Otomatis" />
+            </Field>
+            <Field label="Tanggal *">
+              <Inp type="date" name="doc_date" value={form.doc_date} onChange={hChange} required />
+            </Field>
+            <Field label="Klasifikasi">
+              <Inp type="text" name="klasifikasi" value={form.klasifikasi} onChange={hChange} />
+            </Field>
+          </div>
+
+          <Divider label="Detail" />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <Field label="Perihal">
+              <Inp type="text" name="perihal" value={form.perihal} onChange={hChange} />
+            </Field>
+            <Field label="Di Tanda Tangani Oleh">
+              <Inp type="text" name="signed_by" value={form.signed_by} onChange={hChange} />
+            </Field>
+            <Field label="Link Dokumen">
+              <Inp type="text" name="link_document" value={form.link_document} onChange={hChange} placeholder="https://..." />
+            </Field>
+            <Field label="Keterangan">
+              <textarea
+                name="keterangan"
+                value={form.keterangan}
+                onChange={hChange}
+                rows={2}
+                style={taStyle}
+                onFocus={e => { e.target.style.borderColor = token.blueMid; }}
+                onBlur={e => { e.target.style.borderColor = token.border; }}
+              />
+            </Field>
+          </div>
+
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: `1px solid ${token.border}`, display: 'flex', justifyContent: 'flex-end', gap: '0.6rem' }}>
+            <Btn variant="ghost" type="button" onClick={onClose}>Batal</Btn>
+            <Btn variant="primary" type="submit" disabled={saving}>
+              {saving
+                ? <><RefreshCw size={13} style={{ animation: 'spin 1s linear infinite' }} /> Membuat...</>
+                : <><Copy size={13} /> Buat Salinan</>
+              }
+            </Btn>
+          </div>
+        </form>
+      </ModalBox>
+    </>
+  );
+}
+
 /* ─── Main HistoryView ─── */
 function HistoryView({
   filtered,
@@ -331,25 +367,17 @@ function HistoryView({
   setSearchIntExt,
   pageData,
   currentPage,
-  startDuplicate,
   hDownload,
   totalPages,
   masterData,
   templates,
 }) {
-  const [previewDoc, setPreviewDoc] = useState(null);
-  const [editDoc, setEditDoc]       = useState(null);
+  const [editDoc, setEditDoc] = useState(null);
+  const [duplicateDoc, setDuplicateDoc] = useState(null);
 
   return (
     <div style={wrap}>
       {/* Modals */}
-      {previewDoc && (
-        <PreviewModal
-          doc={previewDoc}
-          onClose={() => setPreviewDoc(null)}
-          onDownload={hDownload}
-        />
-      )}
       {editDoc && (
         <EditModal
           doc={editDoc}
@@ -357,6 +385,15 @@ function HistoryView({
           masterData={masterData}
           onClose={() => setEditDoc(null)}
           onSaved={() => { fetchData(); setEditDoc(null); }}
+        />
+      )}
+      {duplicateDoc && (
+        <DuplicateModal
+          doc={duplicateDoc}
+          templates={templates}
+          masterData={masterData}
+          onClose={() => setDuplicateDoc(null)}
+          onSaved={() => { fetchData(); setDuplicateDoc(null); }}
         />
       )}
 
@@ -369,7 +406,23 @@ function HistoryView({
             </h1>
             <p style={{ fontSize: '0.83rem', color: token.muted }}>{filtered.length} dokumen ditemukan</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            <Inp
+              type="date"
+              value={searchDate}
+              onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+              style={{ width: '160px' }}
+            />
+            {(searchTerm || searchDate || searchIntExt) && (
+              <Btn
+                variant="danger"
+                onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+                style={{ padding: '0.55rem 0.75rem' }}
+                title="Hapus semua filter"
+              >
+                <X size={16} />
+              </Btn>
+            )}
             <select
               value={pageSize}
               onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
@@ -402,13 +455,6 @@ function HistoryView({
               style={{ paddingLeft: '2.2rem' }}
             />
           </div>
-          {/* tanggal */}
-          <Inp
-            type="date"
-            value={searchDate}
-            onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
-            style={{ flex: '0 0 160px' }}
-          />
           {/* internal / external */}
           <select
             value={searchIntExt}
@@ -420,20 +466,9 @@ function HistoryView({
             }}
           >
             <option value="">Semua</option>
-            <option value="Internal">Internal</option>
-            <option value="External">External</option>
-          </select>
-          {/* clear */}
-          {(searchTerm || searchDate || searchIntExt) && (
-            <Btn
-              variant="danger"
-              onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
-              style={{ padding: '0.55rem 0.75rem', flex: '0 0 auto' }}
-              title="Hapus semua filter"
-            >
-              <X size={16} />
-            </Btn>
-          )}
+              <option value="Internal">Internal</option>
+              <option value="External">External</option>
+            </select>
         </div>
 
         {/* Table */}
@@ -471,10 +506,7 @@ function HistoryView({
                 >
                   <td style={{ padding: '0.8rem 1rem' }}>
                     <div style={{ display: 'flex', gap: '0.3rem' }}>
-                      <Btn variant="ghost"   style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => setPreviewDoc(doc)} title="Preview">
-                        <Eye size={12} />
-                      </Btn>
-                      <Btn variant="soft"    style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => startDuplicate(doc)} title="Duplikat">
+                      <Btn variant="soft"    style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
                         <Copy size={12} />
                       </Btn>
                       <Btn variant="ghost"   style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => setEditDoc(doc)} title="Edit">

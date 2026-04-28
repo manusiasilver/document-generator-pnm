@@ -15,8 +15,6 @@ app.use(express.json());
 const templatesDir = path.resolve(__dirname, 'templates');
 if (!fs.existsSync(templatesDir)) fs.mkdirSync(templatesDir);
 
-const tempDir = path.resolve(__dirname, 'temp_previews');
-if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 const upload = multer({
   storage: multer.diskStorage({

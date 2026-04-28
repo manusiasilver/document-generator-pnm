@@ -340,20 +340,43 @@ tr:hover {
 .mock-line.short { width: 40%; }
 .mock-line.medium { width: 70%; }
 
-/* docx-preview page styling */
+/* ── docx-preview styling ──
+   PENTING: jangan pakai !important pada layout properties (width, padding, border)
+   supaya inline style dari docx-preview (style="width:Xpx; padding:Xpx") bisa menang.
+   !important hanya untuk visual overrides (background, hover, text-transform). */
+
 .docx-render .docx-wrapper {
-  background: #d1d5db !important;
-  padding: 1.25rem !important;
+  background: #cbd5e1 !important;
+  padding: 1.5rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 .docx-render .docx-wrapper > section.docx {
   background: #fff !important;
-  box-shadow: 0 4px 24px rgba(15,23,42,0.14) !important;
-  margin: 0 auto 1.5rem !important;
-  border-radius: 3px;
+  box-shadow: 0 6px 32px rgba(15,23,42,0.18) !important;
+  margin-bottom: 1.5rem !important;
 }
+
+/* Batalkan global table { width: 100% } pakai specificity (0-1-1 > 0-0-1),
+   tanpa !important agar inline style docx tetap menang */
 .docx-render table {
-  border-collapse: collapse;
+  width: unset;
+  text-align: initial;
 }
-.docx-render td, .docx-render th {
-  word-break: break-word;
+/* Batalkan global th,td { padding: 1rem; border-bottom: ... } */
+.docx-render th,
+.docx-render td {
+  padding: unset;
+  border-bottom: unset;
+  background-color: unset;
+  font-size: unset;
+  font-weight: unset;
+  color: unset;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+/* Batalkan global tr:hover */
+.docx-render tr:hover {
+  background-color: transparent !important;
 }
