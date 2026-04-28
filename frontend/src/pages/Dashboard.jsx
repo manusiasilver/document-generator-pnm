@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Download, RefreshCw, Edit, Save, X, Copy, ChevronLeft, ChevronRight, Upload, Trash2, FileText } from 'lucide-react';
+import { Download, RefreshCw, Edit, Save, X, Copy, ChevronLeft, ChevronRight, Upload, Trash2, FileText, Eye, ExternalLink } from 'lucide-react';
 
 const API_URL = 'http://localhost:3001/api';
 
@@ -33,6 +33,8 @@ function Dashboard({ activePage, onNavigate }) {
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState('');
+  const [previewDoc, setPreviewDoc] = useState(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
   const fileInputRef = useRef(null);
 
   // History pagination & filter
@@ -44,6 +46,147 @@ function Dashboard({ activePage, onNavigate }) {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const renderRealPreview = async () => {
+    // Fungsi ini tidak lagi digunakan secara internal di Dashboard
+  };
+
+  const handleOpenPrintView = (docObj) => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Popup diblokir! Harap izinkan popup untuk melihat preview.");
+      return;
+    }
+
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print Preview - ${docObj.doc_number}</title>
+          <script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
+          <script src="https://unpkg.com/docx-preview/dist/docx-preview.js"></script>
+          <style>
+            @page {
+              size: A4;
+              margin: 0;
+            }
+            body { 
+              background: #e2e8f0; 
+              margin: 0; 
+              padding: 0; 
+              font-family: 'Inter', sans-serif; 
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            }
+            #preview-container { 
+              background: white; 
+              width: 210mm; 
+              min-height: 297mm;
+              margin: 60px auto 20px auto; 
+              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+              box-sizing: border-box;
+            }
+            /* Override docx-preview internal padding if needed */
+            .docx-wrapper {
+                background: transparent !important;
+                padding: 0 !important;
+                display: block !important;
+            }
+            .docx {
+                box-shadow: none !important;
+                margin-bottom: 0 !important;
+            }
+            .toolbar {
+              background: #0f172a;
+              color: white;
+              padding: 0 24px;
+              position: fixed;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: 50px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              z-index: 1000;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .btn-print {
+              background: #2563eb;
+              color: white;
+              border: none;
+              padding: 6px 16px;
+              border-radius: 4px;
+              font-weight: 600;
+              cursor: pointer;
+              font-size: 14px;
+            }
+            .btn-print:hover { background: #1d4ed8; }
+            @media print {
+              body { background: white !important; }
+              #preview-container { 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                width: 210mm !important;
+              }
+              .toolbar { display: none !important; }
+            }
+            .loader {
+              border: 3px solid #f3f3f3;
+              border-top: 3px solid #2563eb;
+              border-radius: 50%;
+              width: 18px;
+              height: 18px;
+              animation: spin 1s linear infinite;
+            }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          </style>
+        </head>
+        <body>
+          <div class="toolbar">
+            <div style="font-size: 14px;">Web Preview: <b>${docObj.doc_number}</b></div>
+            <div id="status-area">
+               <div style="display:flex; align-items:center; gap:8px; font-size: 13px;">
+                 <div class="loader"></div> Menyiapkan Dokumen...
+               </div>
+            </div>
+            <button class="btn-print" onclick="window.print()">Cetak Dokumen (A4)</button>
+          </div>
+          <div id="preview-container"></div>
+          <script>
+            async function loadDoc() {
+              try {
+                const response = await fetch('${API_URL}/download', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ doc_number: '${docObj.doc_number}' })
+                });
+                
+                const blob = await response.blob();
+                const container = document.getElementById('preview-container');
+                
+                // Render menggunakan docx-preview dengan setting presisi
+                await docx.renderAsync(blob, container, null, {
+                    className: "docx",
+                    inWrapper: true,
+                    ignoreWidth: false,
+                    ignoreHeight: false,
+                    experimental: true
+                });
+
+                document.getElementById('status-area').innerHTML = '<span style="color: #4ade80; font-size: 13px;">✓ Dokumen Siap</span>';
+              } catch (e) {
+                document.getElementById('status-area').innerHTML = '<span style="color: #f87171; font-size: 13px;">✕ Gagal Memuat</span>';
+                console.error(e);
+              }
+            }
+            loadDoc();
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
 
   useEffect(() => {
     if (templates.length > 0 && !editingDoc && !generatedDoc) {
@@ -499,34 +642,54 @@ function Dashboard({ activePage, onNavigate }) {
           <table>
             <thead>
               <tr>
-                <th>No</th>
-                <th>Company</th>
-                <th>Nomor Dokumen</th>
-                <th>Judul Dokumen</th>
-                <th>User</th>
-                <th>Tanggal</th>
                 <th>Aksi</th>
+                <th>No</th>
+                <th>Nomor Dokumen</th>
+                <th>Tanggal</th>
+                <th>Perusahaan</th>
+                <th>Judul Dokumen</th>
+                <th>Pembuat</th>
+                <th>Divisi</th>
+                <th>Int/Ext</th>
+                <th>Klasifikasi</th>
+                <th>Perihal</th>
+                <th>Penandatangan</th>
+                <th>Keterangan</th>
+                <th>Link</th>
               </tr>
             </thead>
             <tbody>
               {currentData.map((doc, idx) => (
                 <tr key={doc.id} style={{ background: editingDoc && editingDoc.id === doc.id ? '#fef3c7' : 'transparent' }}>
+                  <td style={{ display: 'flex', gap: '0.4rem', borderBottom: 'none' }}>
+                    <button type="button" className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.75rem', background: '#e0e7ff', color: '#3730a3' }} onClick={() => startDuplicate(doc)} title="Duplikat">
+                      <Copy size={12} />
+                    </button>
+                    <button type="button" className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.75rem', background: '#f3f4f6', color: '#374151' }} onClick={() => startEdit(doc)} title="Edit">
+                      <Edit size={12} />
+                    </button>
+                    <button type="button" className="btn btn-success" style={{ padding: '0.4rem 0.6rem', fontSize: '0.75rem' }} onClick={() => handleDownload(doc)} title="Download Docx">
+                      <Download size={12} />
+                    </button>
+                  </td>
                   <td>{(currentPage - 1) * pageSize + idx + 1}</td>
+                  <td style={{ fontWeight: 600, color: 'var(--primary)', whiteSpace: 'nowrap' }}>{doc.doc_number}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{doc.doc_date}</td>
                   <td><span className={`badge ${getCompanyBadgeClass(doc.company)}`}>{doc.company}</span></td>
-                  <td style={{ fontWeight: 600, color: 'var(--primary)' }}>{doc.doc_number}</td>
-                  <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.judul_dokumen || '-'}</td>
-                  <td>{doc.user_name}</td>
-                  <td>{doc.doc_date}</td>
-                  <td style={{ display: 'flex', gap: '0.5rem' }}>
-                    <button type="button" className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', background: '#e0e7ff', color: '#3730a3' }} onClick={() => startDuplicate(doc)} title="Gunakan data ini untuk bikin dokumen baru">
-                      <Copy size={14} /> Duplikat
-                    </button>
-                    <button type="button" className="btn" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem', background: '#f3f4f6', color: '#374151' }} onClick={() => startEdit(doc)}>
-                      <Edit size={14} /> Edit
-                    </button>
-                    <button type="button" className="btn btn-success" style={{ padding: '0.4rem 0.6rem', fontSize: '0.8rem' }} onClick={() => handleDownload(doc)}>
-                      <Download size={14} /> Docx
-                    </button>
+                  <td style={{ minWidth: '180px' }}>{doc.judul_dokumen || '-'}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{doc.user_name}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{doc.division}</td>
+                  <td>{doc.internal_external}</td>
+                  <td>{doc.klasifikasi || '-'}</td>
+                  <td style={{ minWidth: '150px' }}>{doc.perihal || '-'}</td>
+                  <td style={{ whiteSpace: 'nowrap' }}>{doc.signed_by || '-'}</td>
+                  <td style={{ minWidth: '200px', fontSize: '0.85rem' }}>{doc.keterangan || '-'}</td>
+                  <td>
+                    {doc.link_document ? (
+                      <a href={doc.link_document} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>
+                        <ExternalLink size={14} />
+                      </a>
+                    ) : '-'}
                   </td>
                 </tr>
               ))}
