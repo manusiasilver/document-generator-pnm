@@ -1,0 +1,8 @@
+node_modules/
+.env
+backend/database.sqlite
+frontend/dist/
+frontend/dist-ssr/
+*.local
+.DS_Store
+Thumbs.db
