@@ -13,6 +13,8 @@ function HistoryView({
   setSearchTerm,
   searchDate,
   setSearchDate,
+  searchIntExt,
+  setSearchIntExt,
   pageData,
   currentPage,
   editingDoc,
@@ -54,17 +56,36 @@ function HistoryView({
 
         {/* Search bar */}
         <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
+          {/* 70% Search */}
           <div style={{ flex: '0 0 70%', position: 'relative' }}>
-            <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
-            <Inp type="text" placeholder="Cari PT, nomor, judul, user..." value={searchTerm}
+            <Search size={14} style={{ position: 'absolute', right: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
+            <Inp type="text" placeholder="Cari Perusahaan, nomor, judul, user..." value={searchTerm}
               onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              style={{ paddingLeft: '2.2rem' }}
+              style={{ paddingRight: '2.2rem' }}
             />
           </div>
-          <div style={{ flex: '0 0 30%', display: 'flex', gap: '0.5rem' }}>
+
+          {/* 15% Internal/External */}
+          <div style={{ flex: '0 0 15%' }}>
+            <select
+              value={searchIntExt}
+              onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
+              style={{ 
+                width: '100%', padding: '0.6rem 0.8rem', fontSize: '0.88rem', color: token.text,
+                background: token.surface, border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', cursor: 'pointer'
+              }}
+            >
+              <option value="">Semua (Int/Ext)</option>
+              <option value="Internal">Internal</option>
+              <option value="External">External</option>
+            </select>
+          </div>
+
+          {/* 15% Date + Reset */}
+          <div style={{ flex: '0 0 15%', display: 'flex', gap: '0.5rem' }}>
             <Inp type="date" value={searchDate} onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }} style={{ flex: 1 }} />
-            {(searchTerm || searchDate) && (
-              <Btn variant="danger" onClick={() => { setSearchTerm(''); setSearchDate(''); setCurrentPage(1); }} style={{ padding: '0.55rem' }}>
+            {(searchTerm || searchDate || searchIntExt) && (
+              <Btn variant="danger" onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }} style={{ padding: '0.55rem' }}>
                 <X size={16} />
               </Btn>
             )}
@@ -81,7 +102,7 @@ function HistoryView({
                   ['No', '3rem'],
                   ['Nomor Dokumen', 'auto'],
                   ['Tanggal', '7rem'],
-                  ['PT', '4rem'],
+                  ['Kode PT', '4rem'],
                   ['Judul', 'auto'],
                   ['User', 'auto'],
                   ['Divisi', 'auto'],
