@@ -1,0 +1,95 @@
+import { ChevronLeft, ChevronRight, XClose } from '@untitledui/icons'
+import { FileText, Clock } from 'lucide-react'
+
+import './templateComponents.css'
+
+function getInitials(name) {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+}
+
+const navItems = [
+  { id: 'form', label: 'Form', Icon: FileText },
+  { id: 'history', label: 'History', Icon: Clock },
+]
+
+function Sidebar({
+  collapsed = false,
+  mobileOpen = false,
+  userName = 'Al fatih',
+  userRole = 'Frontend Developer',
+  activePage = 'form',
+  onNavigate,
+  onToggleCollapse,
+  onCloseMobile,
+}) {
+  const initials = getInitials(userName)
+
+  const sidebarClassName = [
+    'sidebar',
+    collapsed ? 'collapsed' : '',
+    mobileOpen ? 'mobile-open' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  return (
+    <aside id="sidebar" className={sidebarClassName}>
+      <button
+        type="button"
+        className="sidebar-toggle"
+        aria-label="Toggle Sidebar"
+        onClick={onToggleCollapse}
+      >
+        {collapsed ? (
+          <ChevronRight className="toggle-icon" size={16} />
+        ) : (
+          <ChevronLeft className="toggle-icon" size={16} />
+        )}
+      </button>
+
+      <button
+        type="button"
+        className="sidebar-mobile-dismiss"
+        aria-label="Close Sidebar"
+        onClick={onCloseMobile}
+      >
+        <XClose size={18} />
+      </button>
+
+      <div className="sidebar-logo">
+        <div className="profile-content">
+          <div className="profile-avatar">
+            <span className="profile-avatar__badge">{initials}</span>
+            <div className="online-status" />
+          </div>
+          <div className="profile-info">
+            <h3 className="profile-name">{userName}</h3>
+            <p className="profile-role">{userRole}</p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="sidebar-nav" aria-label="Main navigation">
+        {navItems.map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            type="button"
+            className={`nav-item nav-item--button${activePage === id ? ' active' : ''}`}
+            data-tooltip={collapsed ? label : undefined}
+            onClick={() => onNavigate?.(id)}
+          >
+            <Icon className="nav-icon" size={22} />
+            <span className="nav-text">{label}</span>
+          </button>
+        ))}
+      </nav>
+    </aside>
+  )
+}
+
+export default Sidebar

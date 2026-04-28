@@ -10,7 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const dbPath = path.join(__dirname, 'database.sqlite');
+const dbPath = fs.existsSync(path.join(__dirname, 'database.sqllite'))
+  ? path.join(__dirname, 'database.sqllite')
+  : path.join(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath);
 
 // Helper function to convert month to Roman Numeral
