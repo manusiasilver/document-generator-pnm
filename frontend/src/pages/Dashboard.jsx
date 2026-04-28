@@ -119,8 +119,16 @@ function Dashboard({ activePage, onNavigate }) {
   const [pageSize, setPageSize]       = useState(10);
   const [searchTerm, setSearchTerm]   = useState('');
   const [searchDate, setSearchDate]   = useState('');
+  const [viewportWidth, setViewportWidth] = useState(() =>
+    typeof window === 'undefined' ? 1280 : window.innerWidth
+  );
 
   useEffect(() => { fetchData(); }, []);
+  useEffect(() => {
+    const handleResize = () => setViewportWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   useEffect(() => {
     if (templates.length > 0 && !editingDoc && !generatedDoc) {
       const match = templates.find(t => t.toLowerCase().includes(formData.company.toLowerCase()));
@@ -218,14 +226,16 @@ function Dashboard({ activePage, onNavigate }) {
   });
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
   const pageData   = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const isMobile = viewportWidth <= 768;
+  const isTablet = viewportWidth <= 1024;
 
-  const wrap = { padding: '1.5rem 1rem' };
+  const wrap = { padding: isMobile ? '1rem 0.75rem' : '1.5rem 1rem' };
   const card = {
     background: token.surface,
     border: `1px solid ${token.border}`,
     borderRadius: '1rem',
     boxShadow: '0 18px 36px rgba(17, 38, 75, 0.08)',
-    padding: '1.5rem',
+    padding: isMobile ? '1rem' : '1.5rem',
   };
 
   /* ── TEMPLATES ── */
@@ -266,12 +276,12 @@ function Dashboard({ activePage, onNavigate }) {
       {templates.length === 0
         ? <p style={{ color: token.muted, fontSize: '0.85rem', padding: '1rem 0' }}>Belum ada template.</p>
         : templates.map(t => (
-            <div key={t} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.8rem 1rem', borderRadius: '0.6rem', background: token.surface, border: `1px solid ${token.border}`, marginBottom: '0.4rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <div key={t} style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', gap: isMobile ? '0.75rem' : '1rem', padding: '0.8rem 1rem', borderRadius: '0.6rem', background: token.surface, border: `1px solid ${token.border}`, marginBottom: '0.4rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', minWidth: 0 }}>
                 <FileText size={16} style={{ color: token.muted, flexShrink: 0 }} />
-                <span style={{ fontSize: '0.87rem', fontWeight: 500, color: token.text }}>{t}</span>
+                <span style={{ fontSize: '0.87rem', fontWeight: 500, color: token.text, wordBreak: 'break-word' }}>{t}</span>
               </div>
-              <Btn variant="danger" style={{ padding: '0.3rem 0.7rem', fontSize: '0.75rem' }} onClick={() => hDeleteTemplate(t)}>
+              <Btn variant="danger" style={{ padding: '0.3rem 0.7rem', fontSize: '0.75rem', justifyContent: 'center', width: isMobile ? '100%' : 'auto' }} onClick={() => hDeleteTemplate(t)}>
                 <Trash2 size={12} /> Hapus
               </Btn>
             </div>
@@ -286,7 +296,7 @@ function Dashboard({ activePage, onNavigate }) {
     <div style={wrap}>
       <div style={card}>
       {/* Page title */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.75rem' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '1.75rem', gap: '0.75rem' }}>
         <div>
           <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem' }}>
             {editingDoc ? 'Edit Dokumen' : 'Generate Dokumen Baru'}
@@ -296,7 +306,7 @@ function Dashboard({ activePage, onNavigate }) {
           </p>
         </div>
         {editingDoc && (
-          <Btn variant="danger" onClick={resetForm}>
+          <Btn variant="danger" onClick={resetForm} style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}>
             <X size={14} /> Batal Edit
           </Btn>
         )}
@@ -305,7 +315,7 @@ function Dashboard({ activePage, onNavigate }) {
       <form onSubmit={hSubmit}>
         {/* ─── Perusahaan ─── */}
         <Divider label="Perusahaan" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? '1fr 1fr' : '1fr 1fr 1fr', gap: '1rem' }}>
           <Field label="Pilih PT">
             <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc} style={editingDoc ? { ...inp, ...inpRO, cursor: 'not-allowed' } : {}}>
               <option value="PNM">PT Pilar Niaga Makmur (PNM)</option>
@@ -333,7 +343,7 @@ function Dashboard({ activePage, onNavigate }) {
 
         {/* ─── Pengguna ─── */}
         <Divider label="Pengguna & Tanggal" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : isTablet ? '1fr 1fr' : '1fr 1fr 1fr 1fr', gap: '1rem' }}>
           <Field label="User *">
             <Sel name="user_name" value={formData.user_name} onChange={hUser} required>
               <option value="">-- Pilih --</option>
@@ -353,7 +363,7 @@ function Dashboard({ activePage, onNavigate }) {
 
         {/* ─── Detail ─── */}
         <Divider label="Detail Dokumen" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1rem' }}>
           <Field label="Perihal">
             <Inp type="text" name="perihal" value={formData.perihal} onChange={hChange} placeholder="Deskripsi perihal..." />
           </Field>
@@ -373,26 +383,26 @@ function Dashboard({ activePage, onNavigate }) {
         </div>
 
         {/* ─── Action bar ─── */}
-        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${token.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+        <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${token.border}`, display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
           {generatedDoc ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: '0.5rem' }}>
               <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: token.muted }}>Nomor:</span>
               <span style={{ fontSize: '1.1rem', fontWeight: 800, color: token.blue, letterSpacing: '0.5px' }}>{generatedDoc.doc_number}</span>
             </div>
           ) : <div />}
 
-          <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '0.6rem', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto' }}>
             {generatedDoc && (
               <>
-                <Btn variant="soft" onClick={() => startDuplicate(generatedDoc)}>
+                <Btn variant="soft" onClick={() => startDuplicate(generatedDoc)} style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}>
                   <Copy size={15} /> Duplikat
                 </Btn>
-                <Btn variant="success" onClick={() => hDownload(generatedDoc)}>
+                <Btn variant="success" onClick={() => hDownload(generatedDoc)} style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}>
                   <Download size={15} /> Download .docx
                 </Btn>
               </>
             )}
-            <Btn variant="primary" type="submit" disabled={loading}>
+            <Btn variant="primary" type="submit" disabled={loading} style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}>
               {loading
                 ? <RefreshCw size={15} style={{ animation: 'spin 1s linear infinite' }} />
                 : editingDoc ? <><Save size={15} /> Simpan</> : <><ArrowRight size={15} /> Generate</>
@@ -410,24 +420,24 @@ function Dashboard({ activePage, onNavigate }) {
     <div style={wrap}>
       <div style={card}>
       {/* Page header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
           <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem' }}>
             Riwayat Dokumen
           </h1>
           <p style={{ fontSize: '0.83rem', color: token.muted }}>{filtered.length} dokumen ditemukan</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '0.5rem', alignItems: isMobile ? 'stretch' : 'center', width: isMobile ? '100%' : 'auto' }}>
           <select
             value={pageSize}
             onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-            style={{ ...inp, width: 'auto', padding: '0.5rem 0.7rem', fontSize: '0.8rem', cursor: 'pointer' }}
+            style={{ ...inp, width: isMobile ? '100%' : 'auto', padding: '0.5rem 0.7rem', fontSize: '0.8rem', cursor: 'pointer' }}
           >
             <option value={10}>10 baris</option>
             <option value={25}>25 baris</option>
             <option value={50}>50 baris</option>
           </select>
-          <Btn variant="ghost" onClick={fetchData} disabled={tableLoading}>
+          <Btn variant="ghost" onClick={fetchData} disabled={tableLoading} style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}>
             <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
             {tableLoading ? 'Memuat...' : 'Refresh'}
           </Btn>
@@ -435,23 +445,131 @@ function Dashboard({ activePage, onNavigate }) {
       </div>
 
       {/* Search bar */}
-      <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 220, position: 'relative' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '0.6rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: isMobile ? 0 : 220, position: 'relative' }}>
           <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
           <Inp type="text" placeholder="Cari PT, nomor, judul, user..." value={searchTerm}
             onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             style={{ ...inp, paddingLeft: '2.2rem' }}
           />
         </div>
-        <Inp type="date" value={searchDate} onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }} style={{ ...inp, width: 'auto' }} />
+        <Inp type="date" value={searchDate} onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }} style={{ ...inp, width: isMobile ? '100%' : 'auto' }} />
         {(searchTerm || searchDate) && (
-          <Btn variant="danger" onClick={() => { setSearchTerm(''); setSearchDate(''); setCurrentPage(1); }}>
+          <Btn variant="danger" onClick={() => { setSearchTerm(''); setSearchDate(''); setCurrentPage(1); }} style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}>
             <X size={13} /> Reset
           </Btn>
         )}
       </div>
 
       {/* Table — borderless style */}
+      {isMobile ? (
+        <div style={{ display: 'grid', gap: '0.85rem', marginBottom: totalPages > 1 ? '1rem' : 0 }}>
+          {pageData.length === 0 ? (
+            <div style={{ padding: '2rem 1rem', textAlign: 'center', color: token.muted, border: `1px solid ${token.border}`, borderRadius: '0.875rem' }}>
+              <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
+              Tidak ada data
+            </div>
+          ) : pageData.map((doc, idx) => (
+            <div
+              key={doc.id}
+              style={{
+                border: `1px solid ${token.border}`,
+                borderRadius: '0.875rem',
+                padding: '1rem',
+                background: editingDoc?.id === doc.id ? 'rgba(254,243,199,0.5)' : token.surface,
+                display: 'grid',
+                gap: '0.85rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.35rem' }}>
+                    Dokumen {(currentPage - 1) * pageSize + idx + 1}
+                  </div>
+                  <div style={{ fontSize: '0.98rem', fontWeight: 800, color: token.blue, wordBreak: 'break-word' }}>
+                    {doc.doc_number}
+                  </div>
+                </div>
+                <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.22rem 0.6rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700, flexShrink: 0 }}>
+                  {doc.company}
+                </span>
+              </div>
+
+              <div style={{ display: 'grid', gap: '0.6rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>Judul</div>
+                  <div style={{ color: token.text }}>{doc.judul_dokumen || '—'}</div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>Tanggal</div>
+                    <div style={{ color: token.text }}>{doc.doc_date}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>User</div>
+                    <div style={{ color: token.text }}>{doc.user_name}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>Divisi</div>
+                    <div style={{ color: token.text }}>{doc.division || '—'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>Internal/External</div>
+                    <div style={{ color: token.text }}>{doc.internal_external || '—'}</div>
+                  </div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>Perihal</div>
+                  <div style={{ color: token.text }}>{doc.perihal || '—'}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: token.muted, marginBottom: '0.2rem' }}>Keterangan</div>
+                  <div style={{ color: token.muted, fontSize: '0.82rem', lineHeight: 1.6 }}>{doc.keterangan || '—'}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                <Btn variant="soft" onClick={() => startDuplicate(doc)} style={{ justifyContent: 'center', width: '100%' }}>
+                  <Copy size={14} /> Duplikat
+                </Btn>
+                <Btn variant="ghost" onClick={() => startEdit(doc)} style={{ justifyContent: 'center', width: '100%' }}>
+                  <Edit size={14} /> Edit
+                </Btn>
+                <Btn variant="success" onClick={() => hDownload(doc)} style={{ justifyContent: 'center', width: '100%' }}>
+                  <Download size={14} /> Download .docx
+                </Btn>
+                {doc.link_document ? (
+                  <a
+                    href={doc.link_document}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '0.4rem',
+                      minHeight: '42px',
+                      width: '100%',
+                      borderRadius: '0.55rem',
+                      border: `1px solid ${token.border}`,
+                      background: 'rgba(26,42,87,0.04)',
+                      color: token.blue,
+                      textDecoration: 'none',
+                      fontSize: '0.83rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    <Link size={14} /> Buka Link
+                  </a>
+                ) : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {!isMobile ? (
       <div style={{ overflowX: 'auto', background: token.surface, borderRadius: '0.875rem', border: `1px solid ${token.border}` }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.855rem' }}>
           <thead>
@@ -523,26 +641,27 @@ function Dashboard({ activePage, onNavigate }) {
           </tbody>
         </table>
       </div>
+      ) : null}
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', padding: '0 0.25rem' }}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', gap: '0.75rem', marginTop: '1rem', padding: '0 0.25rem' }}>
           <span style={{ fontSize: '0.78rem', color: token.muted }}>
             {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, filtered.length)} dari {filtered.length}
           </span>
-          <div style={{ display: 'flex', gap: '0.35rem' }}>
-            <Btn variant="ghost" style={{ padding: '0.35rem 0.65rem' }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
+          <div style={{ display: 'flex', gap: '0.35rem', justifyContent: isMobile ? 'space-between' : 'flex-start' }}>
+            <Btn variant="ghost" style={{ padding: '0.35rem 0.65rem', flex: isMobile ? 1 : undefined, justifyContent: 'center' }} disabled={currentPage === 1} onClick={() => setCurrentPage(p => p - 1)}>
               <ChevronLeft size={16} />
             </Btn>
             {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
               const page = totalPages <= 5 ? i + 1 : Math.max(1, Math.min(currentPage - 2, totalPages - 4)) + i;
               return (
-                <Btn key={page} variant={page === currentPage ? 'primary' : 'ghost'} style={{ padding: '0.35rem 0.65rem', minWidth: '2.2rem' }} onClick={() => setCurrentPage(page)}>
+                <Btn key={page} variant={page === currentPage ? 'primary' : 'ghost'} style={{ padding: '0.35rem 0.65rem', minWidth: '2.2rem', flex: isMobile ? 1 : undefined, justifyContent: 'center' }} onClick={() => setCurrentPage(page)}>
                   {page}
                 </Btn>
               );
             })}
-            <Btn variant="ghost" style={{ padding: '0.35rem 0.65rem' }} disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
+            <Btn variant="ghost" style={{ padding: '0.35rem 0.65rem', flex: isMobile ? 1 : undefined, justifyContent: 'center' }} disabled={currentPage === totalPages} onClick={() => setCurrentPage(p => p + 1)}>
               <ChevronRight size={16} />
             </Btn>
           </div>
