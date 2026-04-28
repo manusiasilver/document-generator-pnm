@@ -1,6 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Copy, Download, RefreshCw, Save, Plus } from 'lucide-react';
 import { token, Btn, wrap, card, Divider, Field, Sel, Inp } from './SharedUI';
+
+const MOBILE_BREAKPOINT = 768;
+
+function ResponsiveGrid({ isMobile, columns, children }) {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: isMobile ? '1fr' : columns,
+      gap: '1rem',
+    }}>
+      {children}
+    </div>
+  );
+}
 
 function FormView({
   editingDoc,
@@ -16,15 +30,35 @@ function FormView({
   resetForm,
   startDuplicate
 }) {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
   const inpRO = { background: '#f1f5f9', color: token.muted, cursor: 'not-allowed' };
 
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const textareaStyle = {
+    width: '100%',
+    padding: '0.6rem 0.8rem',
+    fontSize: '0.88rem',
+    color: token.text,
+    background: token.surface,
+    border: `1px solid ${token.border}`,
+    borderRadius: '0.5rem',
+    outline: 'none',
+    transition: 'border-color 0.15s',
+    fontFamily: 'inherit',
+    resize: 'vertical',
+  };
+
   return (
-    <div style={wrap}>
-      <div style={card}>
-        {/* Page title */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.75rem' }}>
+    <div style={{ ...wrap, padding: isMobile ? '1rem 0.75rem' : '1.5rem 1rem' }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '1.75rem', gap: '0.9rem', flexDirection: isMobile ? 'column' : 'row' }}>
           <div>
-            <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem' }}>
+            <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem', lineHeight: 1.25 }}>
               {editingDoc ? 'Edit Dokumen' : 'Generate Dokumen Baru'}
             </h1>
             <p style={{ fontSize: '0.83rem', color: token.muted }}>
@@ -32,16 +66,15 @@ function FormView({
             </p>
           </div>
           {editingDoc && (
-            <Btn variant="danger" onClick={resetForm}>
+            <Btn variant="danger" onClick={resetForm} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
               <X size={14} /> Batal Edit
             </Btn>
           )}
         </div>
 
         <form onSubmit={hSubmit}>
-          {/* ─── Perusahaan ─── */}
           <Divider label="Perusahaan" />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+          <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr 1fr">
             <Field label="Pilih Perusahaan">
               <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc} style={editingDoc ? inpRO : {}}>
                 <option value="PNM">PT Pilar Niaga Makmur (PNM)</option>
@@ -60,16 +93,16 @@ function FormView({
                 <option value="External">External</option>
               </Sel>
             </Field>
-          </div>
+          </ResponsiveGrid>
+
           <div style={{ marginTop: '1rem' }}>
             <Field label="Judul Dokumen">
               <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama..." />
             </Field>
           </div>
 
-          {/* ─── Pengguna ─── */}
           <Divider label="Pengguna & Tanggal" />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '1rem' }}>
+          <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr 1fr 1fr">
             <Field label="User *">
               <Sel name="user_name" value={formData.user_name} onChange={hUser} required>
                 <option value="">-- Pilih --</option>
@@ -85,11 +118,10 @@ function FormView({
             <Field label="Klasifikasi">
               <Inp type="text" name="klasifikasi" value={formData.klasifikasi} onChange={hChange} placeholder="Surat Edaran..." />
             </Field>
-          </div>
+          </ResponsiveGrid>
 
-          {/* ─── Detail ─── */}
           <Divider label="Detail Dokumen" />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+          <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr">
             <Field label="Perihal">
               <Inp type="text" name="perihal" value={formData.perihal} onChange={hChange} placeholder="Deskripsi perihal..." />
             </Field>
@@ -100,44 +132,41 @@ function FormView({
               <Inp type="text" name="link_document" value={formData.link_document} onChange={hChange} placeholder="https://..." />
             </Field>
             <Field label="Keterangan">
-              <textarea name="keterangan" value={formData.keterangan} onChange={hChange} placeholder="Catatan opsional..." rows={2}
-                style={{ 
-                  width: '100%', padding: '0.6rem 0.8rem',
-                  fontSize: '0.88rem', color: token.text,
-                  background: token.surface,
-                  border: `1px solid ${token.border}`,
-                  borderRadius: '0.5rem', outline: 'none',
-                  transition: 'border-color 0.15s',
-                  fontFamily: 'inherit',
-                  resize: 'vertical' 
-                }}
-                onFocus={e => e.target.style.borderColor = token.blueMid}
-                onBlur={e => e.target.style.borderColor = token.border}
+              <textarea
+                name="keterangan"
+                value={formData.keterangan}
+                onChange={hChange}
+                placeholder="Catatan opsional..."
+                rows={isMobile ? 3 : 2}
+                style={textareaStyle}
+                onFocus={e => { e.target.style.borderColor = token.blueMid; }}
+                onBlur={e => { e.target.style.borderColor = token.border; }}
               />
             </Field>
-          </div>
+          </ResponsiveGrid>
 
-          {/* ─── Action bar ─── */}
-          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${token.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${token.border}`, display: 'flex', alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', flexDirection: isMobile ? 'column' : 'row' }}>
             {generatedDoc ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', gap: '0.45rem', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto', padding: isMobile ? '0.85rem 0.9rem' : 0, background: isMobile ? 'rgba(26,42,87,0.04)' : 'transparent', borderRadius: isMobile ? '0.75rem' : 0 }}>
                 <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: token.muted }}>Nomor:</span>
-                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: token.blue, letterSpacing: '0.5px' }}>{generatedDoc.doc_number}</span>
+                <span style={{ fontSize: isMobile ? '1rem' : '1.1rem', fontWeight: 800, color: token.blue, letterSpacing: '0.5px', wordBreak: 'break-word' }}>{generatedDoc.doc_number}</span>
               </div>
-            ) : <div />}
+            ) : (
+              !isMobile && <div />
+            )}
 
-            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', width: isMobile ? '100%' : 'auto', flexDirection: isMobile ? 'column' : 'row' }}>
               {generatedDoc && (
                 <>
-                  <Btn variant="soft" onClick={() => startDuplicate(generatedDoc)}>
+                  <Btn variant="soft" onClick={() => startDuplicate(generatedDoc)} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
                     <Copy size={15} /> Duplikat
                   </Btn>
-                  <Btn variant="success" onClick={() => hDownload(generatedDoc)}>
+                  <Btn variant="success" onClick={() => hDownload(generatedDoc)} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
                     <Download size={15} /> Download .docx
                   </Btn>
                 </>
               )}
-              <Btn variant="primary" type="submit" disabled={loading}>
+              <Btn variant="primary" type="submit" disabled={loading} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
                 {loading ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} /> : (editingDoc ? <><Save size={18} /> Simpan Perubahan</> : <><Plus size={18} /> Generate Nomor</>)}
               </Btn>
             </div>
