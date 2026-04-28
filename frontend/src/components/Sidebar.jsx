@@ -13,9 +13,9 @@ function getInitials(name) {
 }
 
 const navItems = [
-  { id: 'form', label: 'Form', Icon: FileText },
-  { id: 'history', label: 'History', Icon: Clock },
-  { id: 'templates', label: 'Templates', Icon: LayoutTemplate },
+  { id: 'form', label: 'Generate Dokumen', Icon: FileText },
+  { id: 'history', label: 'Riwayat Dokumen', Icon: Clock },
+  { id: 'templates', label: 'Kelola Template', Icon: LayoutTemplate },
 ]
 
 function Sidebar({
