@@ -250,7 +250,7 @@ function Dashboard() {
       <div className="card glass">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
            <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-             {editingDoc ? \`Edit Dokumen: \${editingDoc.doc_number}\` : 'Generate Dokumen Baru'}
+             {editingDoc ? `Edit Dokumen: ${editingDoc.doc_number}` : 'Generate Dokumen Baru'}
            </h2>
            {editingDoc && (
              <button type="button" className="btn" style={{ background: '#fecaca', color: '#991b1b', padding: '0.5rem 1rem' }} onClick={resetForm}>
@@ -431,7 +431,7 @@ function Dashboard() {
               {currentData.map((doc, idx) => (
                 <tr key={doc.id} style={{ background: editingDoc && editingDoc.id === doc.id ? '#fef3c7' : 'transparent' }}>
                   <td>{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td><span className={`badge \${getCompanyBadgeClass(doc.company)}`}>{doc.company}</span></td>
+                  <td><span className={`badge ${getCompanyBadgeClass(doc.company)}`}>{doc.company}</span></td>
                   <td style={{ fontWeight: 600, color: 'var(--primary)' }}>{doc.doc_number}</td>
                   <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {doc.judul_dokumen || '-'}
