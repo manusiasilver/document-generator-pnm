@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, XClose } from '@untitledui/icons'
 import { FileText, Clock, LayoutTemplate } from 'lucide-react'
 
-import './templateComponents.css'
+import '../styles/templateComponents.css'
 
 function getInitials(name) {
   return name

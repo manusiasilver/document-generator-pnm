@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import Dashboard from './Dashboard'
-import Header from './templateComponents/templateComponents/Header.jsx'
-import Sidebar from './templateComponents/templateComponents/Sidebar.jsx'
+import Dashboard from './pages/Dashboard'
+import Header from './components/Header.jsx'
+import Sidebar from './components/Sidebar.jsx'
 
 function App() {
   const [collapsed, setCollapsed] = useState(false)
