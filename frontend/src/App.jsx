@@ -39,6 +39,7 @@ function App() {
   const [pageSize, setPageSize]       = useState(10);
   const [searchTerm, setSearchTerm]   = useState('');
   const [searchDate, setSearchDate]   = useState('');
+  const [searchIntExt, setSearchIntExt] = useState('');
 
   useEffect(() => { fetchData(); }, []);
   
@@ -136,7 +137,8 @@ function App() {
   const filtered = documents.filter(doc => {
     const s = !searchTerm || [doc.company, doc.doc_number, doc.judul_dokumen, doc.user_name].some(f => f?.toLowerCase().includes(searchTerm.toLowerCase()));
     const d = !searchDate || doc.doc_date === searchDate;
-    return s && d;
+    const ie = !searchIntExt || doc.internal_external === searchIntExt;
+    return s && d && ie;
   });
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
   const pageData   = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -205,6 +207,8 @@ function App() {
                 setSearchTerm={setSearchTerm}
                 searchDate={searchDate}
                 setSearchDate={setSearchDate}
+                searchIntExt={searchIntExt}
+                setSearchIntExt={setSearchIntExt}
                 pageData={pageData}
                 currentPage={currentPage}
                 startDuplicate={startDuplicate}

@@ -42,7 +42,7 @@ function FormView({
           {/* ─── Perusahaan ─── */}
           <Divider label="Perusahaan" />
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
-            <Field label="Pilih PT">
+            <Field label="Pilih Perusahaan">
               <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc} style={editingDoc ? inpRO : {}}>
                 <option value="PNM">PT Pilar Niaga Makmur (PNM)</option>
                 <option value="PKS">PT Pilkada (PKS)</option>

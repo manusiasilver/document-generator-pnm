@@ -16,7 +16,7 @@ function Overlay({ onClick }) {
         background: 'rgba(15,23,42,0.5)',
         backdropFilter: 'blur(5px)',
         WebkitBackdropFilter: 'blur(5px)',
-        zIndex: 1000,
+        zIndex: 9000,
       }}
     />
   );
@@ -28,7 +28,7 @@ function ModalBox({ children, maxWidth = '700px' }) {
       position: 'fixed',
       top: '50%', left: '50%',
       transform: 'translate(-50%, -50%)',
-      zIndex: 1001,
+      zIndex: 9001,
       background: token.surface,
       borderRadius: '1.1rem',
       boxShadow: '0 30px 80px rgba(15,23,42,0.25)',
@@ -327,6 +327,8 @@ function HistoryView({
   setSearchTerm,
   searchDate,
   setSearchDate,
+  searchIntExt,
+  setSearchIntExt,
   pageData,
   currentPage,
   startDuplicate,
@@ -388,8 +390,9 @@ function HistoryView({
         </div>
 
         {/* Search bar */}
-        <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem' }}>
-          <div style={{ flex: '0 0 70%', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+          {/* keyword */}
+          <div style={{ flex: '1 1 260px', position: 'relative' }}>
             <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
             <Inp
               type="text"
@@ -399,14 +402,38 @@ function HistoryView({
               style={{ paddingLeft: '2.2rem' }}
             />
           </div>
-          <div style={{ flex: '0 0 30%', display: 'flex', gap: '0.5rem' }}>
-            <Inp type="date" value={searchDate} onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }} style={{ flex: 1 }} />
-            {(searchTerm || searchDate) && (
-              <Btn variant="danger" onClick={() => { setSearchTerm(''); setSearchDate(''); setCurrentPage(1); }} style={{ padding: '0.55rem' }}>
-                <X size={16} />
-              </Btn>
-            )}
-          </div>
+          {/* tanggal */}
+          <Inp
+            type="date"
+            value={searchDate}
+            onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+            style={{ flex: '0 0 160px' }}
+          />
+          {/* internal / external */}
+          <select
+            value={searchIntExt}
+            onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
+            style={{
+              flex: '0 0 140px', padding: '0.6rem 0.8rem', fontSize: '0.88rem',
+              background: token.surface, border: `1px solid ${token.border}`,
+              borderRadius: '0.5rem', cursor: 'pointer', color: searchIntExt ? token.text : token.muted,
+            }}
+          >
+            <option value="">Semua</option>
+            <option value="Internal">Internal</option>
+            <option value="External">External</option>
+          </select>
+          {/* clear */}
+          {(searchTerm || searchDate || searchIntExt) && (
+            <Btn
+              variant="danger"
+              onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+              style={{ padding: '0.55rem 0.75rem', flex: '0 0 auto' }}
+              title="Hapus semua filter"
+            >
+              <X size={16} />
+            </Btn>
+          )}
         </div>
 
         {/* Table */}
