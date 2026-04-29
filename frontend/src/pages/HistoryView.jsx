@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, Save, ArrowUp, CalendarDays } from 'lucide-react';
+import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save, CalendarDays } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 
 const API_URL = 'http://localhost:3001/api';
@@ -486,13 +486,14 @@ const tableLabelStyle = {
 const tablePrimaryTextStyle = {
   fontSize: '0.86rem',
   color: token.text,
-  fontWeight: 700,
+  fontWeight: 500,
   lineHeight: 1.45,
 };
 
 const tableSecondaryTextStyle = {
-  fontSize: '0.78rem',
-  color: token.muted,
+  fontSize: '0.86rem',
+  color: token.text,
+  fontWeight: 500,
   lineHeight: 1.45,
 };
 
@@ -503,11 +504,11 @@ const clampTwoLinesStyle = {
   overflow: 'hidden',
 };
 
-function InfoPair({ label, value, muted = false }) {
+function InfoPair({ label, value, muted = false, full = false }) {
   return (
     <div style={{ minWidth: 0 }}>
       <div style={tableLabelStyle}>{label}</div>
-      <div style={{ ...(muted ? tableSecondaryTextStyle : tablePrimaryTextStyle), ...clampTwoLinesStyle, marginTop: '0.2rem' }}>
+      <div style={{ ...(muted ? tableSecondaryTextStyle : tablePrimaryTextStyle), ...(full ? { wordBreak: 'break-word' } : clampTwoLinesStyle), marginTop: '0.2rem' }}>
         {dash(value)}
       </div>
     </div>
@@ -515,35 +516,61 @@ function InfoPair({ label, value, muted = false }) {
 }
 
 function DateFilterInput({ value, onChange, isMobile = false }) {
-  const openPicker = event => {
-    if (typeof event.currentTarget.showPicker === 'function') {
-      event.currentTarget.showPicker();
+  const inputRef = React.useRef(null);
+
+  const openPicker = () => {
+    if (inputRef.current && typeof inputRef.current.showPicker === 'function') {
+      inputRef.current.showPicker();
     }
   };
 
+  const displayValue = value
+    ? new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value + 'T00:00:00'))
+    : null;
+
   return (
-    <div style={{ position: 'relative', width: isMobile ? '100%' : '148px', flex: '0 0 auto' }}>
-      <CalendarDays
-        size={16}
-        style={{
-          position: 'absolute',
-          left: '0.75rem',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          color: token.muted,
-          pointerEvents: 'none',
-        }}
-      />
-      <Inp
+    <div
+      onClick={openPicker}
+      style={{
+        position: 'relative',
+        width: isMobile ? '100%' : '160px',
+        flex: '0 0 auto',
+        cursor: 'pointer',
+      }}
+    >
+      {/* visible display layer */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        padding: '0.6rem 0.75rem',
+        background: token.surface,
+        border: `1px solid ${token.border}`,
+        borderRadius: '0.5rem',
+        fontSize: '0.82rem',
+        color: displayValue ? token.text : token.muted,
+        userSelect: 'none',
+        pointerEvents: 'none',
+      }}>
+        <CalendarDays size={15} style={{ flex: '0 0 auto', color: token.muted }} />
+        <span style={{ flex: 1 }}>{displayValue || 'Filter Tanggal'}</span>
+      </div>
+
+      {/* hidden real input on top */}
+      <input
+        ref={inputRef}
         type="date"
         value={value}
         onChange={onChange}
-        onFocus={openPicker}
-        onClick={openPicker}
         style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0,
           width: '100%',
-          paddingLeft: '2.2rem',
+          height: '100%',
           cursor: 'pointer',
+          border: 'none',
+          padding: 0,
         }}
       />
     </div>
@@ -572,31 +599,33 @@ function HistoryView({
 }) {
   const [editDoc, setEditDoc] = useState(null);
   const [duplicateDoc, setDuplicateDoc] = useState(null);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [expandedRows, setExpandedRows] = useState(new Set());
+  const toggleRow = id => setExpandedRows(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
   const isMobile = useViewportFlag(MOBILE_BREAKPOINT);
   const isCompactMobile = useViewportFlag(COMPACT_MOBILE_BREAKPOINT);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 480);
-    };
-
-    handleScroll();
-    window.addEventListener('scroll', handleScroll, { passive: true });
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleRefresh = () => {
     fetchData();
   };
 
-  const handleScrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <div style={{ ...wrap, padding: isMobile ? '1rem 0.75rem' : '1.5rem 1rem' }}>
+    <div style={{
+      position: 'fixed',
+      top: '170px',
+      left: '260px',
+      right: 0,
+      bottom: 0,
+      padding: isMobile ? '0.75rem' : '0.75rem 1.25rem 0.75rem',
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      overflow: 'hidden',
+      background: 'transparent',
+    }}>
       {editDoc && (
         <EditModal
           doc={editDoc}
@@ -616,7 +645,7 @@ function HistoryView({
         />
       )}
 
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem' }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '1.1rem' }}>
           <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, margin: 0 }}>
             Riwayat Dokumen
@@ -645,10 +674,21 @@ function HistoryView({
             value={searchIntExt}
             onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
             style={{
-              padding: '0.6rem 0.7rem', fontSize: '0.82rem',
-              background: token.surface, border: `1px solid ${token.border}`,
-              borderRadius: '0.5rem', cursor: 'pointer', color: searchIntExt ? token.text : token.muted,
-              width: isMobile ? '100%' : '115px', flex: '0 0 auto',
+              padding: '0.6rem 0.75rem',
+              fontSize: '0.82rem',
+              background: token.surface,
+              border: `1px solid ${token.border}`,
+              borderRadius: '0.5rem',
+              cursor: 'pointer',
+              color: searchIntExt ? token.text : token.muted,
+              width: isMobile ? '100%' : '120px',
+              flex: '0 0 auto',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.6rem center',
+              paddingRight: '2rem',
             }}
           >
             <option value="">Semua</option>
@@ -675,14 +715,28 @@ function HistoryView({
             value={pageSize}
             onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
             style={{
-              padding: '0.5rem 0.6rem', fontSize: '0.8rem', cursor: 'pointer',
-              background: token.surface, border: `1px solid ${token.border}`, borderRadius: '0.5rem',
-              width: isMobile ? '100%' : 'auto', flex: '0 0 auto',
+              padding: '0.6rem 0.75rem',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              background: token.surface,
+              border: `1px solid ${token.border}`,
+              borderRadius: '0.5rem',
+              color: token.text,
+              width: isMobile ? '100%' : '120px',
+              flex: '0 0 auto',
+              appearance: 'none',
+              WebkitAppearance: 'none',
+              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'right 0.6rem center',
+              paddingRight: '2rem',
             }}
           >
             <option value={10}>10 baris</option>
             <option value={25}>25 baris</option>
             <option value={50}>50 baris</option>
+            <option value={75}>75 baris</option>
+            <option value={100}>100 baris</option>
           </select>
           <Btn variant="ghost" onClick={handleRefresh} disabled={tableLoading} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center', flex: '0 0 auto' }}>
             <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
@@ -711,130 +765,129 @@ function HistoryView({
             )}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
-            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
-              <thead>
+          <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
+            <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
+              <colgroup>
+                <col style={{ width: '44px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '200px' }} />
+                <col style={{ width: 'auto' }} />
+                <col style={{ width: '110px' }} />
+                <col style={{ width: '100px' }} />
+                <col style={{ width: '90px' }} />
+                <col style={{ width: '80px' }} />
+                <col style={{ width: '110px' }} />
+              </colgroup>
+              <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
                 <tr>
                   {[
-                    ['No', '3rem'],
-                    ['Dokumen', '22%'],
-                    ['Tanggal', '10%'],
-                    ['Pemilik', '16%'],
-                    ['Kategori', '14%'],
-                    ['Ringkasan', '24%'],
-                    ['Aksi', '14%'],
-                  ].map(([h, w]) => (
-                    <th key={h} style={{ ...tableHeaderCellStyle, width: w, borderBottom: `1px solid ${token.border}` }}>{h}</th>
+                    'No',
+                    'Kode PT',
+                    'No. Dokumen',
+                    'Judul',
+                    'Tanggal',
+                    'User',
+                    'Divisi',
+                    'Int/Ext',
+                    'Aksi',
+                  ].map(h => (
+                    <th key={h} style={{ ...tableHeaderCellStyle, borderBottom: `1px solid ${token.border}` }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
-                {pageData.map((doc, idx) => (
-                  <tr
-                    key={doc.id}
-                    style={{ transition: 'background 0.15s ease' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,42,87,0.03)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-                  >
-                    <td style={{ ...tableBodyCellStyle, color: token.muted, fontWeight: 700 }}>
-                      {(currentPage - 1) * pageSize + idx + 1}
-                    </td>
-                    <td style={tableBodyCellStyle}>
-                      <div style={{ display: 'grid', gap: '0.55rem' }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
-                          <div style={{ minWidth: 0 }}>
-                            <div style={{ ...tablePrimaryTextStyle, color: token.blue, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                              <span style={{ ...clampTwoLinesStyle }}>{doc.doc_number}</span>
-                              <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(doc.doc_number);
-                                  alert('Nomor disalin!');
-                                }}
-                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: 0, flex: '0 0 auto' }}
-                                title="Salin Nomor"
-                                onMouseEnter={e => e.currentTarget.style.color = token.blue}
-                                onMouseLeave={e => e.currentTarget.style.color = token.muted}
-                              >
-                                <Copy size={13} />
-                              </button>
-                            </div>
-                            <div style={{ ...tableSecondaryTextStyle, ...clampTwoLinesStyle, marginTop: '0.28rem' }}>
-                              {dash(doc.judul_dokumen)}
-                            </div>
+                {pageData.map((doc, idx) => {
+                  const isExpanded = expandedRows.has(doc.id);
+                  return (
+                    <React.Fragment key={doc.id}>
+                      <tr
+                        style={{ transition: 'background 0.15s ease', cursor: 'pointer', background: isExpanded ? 'rgba(26,42,87,0.025)' : 'transparent' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,42,87,0.04)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = isExpanded ? 'rgba(26,42,87,0.025)' : 'transparent'; }}
+                        onClick={() => toggleRow(doc.id)}
+                      >
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle', textAlign: 'center', padding: '0.75rem 0.4rem' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.18rem' }}>
+                            <span style={{ fontSize: '0.72rem', color: token.muted, fontWeight: 700, lineHeight: 1 }}>{(currentPage - 1) * pageSize + idx + 1}</span>
+                            <ChevronDown size={12} style={{ color: token.muted, transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
                           </div>
-                          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.55rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700, whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle', textAlign: 'center' }}>
+                          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.5rem', borderRadius: '999px', fontSize: '0.67rem', fontWeight: 700, whiteSpace: 'nowrap', display: 'inline-block' }}>
                             {doc.company}
                           </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td style={tableBodyCellStyle}>
-                      <div style={{ ...tablePrimaryTextStyle, fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDate(doc.doc_date)}</div>
-                    </td>
-                    <td style={tableBodyCellStyle}>
-                      <div style={{ display: 'grid', gap: '0.65rem' }}>
-                        <InfoPair label="User" value={doc.user_name} />
-                        <InfoPair label="Divisi" value={doc.division} muted />
-                      </div>
-                    </td>
-                    <td style={tableBodyCellStyle}>
-                      <div style={{ display: 'grid', gap: '0.65rem' }}>
-                        <InfoPair label="Int/Ext" value={doc.internal_external} />
-                        <InfoPair label="Klasifikasi" value={doc.klasifikasi} muted />
-                      </div>
-                    </td>
-                    <td style={tableBodyCellStyle}>
-                      <div style={{ display: 'grid', gap: '0.65rem' }}>
-                        <InfoPair label="Perihal" value={doc.perihal} />
-                        <InfoPair label="Penandatangan" value={doc.signed_by} muted />
-                        <InfoPair label="Keterangan" value={doc.keterangan} muted />
-                      </div>
-                    </td>
-                    <td style={tableBodyCellStyle}>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
-                        <Btn variant="soft" style={{ padding: '0.42rem 0.55rem', fontSize: '0.72rem', justifyContent: 'center', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
-                          <Copy size={12} /> Duplikat
-                        </Btn>
-                        <Btn variant="ghost" style={{ padding: '0.42rem 0.55rem', fontSize: '0.72rem', justifyContent: 'center', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }} onClick={() => setEditDoc(doc)} title="Edit">
-                          <Edit size={12} /> Edit
-                        </Btn>
-                        <Btn variant="success" style={{ padding: '0.42rem 0.55rem', fontSize: '0.72rem', justifyContent: 'center', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }} onClick={() => hDownload(doc)} title="Download Docx">
-                          <Download size={12} /> Unduh
-                        </Btn>
-                        {doc.link_document ? (
-                          <a
-                            href={doc.link_document}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: '0.35rem',
-                              minHeight: '2rem',
-                              borderRadius: '0.65rem',
-                              textDecoration: 'none',
-                              color: token.blue,
-                              background: 'rgba(26,42,87,0.05)',
-                              border: `1px solid ${token.border}`,
-                              fontSize: '0.72rem',
-                              fontWeight: 700,
-                              padding: '0.42rem 0.55rem',
-                              flex: '1 1 calc(50% - 0.225rem)',
-                              minWidth: '5rem',
-                            }}
-                          >
-                            <Link size={13} /> Link
-                          </a>
-                        ) : (
-                          <span style={{ ...tableSecondaryTextStyle, textAlign: 'center', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', minHeight: '2rem', padding: '0.42rem 0.55rem', borderRadius: '0.65rem', background: 'rgba(148,163,184,0.08)', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }}>Tanpa link</span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden' }}>
+                            <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.45 }}>{doc.doc_number}</span>
+                            <button
+                              onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(doc.doc_number); alert('Nomor disalin!'); }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: 0, flex: '0 0 auto' }}
+                              title="Salin Nomor"
+                              onMouseEnter={e => { e.stopPropagation(); e.currentTarget.style.color = token.blue; }}
+                              onMouseLeave={e => { e.stopPropagation(); e.currentTarget.style.color = token.muted; }}
+                            >
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.judul_dokumen)}</div>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDate(doc.doc_date)}</div>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.user_name)}</div>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tableSecondaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.division)}</div>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle }}>{dash(doc.internal_external)}</div>
+                        </td>
+                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
+                          <div style={{ display: 'flex', flexDirection: 'row', gap: '0.3rem', alignItems: 'center' }}>
+                            <Btn variant="soft" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
+                              <Copy size={13} />
+                            </Btn>
+                            <Btn variant="ghost" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => setEditDoc(doc)} title="Edit">
+                              <Edit size={13} />
+                            </Btn>
+                            <Btn variant="success" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => hDownload(doc)} title="Unduh">
+                              <Download size={13} />
+                            </Btn>
+                          </div>
+                        </td>
+                      </tr>
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={9} style={{ padding: '0 0.75rem 0.85rem', borderBottom: `1px solid ${token.border}`, background: 'rgba(248,250,252,0.6)' }}>
+                            <div style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', background: token.surface, border: `1px solid ${token.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem 1.25rem' }}>
+                              <InfoPair label="Klasifikasi" value={doc.klasifikasi} muted full />
+                              <InfoPair label="Penandatangan" value={doc.signed_by} full />
+                              <div style={{ minWidth: 0 }}>
+                                <div style={tableLabelStyle}>Link</div>
+                                {doc.link_document
+                                  ? <a href={doc.link_document} target="_blank" rel="noopener noreferrer" onClick={e => e.stopPropagation()} style={{ fontSize: '0.82rem', color: token.blue, fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.3rem', marginTop: '0.2rem', textDecoration: 'none' }}>
+                                      <Link size={12} style={{ flex: '0 0 auto' }} /> Buka Link
+                                    </a>
+                                  : <div style={{ ...tableSecondaryTextStyle, marginTop: '0.2rem' }}>-</div>
+                                }
+                              </div>
+                              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem 1.25rem' }}>
+                                <InfoPair label="Perihal" value={doc.perihal} full />
+                                <InfoPair label="Keterangan" value={doc.keterangan} muted full />
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
                 {pageData.length === 0 && (
-                  <tr><td colSpan={7} style={{ padding: '3.5rem', textAlign: 'center', color: token.muted }}>
+                  <tr><td colSpan={9} style={{ padding: '3.5rem', textAlign: 'center', color: token.muted }}>
                     <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
                     Tidak ada data
                   </td></tr>
@@ -869,33 +922,6 @@ function HistoryView({
         )}
       </div>
 
-      {showScrollTop ? (
-        <button
-          type="button"
-          onClick={handleScrollToTop}
-          aria-label="Kembali ke atas"
-          title="Kembali ke atas"
-          style={{
-            position: 'fixed',
-            right: isMobile ? '16px' : '24px',
-            bottom: isMobile ? '16px' : '24px',
-            width: '3rem',
-            height: '3rem',
-            borderRadius: '999px',
-            border: `1px solid ${token.border}`,
-            background: token.blue,
-            color: '#fff',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 16px 32px rgba(26,42,87,0.24)',
-            cursor: 'pointer',
-            zIndex: 40,
-          }}
-        >
-          <ArrowUp size={18} />
-        </button>
-      ) : null}
     </div>
   );
 }
