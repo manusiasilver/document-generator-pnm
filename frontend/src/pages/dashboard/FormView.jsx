@@ -117,30 +117,61 @@ function FormView({
             </Field>
           </div>
 
-          {/* ─── Action bar ─── */}
-          <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: `1px solid ${token.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+          {/* ─── Action bar (Centered Box) ─── */}
+          <div style={{ marginTop: '2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+            
             {generatedDoc ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: token.muted }}>Nomor:</span>
-                <span style={{ fontSize: '1.1rem', fontWeight: 800, color: token.blue, letterSpacing: '0.5px' }}>{generatedDoc.doc_number}</span>
-              </div>
-            ) : <div />}
+              <div style={{ 
+                background: token.blueLight, 
+                border: `1px solid ${token.border}`, 
+                borderRadius: '1rem', 
+                padding: '2rem', 
+                width: '100%', 
+                maxWidth: '600px',
+                textAlign: 'center',
+                boxShadow: '0 10px 25px rgba(26, 42, 87, 0.05)'
+              }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: token.muted, display: 'block', marginBottom: '0.5rem' }}>
+                  Nomor Dokumen Berhasil Dibuat:
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                  <span style={{ fontSize: '1.75rem', fontWeight: 800, color: token.blue, letterSpacing: '1px' }}>{generatedDoc.doc_number}</span>
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(generatedDoc.doc_number);
+                      alert('Nomor disalin!');
+                    }}
+                    style={{ background: 'white', border: `1px solid ${token.border}`, borderRadius: '0.5rem', cursor: 'pointer', color: token.blue, display: 'flex', alignItems: 'center', padding: '8px', boxShadow: '0 2px 5px rgba(0,0,0,0.05)' }}
+                    title="Salin Nomor"
+                  >
+                    <Copy size={18} />
+                  </button>
+                </div>
 
-            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-              {generatedDoc && (
-                <>
-                  <Btn variant="soft" onClick={() => startDuplicate(generatedDoc)}>
+                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <Btn variant="soft" type="button" onClick={() => startDuplicate(generatedDoc)}>
                     <Copy size={15} /> Duplikat
                   </Btn>
-                  <Btn variant="success" onClick={() => hDownload(generatedDoc)}>
+                  <Btn variant="success" type="button" onClick={() => hDownload(generatedDoc)}>
                     <Download size={15} /> Download .docx
                   </Btn>
-                </>
-              )}
-              <Btn variant="primary" type="submit" disabled={loading}>
-                {loading ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} /> : (editingDoc ? <><Save size={18} /> Simpan Perubahan</> : <><Plus size={18} /> Generate Nomor</>)}
+                  <Btn variant="primary" type="submit" disabled={loading}>
+                    {loading ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <><Save size={18} /> Simpan Perubahan</>}
+                  </Btn>
+                </div>
+              </div>
+            ) : (
+              <Btn variant="primary" type="submit" disabled={loading} style={{ padding: '0.8rem 2.5rem', fontSize: '1rem' }}>
+                {loading ? <RefreshCw size={20} style={{ animation: 'spin 1s linear infinite' }} /> : <><Plus size={20} /> Generate Nomor Baru</>}
               </Btn>
-            </div>
+            )}
+
+            {!generatedDoc && editingDoc && (
+              <p style={{ fontSize: '0.85rem', color: token.muted }}>
+                Mengedit dokumen: <b>{editingDoc.doc_number}</b>
+              </p>
+            )}
           </div>
         </form>
       </div>

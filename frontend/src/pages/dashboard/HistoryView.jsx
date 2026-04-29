@@ -133,7 +133,23 @@ function HistoryView({
                     </div>
                   </td>
                   <td style={{ padding: '0.8rem 1rem', color: token.muted, fontWeight: 600 }}>{(currentPage - 1) * pageSize + idx + 1}</td>
-                  <td style={{ padding: '0.8rem 1rem', fontWeight: 700, color: token.blue, whiteSpace: 'nowrap' }}>{doc.doc_number}</td>
+                  <td style={{ padding: '0.8rem 1rem', fontWeight: 700, color: token.blue, whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {doc.doc_number}
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(doc.doc_number);
+                          alert('Nomor disalin!');
+                        }}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: '2px' }}
+                        title="Salin Nomor"
+                        onMouseEnter={e => e.currentTarget.style.color = token.blue}
+                        onMouseLeave={e => e.currentTarget.style.color = token.muted}
+                      >
+                        <Copy size={13} />
+                      </button>
+                    </div>
+                  </td>
                   <td style={{ padding: '0.8rem 1rem', color: token.muted, whiteSpace: 'nowrap' }}>{doc.doc_date}</td>
                   <td style={{ padding: '0.8rem 1rem' }}>
                     <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.55rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700 }}>{doc.company}</span>
