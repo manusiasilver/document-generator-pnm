@@ -603,7 +603,7 @@ select {
 .header-menu-button {
   width: 44px;
   height: 44px;
-  display: inline-flex;
+  display: none;
   align-items: center;
   justify-content: center;
   color: #fff;
@@ -3015,6 +3015,10 @@ select {
 
   .sidebar-toggle {
     display: none;
+  }
+
+  .header-menu-button {
+    display: inline-flex;
   }
 
   .sidebar-mobile-dismiss {

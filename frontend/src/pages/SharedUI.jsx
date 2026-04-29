@@ -42,7 +42,7 @@ export function Inp(props) {
   return (
     <input
       {...props}
-      style={props.readOnly ? inpRO : inpStyle}
+      style={{ ...(props.readOnly ? inpRO : inpStyle), ...props.style }}
       onFocus={e => { if (!props.readOnly) e.target.style.borderColor = token.blueMid; }}
       onBlur={e => { e.target.style.borderColor = token.border; }}
     />

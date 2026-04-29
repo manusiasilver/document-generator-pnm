@@ -6,7 +6,6 @@ const fs = require('fs');
 const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
 const multer = require('multer');
-const { exec } = require('child_process');
 
 const app = express();
 app.use(cors());
@@ -15,8 +14,6 @@ app.use(express.json());
 const templatesDir = path.resolve(__dirname, 'templates');
 if (!fs.existsSync(templatesDir)) fs.mkdirSync(templatesDir);
 
-const tempDir = path.resolve(__dirname, 'temp_previews');
-if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -222,7 +219,6 @@ app.post('/api/download', (req, res) => {
     });
 });
 
-// Start server
 const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Backend server running on http://localhost:${PORT}`);
