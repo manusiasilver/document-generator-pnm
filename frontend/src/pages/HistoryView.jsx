@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, Save } from 'lucide-react';
+import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, Save, ArrowUp, CalendarDays } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 
 const API_URL = 'http://localhost:3001/api';
@@ -9,6 +9,19 @@ const COMPACT_MOBILE_BREAKPOINT = 480;
 
 const getToday = () => new Date().toISOString().split('T')[0];
 const dash = value => value || '-';
+const formatTimestamp = value => new Intl.DateTimeFormat('id-ID', {
+  dateStyle: 'medium',
+  timeStyle: 'short',
+}).format(value);
+
+const formatDate = value => {
+  if (!value) return '-';
+  try {
+    return new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value + 'T00:00:00'));
+  } catch {
+    return value;
+  }
+};
 
 function useViewportFlag(breakpoint) {
   const getMatches = () => (typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false);
@@ -409,7 +422,7 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: '0.75rem 0.8rem', marginBottom: '1rem', padding: isCompact ? '0.75rem' : '0.85rem', borderRadius: '0.8rem', background: 'rgba(26,42,87,0.035)' }}>
-        {renderMetaBlock('Tanggal', dash(doc.doc_date))}
+        {renderMetaBlock('Tanggal', formatDate(doc.doc_date))}
         {renderMetaBlock('Int/Ext', dash(doc.internal_external))}
         {renderMetaBlock('User', dash(doc.user_name))}
         {renderMetaBlock('Divisi', dash(doc.division))}
@@ -444,6 +457,99 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
   );
 }
 
+const tableHeaderCellStyle = {
+  padding: '0.9rem 1rem',
+  textAlign: 'left',
+  fontWeight: 700,
+  fontSize: '0.68rem',
+  letterSpacing: '0.09em',
+  textTransform: 'uppercase',
+  color: token.muted,
+  whiteSpace: 'nowrap',
+  background: 'rgba(248, 250, 252, 0.96)',
+};
+
+const tableBodyCellStyle = {
+  padding: '1rem',
+  verticalAlign: 'top',
+  borderBottom: `1px solid ${token.border}`,
+};
+
+const tableLabelStyle = {
+  fontSize: '0.66rem',
+  color: token.muted,
+  fontWeight: 700,
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+};
+
+const tablePrimaryTextStyle = {
+  fontSize: '0.86rem',
+  color: token.text,
+  fontWeight: 700,
+  lineHeight: 1.45,
+};
+
+const tableSecondaryTextStyle = {
+  fontSize: '0.78rem',
+  color: token.muted,
+  lineHeight: 1.45,
+};
+
+const clampTwoLinesStyle = {
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+};
+
+function InfoPair({ label, value, muted = false }) {
+  return (
+    <div style={{ minWidth: 0 }}>
+      <div style={tableLabelStyle}>{label}</div>
+      <div style={{ ...(muted ? tableSecondaryTextStyle : tablePrimaryTextStyle), ...clampTwoLinesStyle, marginTop: '0.2rem' }}>
+        {dash(value)}
+      </div>
+    </div>
+  );
+}
+
+function DateFilterInput({ value, onChange, isMobile = false }) {
+  const openPicker = event => {
+    if (typeof event.currentTarget.showPicker === 'function') {
+      event.currentTarget.showPicker();
+    }
+  };
+
+  return (
+    <div style={{ position: 'relative', width: isMobile ? '100%' : '148px', flex: '0 0 auto' }}>
+      <CalendarDays
+        size={16}
+        style={{
+          position: 'absolute',
+          left: '0.75rem',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          color: token.muted,
+          pointerEvents: 'none',
+        }}
+      />
+      <Inp
+        type="date"
+        value={value}
+        onChange={onChange}
+        onFocus={openPicker}
+        onClick={openPicker}
+        style={{
+          width: '100%',
+          paddingLeft: '2.2rem',
+          cursor: 'pointer',
+        }}
+      />
+    </div>
+  );
+}
+
 function HistoryView({
   filtered,
   pageSize,
@@ -466,8 +572,28 @@ function HistoryView({
 }) {
   const [editDoc, setEditDoc] = useState(null);
   const [duplicateDoc, setDuplicateDoc] = useState(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const isMobile = useViewportFlag(MOBILE_BREAKPOINT);
   const isCompactMobile = useViewportFlag(COMPACT_MOBILE_BREAKPOINT);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 480);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleRefresh = () => {
+    fetchData();
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <div style={{ ...wrap, padding: isMobile ? '1rem 0.75rem' : '1.5rem 1rem' }}>
@@ -477,7 +603,7 @@ function HistoryView({
           templates={templates}
           masterData={masterData}
           onClose={() => setEditDoc(null)}
-          onSaved={() => { fetchData(); setEditDoc(null); }}
+          onSaved={() => { handleRefresh(); setEditDoc(null); }}
         />
       )}
       {duplicateDoc && (
@@ -486,81 +612,82 @@ function HistoryView({
           templates={templates}
           masterData={masterData}
           onClose={() => setDuplicateDoc(null)}
-          onSaved={() => { fetchData(); setDuplicateDoc(null); }}
+          onSaved={() => { handleRefresh(); setDuplicateDoc(null); }}
         />
       )}
 
       <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem', flexDirection: isMobile ? 'column' : 'row' }}>
-          <div>
-            <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem' }}>
-              Riwayat Dokumen
-            </h1>
-            <p style={{ fontSize: '0.83rem', color: token.muted }}>{filtered.length} dokumen ditemukan</p>
-          </div>
-          <div style={{ display: 'grid', gap: '0.5rem', alignItems: 'center', gridTemplateColumns: isMobile ? (isCompactMobile ? '1fr' : '1fr 1fr') : 'repeat(4, auto)', width: isMobile ? '100%' : 'auto' }}>
-            <Inp
-              type="date"
-              value={searchDate}
-              onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
-              style={{ width: isMobile ? '100%' : '160px' }}
-            />
-            {(searchTerm || searchDate || searchIntExt) && (
-              <Btn
-                variant="danger"
-                onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
-                style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto' }}
-                title="Hapus semua filter"
-              >
-                <X size={16} />
-                {isMobile && 'Reset'}
-              </Btn>
-            )}
-            <select
-              value={pageSize}
-              onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-              style={{
-                padding: '0.5rem 0.7rem', fontSize: '0.8rem', cursor: 'pointer',
-                background: token.surface, border: `1px solid ${token.border}`, borderRadius: '0.5rem',
-                width: isMobile ? '100%' : 'auto',
-              }}
-            >
-              <option value={10}>10 baris</option>
-              <option value={25}>25 baris</option>
-              <option value={50}>50 baris</option>
-            </select>
-            <Btn variant="ghost" onClick={fetchData} disabled={tableLoading} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center' }}>
-              <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
-              {tableLoading ? 'Memuat...' : 'Refresh'}
-            </Btn>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '1.1rem' }}>
+          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, margin: 0 }}>
+            Riwayat Dokumen
+          </h1>
+          <span style={{
+            fontSize: '0.72rem', fontWeight: 700, color: token.muted,
+            background: 'rgba(26,42,87,0.07)', border: `1px solid ${token.border}`,
+            padding: '0.22rem 0.65rem', borderRadius: '999px',
+          }}>
+            {filtered.length} dokumen
+          </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.6rem', marginBottom: '1.25rem', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
-          <div style={{ flex: '1 1 260px', position: 'relative', width: isMobile ? '100%' : 'auto' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap', alignItems: 'center', flexDirection: isMobile ? 'column' : 'row' }}>
+          <div style={{ flex: '1 1 160px', position: 'relative', minWidth: 0, width: isMobile ? '100%' : 'auto' }}>
             <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
             <Inp
               type="text"
-              placeholder="Cari Kode PT, nomor, judul, user..."
+              placeholder="Cari nomor, judul, user..."
               value={searchTerm}
               onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              style={{ paddingLeft: '2.2rem' }}
+              style={{ paddingLeft: '2.2rem', width: '100%' }}
             />
           </div>
           <select
             value={searchIntExt}
             onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
             style={{
-              flex: '0 0 140px', padding: '0.6rem 0.8rem', fontSize: '0.88rem',
+              padding: '0.6rem 0.7rem', fontSize: '0.82rem',
               background: token.surface, border: `1px solid ${token.border}`,
               borderRadius: '0.5rem', cursor: 'pointer', color: searchIntExt ? token.text : token.muted,
-              width: isMobile ? '100%' : '140px',
+              width: isMobile ? '100%' : '115px', flex: '0 0 auto',
             }}
           >
             <option value="">Semua</option>
             <option value="Internal">Internal</option>
             <option value="External">External</option>
           </select>
+          <DateFilterInput
+            value={searchDate}
+            onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+            isMobile={isMobile}
+          />
+          {(searchTerm || searchDate || searchIntExt) && (
+            <Btn
+              variant="danger"
+              onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+              style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto', flex: '0 0 auto' }}
+              title="Hapus semua filter"
+            >
+              <X size={16} />
+              {isMobile && 'Reset'}
+            </Btn>
+          )}
+          <select
+            value={pageSize}
+            onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+            style={{
+              padding: '0.5rem 0.6rem', fontSize: '0.8rem', cursor: 'pointer',
+              background: token.surface, border: `1px solid ${token.border}`, borderRadius: '0.5rem',
+              width: isMobile ? '100%' : 'auto', flex: '0 0 auto',
+            }}
+          >
+            <option value={10}>10 baris</option>
+            <option value={25}>25 baris</option>
+            <option value={50}>50 baris</option>
+          </select>
+          <Btn variant="ghost" onClick={handleRefresh} disabled={tableLoading} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center', flex: '0 0 auto' }}>
+            <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
+            {tableLoading ? 'Memuat...' : 'Refresh'}
+          </Btn>
         </div>
 
         {isMobile ? (
@@ -584,27 +711,20 @@ function HistoryView({
             )}
           </div>
         ) : (
-          <div style={{ overflowX: 'auto', background: token.surface, borderRadius: '0.875rem', border: `1px solid ${token.border}` }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.855rem' }}>
+          <div style={{ overflowX: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
               <thead>
-                <tr style={{ borderBottom: `1px solid ${token.border}` }}>
+                <tr>
                   {[
-                    ['Aksi', '11rem'],
                     ['No', '3rem'],
-                    ['Nomor Dokumen', 'auto'],
-                    ['Tanggal', '7rem'],
-                    ['Kode PT', '4.5rem'],
-                    ['Judul', 'auto'],
-                    ['User', 'auto'],
-                    ['Divisi', 'auto'],
-                    ['Int/Ext', 'auto'],
-                    ['Klasifikasi', 'auto'],
-                    ['Perihal', 'auto'],
-                    ['Penandatangan', 'auto'],
-                    ['Keterangan', '15rem'],
-                    ['Link', '4rem'],
+                    ['Dokumen', '22%'],
+                    ['Tanggal', '10%'],
+                    ['Pemilik', '16%'],
+                    ['Kategori', '14%'],
+                    ['Ringkasan', '24%'],
+                    ['Aksi', '14%'],
                   ].map(([h, w]) => (
-                    <th key={h} style={{ padding: '0.75rem 1rem', textAlign: 'left', fontWeight: 700, fontSize: '0.68rem', letterSpacing: '0.09em', textTransform: 'uppercase', color: token.muted, width: w, whiteSpace: 'nowrap' }}>{h}</th>
+                    <th key={h} style={{ ...tableHeaderCellStyle, width: w, borderBottom: `1px solid ${token.border}` }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -612,64 +732,109 @@ function HistoryView({
                 {pageData.map((doc, idx) => (
                   <tr
                     key={doc.id}
-                    style={{ borderBottom: `1px solid ${token.border}`, transition: 'background 0.1s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,42,87,0.025)'; }}
+                    style={{ transition: 'background 0.15s ease' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,42,87,0.03)'; }}
                     onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
                   >
-                    <td style={{ padding: '0.8rem 1rem' }}>
-                      <div style={{ display: 'flex', gap: '0.3rem' }}>
-                        <Btn variant="soft" style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
-                          <Copy size={12} />
-                        </Btn>
-                        <Btn variant="ghost" style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => setEditDoc(doc)} title="Edit">
-                          <Edit size={12} />
-                        </Btn>
-                        <Btn variant="success" style={{ padding: '0.28rem 0.5rem', fontSize: '0.7rem' }} onClick={() => hDownload(doc)} title="Download Docx">
-                          <Download size={12} />
-                        </Btn>
+                    <td style={{ ...tableBodyCellStyle, color: token.muted, fontWeight: 700 }}>
+                      {(currentPage - 1) * pageSize + idx + 1}
+                    </td>
+                    <td style={tableBodyCellStyle}>
+                      <div style={{ display: 'grid', gap: '0.55rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '0.75rem' }}>
+                          <div style={{ minWidth: 0 }}>
+                            <div style={{ ...tablePrimaryTextStyle, color: token.blue, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                              <span style={{ ...clampTwoLinesStyle }}>{doc.doc_number}</span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(doc.doc_number);
+                                  alert('Nomor disalin!');
+                                }}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: 0, flex: '0 0 auto' }}
+                                title="Salin Nomor"
+                                onMouseEnter={e => e.currentTarget.style.color = token.blue}
+                                onMouseLeave={e => e.currentTarget.style.color = token.muted}
+                              >
+                                <Copy size={13} />
+                              </button>
+                            </div>
+                            <div style={{ ...tableSecondaryTextStyle, ...clampTwoLinesStyle, marginTop: '0.28rem' }}>
+                              {dash(doc.judul_dokumen)}
+                            </div>
+                          </div>
+                          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.55rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700, whiteSpace: 'nowrap', flex: '0 0 auto' }}>
+                            {doc.company}
+                          </span>
+                        </div>
                       </div>
                     </td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.muted, fontWeight: 600 }}>{(currentPage - 1) * pageSize + idx + 1}</td>
-                    <td style={{ padding: '0.8rem 1rem', fontWeight: 700, color: token.blue, whiteSpace: 'nowrap' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {doc.doc_number}
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(doc.doc_number);
-                            alert('Nomor disalin!');
-                          }}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: '2px' }}
-                          title="Salin Nomor"
-                          onMouseEnter={e => e.currentTarget.style.color = token.blue}
-                          onMouseLeave={e => e.currentTarget.style.color = token.muted}
-                        >
-                          <Copy size={13} />
-                        </button>
+                    <td style={tableBodyCellStyle}>
+                      <div style={{ ...tablePrimaryTextStyle, fontWeight: 600, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDate(doc.doc_date)}</div>
+                    </td>
+                    <td style={tableBodyCellStyle}>
+                      <div style={{ display: 'grid', gap: '0.65rem' }}>
+                        <InfoPair label="User" value={doc.user_name} />
+                        <InfoPair label="Divisi" value={doc.division} muted />
                       </div>
                     </td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.muted, whiteSpace: 'nowrap' }}>{doc.doc_date}</td>
-                    <td style={{ padding: '0.8rem 1rem' }}>
-                      <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.55rem', borderRadius: '999px', fontSize: '0.68rem', fontWeight: 700 }}>{doc.company}</span>
+                    <td style={tableBodyCellStyle}>
+                      <div style={{ display: 'grid', gap: '0.65rem' }}>
+                        <InfoPair label="Int/Ext" value={doc.internal_external} />
+                        <InfoPair label="Klasifikasi" value={doc.klasifikasi} muted />
+                      </div>
                     </td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text, minWidth: 200, maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{doc.judul_dokumen || <span style={{ color: token.muted }}>-</span>}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text, whiteSpace: 'nowrap' }}>{doc.user_name}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text, whiteSpace: 'nowrap' }}>{doc.division}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text }}>{doc.internal_external}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text }}>{doc.klasifikasi || '-'}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text, minWidth: 150 }}>{doc.perihal || '-'}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.text, whiteSpace: 'nowrap' }}>{doc.signed_by || '-'}</td>
-                    <td style={{ padding: '0.8rem 1rem', color: token.muted, fontSize: '0.78rem', minWidth: 200 }}>{doc.keterangan || '-'}</td>
-                    <td style={{ padding: '0.8rem 1rem', textAlign: 'center' }}>
-                      {doc.link_document ? (
-                        <a href={doc.link_document} target="_blank" rel="noopener noreferrer" style={{ color: token.blue }}>
-                          <Link size={14} />
-                        </a>
-                      ) : <span style={{ color: token.muted }}>-</span>}
+                    <td style={tableBodyCellStyle}>
+                      <div style={{ display: 'grid', gap: '0.65rem' }}>
+                        <InfoPair label="Perihal" value={doc.perihal} />
+                        <InfoPair label="Penandatangan" value={doc.signed_by} muted />
+                        <InfoPair label="Keterangan" value={doc.keterangan} muted />
+                      </div>
+                    </td>
+                    <td style={tableBodyCellStyle}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
+                        <Btn variant="soft" style={{ padding: '0.42rem 0.55rem', fontSize: '0.72rem', justifyContent: 'center', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
+                          <Copy size={12} /> Duplikat
+                        </Btn>
+                        <Btn variant="ghost" style={{ padding: '0.42rem 0.55rem', fontSize: '0.72rem', justifyContent: 'center', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }} onClick={() => setEditDoc(doc)} title="Edit">
+                          <Edit size={12} /> Edit
+                        </Btn>
+                        <Btn variant="success" style={{ padding: '0.42rem 0.55rem', fontSize: '0.72rem', justifyContent: 'center', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }} onClick={() => hDownload(doc)} title="Download Docx">
+                          <Download size={12} /> Unduh
+                        </Btn>
+                        {doc.link_document ? (
+                          <a
+                            href={doc.link_document}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: '0.35rem',
+                              minHeight: '2rem',
+                              borderRadius: '0.65rem',
+                              textDecoration: 'none',
+                              color: token.blue,
+                              background: 'rgba(26,42,87,0.05)',
+                              border: `1px solid ${token.border}`,
+                              fontSize: '0.72rem',
+                              fontWeight: 700,
+                              padding: '0.42rem 0.55rem',
+                              flex: '1 1 calc(50% - 0.225rem)',
+                              minWidth: '5rem',
+                            }}
+                          >
+                            <Link size={13} /> Link
+                          </a>
+                        ) : (
+                          <span style={{ ...tableSecondaryTextStyle, textAlign: 'center', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', minHeight: '2rem', padding: '0.42rem 0.55rem', borderRadius: '0.65rem', background: 'rgba(148,163,184,0.08)', flex: '1 1 calc(50% - 0.225rem)', minWidth: '5rem' }}>Tanpa link</span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {pageData.length === 0 && (
-                  <tr><td colSpan={14} style={{ padding: '3.5rem', textAlign: 'center', color: token.muted }}>
+                  <tr><td colSpan={7} style={{ padding: '3.5rem', textAlign: 'center', color: token.muted }}>
                     <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
                     Tidak ada data
                   </td></tr>
@@ -703,6 +868,34 @@ function HistoryView({
           </div>
         )}
       </div>
+
+      {showScrollTop ? (
+        <button
+          type="button"
+          onClick={handleScrollToTop}
+          aria-label="Kembali ke atas"
+          title="Kembali ke atas"
+          style={{
+            position: 'fixed',
+            right: isMobile ? '16px' : '24px',
+            bottom: isMobile ? '16px' : '24px',
+            width: '3rem',
+            height: '3rem',
+            borderRadius: '999px',
+            border: `1px solid ${token.border}`,
+            background: token.blue,
+            color: '#fff',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 16px 32px rgba(26,42,87,0.24)',
+            cursor: 'pointer',
+            zIndex: 40,
+          }}
+        >
+          <ArrowUp size={18} />
+        </button>
+      ) : null}
     </div>
   );
 }

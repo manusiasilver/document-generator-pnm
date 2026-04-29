@@ -62,15 +62,6 @@ function Header({
     )
   }, [departmentFilterProps])
 
-  const activeSectionLabel = useMemo(() => {
-    if (departmentFilterProps) {
-      return selectedDepartmentLabel
-    }
-
-    const activeBreadcrumb = breadcrumb.find((item) => item.active)
-    return activeBreadcrumb?.label ?? breadcrumb[breadcrumb.length - 1]?.label ?? ''
-  }, [breadcrumb, departmentFilterProps, selectedDepartmentLabel])
-
   useEffect(() => {
     if (!isNotificationModalOpen) {
       return undefined
@@ -286,9 +277,6 @@ function Header({
         <div className="header-right">
           <div className="header-title-block">
             <span className="header-brand-title">{title}</span>
-            {activeSectionLabel ? (
-              <span className="page-subtitle">Menu aktif: {activeSectionLabel}</span>
-            ) : null}
           </div>
         </div>
       </div>
