@@ -100,6 +100,23 @@ function Sidebar({
           <ArrowLeft className="nav-icon" size={22} />
           <span className="nav-text">Kembali ke Pilar Group</span>
         </a>
+
+        {!collapsed ? (
+          <div
+            style={{
+              margin: '0.85rem 1rem 0 1rem',
+              paddingTop: '0.85rem',
+              borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+              textAlign: 'center',
+              color: 'rgba(226, 232, 240, 0.82)',
+              fontSize: '0.68rem',
+              lineHeight: 1.5,
+            }}
+          >
+            <div>© 2026 PT Pilar Niaga Makmur. All rights reserved.</div>
+            <div>Developed by IT Team PT Pilar Niaga Makmur.</div>
+          </div>
+        ) : null}
       </div>
     </aside>
   )

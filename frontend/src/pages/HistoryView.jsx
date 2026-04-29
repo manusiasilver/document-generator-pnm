@@ -616,10 +616,10 @@ function HistoryView({
     <div style={{
       position: 'fixed',
       top: '170px',
-      left: '260px',
+      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
       right: 0,
       bottom: 0,
-      padding: isMobile ? '0.75rem' : '0.75rem 1.25rem 0.75rem',
+      padding: isMobile ? '0.75rem' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',

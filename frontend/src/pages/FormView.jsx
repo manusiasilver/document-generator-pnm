@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Copy, Download, RefreshCw, Save, Plus } from 'lucide-react';
+import { X, Copy, Download, RefreshCw, Save, Plus, CalendarDays } from 'lucide-react';
 import { token, Btn, wrap, card, Divider, Field, Sel, Inp } from './SharedUI';
 
 const MOBILE_BREAKPOINT = 768;
@@ -12,6 +12,57 @@ function ResponsiveGrid({ isMobile, columns, children }) {
       gap: '1rem',
     }}>
       {children}
+    </div>
+  );
+}
+
+function DateInputField({ name, value, onChange, required = false }) {
+  const openPicker = event => {
+    if (typeof event.currentTarget.showPicker === 'function') {
+      event.currentTarget.showPicker();
+    }
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <div
+        style={{
+          width: '100%',
+          minHeight: '2.6rem',
+          borderRadius: '0.5rem',
+          border: `1px solid ${token.border}`,
+          background: token.surface,
+          padding: '0.6rem 0.8rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.75rem',
+          color: value ? token.text : token.muted,
+          fontSize: '0.88rem',
+        }}
+      >
+        <span>{value || 'Pilih tanggal'}</span>
+        <CalendarDays size={16} style={{ color: token.muted, flex: '0 0 auto' }} />
+      </div>
+      <input
+        type="date"
+        name={name}
+        value={value}
+        onChange={onChange}
+        onFocus={openPicker}
+        onClick={openPicker}
+        required={required}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          opacity: 0,
+          width: '100%',
+          height: '100%',
+          cursor: 'pointer',
+          border: 'none',
+          padding: 0,
+        }}
+      />
     </div>
   );
 }
@@ -54,8 +105,21 @@ function FormView({
   };
 
   return (
-    <div style={{ ...wrap, padding: isMobile ? '1rem 0.75rem' : '1.5rem 1rem' }}>
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem' }}>
+    <div style={{
+      ...(isMobile ? wrap : {}),
+      position: isMobile ? 'static' : 'fixed',
+      top: isMobile ? 'auto' : '170px',
+      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
+      right: 0,
+      bottom: isMobile ? 'auto' : 0,
+      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      overflowY: 'auto',
+      background: 'transparent',
+    }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem', flex: '0 0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '1.75rem', gap: '0.9rem', flexDirection: isMobile ? 'column' : 'row' }}>
           <div>
             <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem', lineHeight: 1.25 }}>
@@ -113,7 +177,12 @@ function FormView({
               <Inp value={formData.division} readOnly placeholder="Otomatis" />
             </Field>
             <Field label="Tanggal Dokumen *">
-              <Inp type="date" name="doc_date" value={formData.doc_date} onChange={hChange} required />
+              <DateInputField
+                name="doc_date"
+                value={formData.doc_date}
+                onChange={hChange}
+                required
+              />
             </Field>
             <Field label="Klasifikasi">
               <Inp type="text" name="klasifikasi" value={formData.klasifikasi} onChange={hChange} placeholder="Surat Edaran..." />
@@ -153,9 +222,8 @@ function FormView({
                 background: token.blueLight, 
                 border: `1px solid ${token.border}`, 
                 borderRadius: '1rem', 
-                padding: isMobile ? '1.5rem 1rem' : '2rem', 
+                padding: isMobile ? '1.25rem 1rem' : '1.5rem', 
                 width: '100%', 
-                maxWidth: '600px',
                 textAlign: 'center',
                 boxShadow: '0 10px 25px rgba(26, 42, 87, 0.05)'
               }}>

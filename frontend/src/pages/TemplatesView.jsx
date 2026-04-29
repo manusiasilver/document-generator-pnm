@@ -1,22 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, FileText, Trash2, StickyNote, Plus } from 'lucide-react';
 import { token, Btn, wrap, card } from './SharedUI';
 
-function TemplatesView({ 
-  templates, 
-  uploadLoading, 
-  uploadMsg, 
-  showNote, 
-  setShowNote, 
-  hUpload, 
-  hDeleteTemplate, 
+const MOBILE_BREAKPOINT = 768;
+
+function TemplatesView({
+  templates,
+  uploadLoading,
+  uploadMsg,
+  showNote,
+  setShowNote,
+  hUpload,
+  hDeleteTemplate,
   fileInputRef,
   setUploadMsg
 }) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth <= MOBILE_BREAKPOINT : false);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   return (
-    <div style={wrap}>
-      <div style={card}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem' }}>
+    <div style={{
+      ...(isMobile ? wrap : {}),
+      position: isMobile ? 'static' : 'fixed',
+      top: isMobile ? 'auto' : '170px',
+      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
+      right: 0,
+      bottom: isMobile ? 'auto' : 0,
+      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      display: 'flex',
+      flexDirection: 'column',
+      boxSizing: 'border-box',
+      overflowY: 'auto',
+      background: 'transparent',
+    }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem', flex: '0 0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '2rem', gap: '0.9rem', flexDirection: isMobile ? 'column' : 'row' }}>
           <div>
             <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, marginBottom: '0.25rem' }}>Kelola Template</h1>
             <p style={{ fontSize: '0.83rem', color: token.muted }}>Upload dan kelola template dokumen .docx</p>
