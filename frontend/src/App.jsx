@@ -72,7 +72,10 @@ function App() {
 
   const hSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.user_name || !formData.doc_date) { alert('Harap isi User dan Tanggal!'); return; }
+    if (!formData.judul_dokumen.trim() || !formData.user_name || !formData.doc_date) {
+      alert('Harap isi Judul Dokumen, User, dan Tanggal!');
+      return;
+    }
     setLoading(true);
     try {
       if (editingDoc) {

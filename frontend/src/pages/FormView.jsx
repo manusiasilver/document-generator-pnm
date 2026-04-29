@@ -96,8 +96,8 @@ function FormView({
           </ResponsiveGrid>
 
           <div style={{ marginTop: '1rem' }}>
-            <Field label="Judul Dokumen">
-              <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama..." />
+            <Field label="Judul Dokumen *">
+              <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama..." required />
             </Field>
           </div>
 

@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, XClose } from '@untitledui/icons'
-import { FileText, Clock, LayoutTemplate } from 'lucide-react'
+import { ArrowLeft, Clock, FileText, LayoutTemplate } from 'lucide-react'
 
 import '../styles/templateComponents.css'
 
@@ -23,6 +23,7 @@ function Sidebar({
   mobileOpen = false,
   userName = 'Al fatih',
   userRole = 'Frontend Developer',
+  portalHref = '/',
   activePage = 'form',
   onNavigate,
   onToggleCollapse,
@@ -89,6 +90,17 @@ function Sidebar({
           </button>
         ))}
       </nav>
+
+      <div className="sidebar-bottom">
+        <a
+          href={portalHref}
+          className="nav-item"
+          data-tooltip={collapsed ? 'Kembali ke Pilar Group' : undefined}
+        >
+          <ArrowLeft className="nav-icon" size={22} />
+          <span className="nav-text">Kembali ke Pilar Group</span>
+        </a>
+      </div>
     </aside>
   )
 }
