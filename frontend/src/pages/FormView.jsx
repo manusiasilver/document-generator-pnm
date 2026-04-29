@@ -187,6 +187,9 @@ function FormView({
                   <Btn variant="primary" type="submit" disabled={loading} style={{ width: isMobile ? '100%' : 'auto' }}>
                     {loading ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <><Save size={18} /> Simpan Perubahan</>}
                   </Btn>
+                  <Btn variant="ghost" type="button" onClick={resetForm} style={{ width: isMobile ? '100%' : 'auto' }}>
+                    <Plus size={15} /> Buat Baru
+                  </Btn>
                 </div>
               </div>
             ) : (
