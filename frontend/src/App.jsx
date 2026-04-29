@@ -166,9 +166,9 @@ function App() {
           onMenuToggle={() => setMobileOpen(o => !o)}
           breadcrumb={[{ label: pageTitle, href: '#', active: true }]}
         />
-        <main className="dashboard-main" style={{ position: 'relative' }}>
+        <main className="dashboard-main" style={{ position: 'relative', display: 'flex', flexDirection: 'column', minHeight: 'calc(100vh - 80px)' }}>
           <BackgroundMain position="absolute" zIndex={0} />
-          <div style={{ position: 'relative', zIndex: 1 }}>
+          <div style={{ position: 'relative', zIndex: 1, flex: 1 }}>
             {activePage === 'templates' && (
               <TemplatesView 
                 templates={templates}
@@ -222,6 +222,10 @@ function App() {
               />
             )}
           </div>
+          <footer style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '1rem', marginTop: 'auto', color: '#8a93a6', fontSize: '0.85rem', lineHeight: '1.6' }}>
+            &copy; 2026 PT Pilar Niaga Makmur. All rights reserved.<br/>
+            Developed by IT Team PT Pilar Niaga Makmur.
+          </footer>
         </main>
       </div>
     </div>
