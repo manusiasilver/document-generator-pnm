@@ -382,63 +382,7 @@ function DuplicateModal({ doc, templates, masterData, onClose, onSaved }) {
   );
 }
 
-function DetailModal({ doc, onClose, isMobile = false }) {
-  const renderItem = (label, value) => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-      <span style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: token.muted }}>
-        {label}
-      </span>
-      <div style={{ 
-        width: '100%', padding: '0.6rem 0.8rem', fontSize: '0.88rem', color: token.text,
-        background: '#f8fafc', border: `1px solid ${token.border}`, borderRadius: '0.5rem',
-        minHeight: '2.4rem', wordBreak: 'break-word'
-      }}>
-        {value || '-'}
-      </div>
-    </div>
-  );
-
-  return (
-    <>
-      <Overlay onClick={onClose} />
-      <ModalBox maxWidth="700px" scrollable isMobile={isMobile}>
-        <ModalHeader subtitle="Detail Dokumen" title={doc.doc_number} onClose={onClose} isMobile={isMobile} />
-        <div style={{ padding: isMobile ? '1rem' : '1.5rem' }}>
-          <DetailGrid isMobile={isMobile} columns="1fr 1fr 1fr">
-            {renderItem('Kode PT', doc.company)}
-            {renderItem('Template Dokumen', doc.template_name)}
-            {renderItem('Internal / External', doc.internal_external)}
-          </DetailGrid>
-          <div style={{ marginTop: '1rem' }}>
-            {renderItem('Judul Dokumen', doc.judul_dokumen)}
-          </div>
-          
-          <Divider label="Pengguna & Tanggal" />
-          <DetailGrid isMobile={isMobile} columns="1fr 1fr 1fr 1fr">
-            {renderItem('User', doc.user_name)}
-            {renderItem('Divisi', doc.division)}
-            {renderItem('Tanggal', doc.doc_date)}
-            {renderItem('Klasifikasi', doc.klasifikasi)}
-          </DetailGrid>
-
-          <Divider label="Detail Tambahan" />
-          <DetailGrid isMobile={isMobile} columns="1fr 1fr">
-            {renderItem('Perihal', doc.perihal)}
-            {renderItem('Di Tanda Tangani Oleh', doc.signed_by)}
-            {renderItem('Link Dokumen', doc.link_document ? <a href={doc.link_document} target="_blank" rel="noopener noreferrer" style={{color: token.blue}}>{doc.link_document}</a> : '-')}
-            {renderItem('Keterangan', doc.keterangan)}
-          </DetailGrid>
-
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: `1px solid ${token.border}`, display: 'flex', justifyContent: 'flex-end' }}>
-            <Btn variant="ghost" onClick={onClose}>Tutup</Btn>
-          </div>
-        </div>
-      </ModalBox>
-    </>
-  );
-}
-
-function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, onShowDetail, isCompact = false }) {
+function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact = false }) {
   const renderMetaBlock = (label, value, span = '1fr') => (
     <div style={{ minWidth: 0, gridColumn: span }}>
       <div style={{ fontSize: '0.68rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.18rem' }}>{label}</div>
@@ -453,11 +397,7 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, onShowDeta
           <div style={{ fontSize: '0.68rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
             Dokumen #{index}
           </div>
-          <div 
-            onClick={() => onShowDetail(doc)}
-            style={{ fontSize: '0.96rem', fontWeight: 800, color: token.blue, lineHeight: 1.35, wordBreak: 'break-word', cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: '4px' }}
-            title="Lihat Detail"
-          >
+          <div style={{ fontSize: '0.96rem', fontWeight: 800, color: token.blue, lineHeight: 1.35, wordBreak: 'break-word' }}>
             {doc.doc_number}
           </div>
         </div>
@@ -526,19 +466,11 @@ function HistoryView({
 }) {
   const [editDoc, setEditDoc] = useState(null);
   const [duplicateDoc, setDuplicateDoc] = useState(null);
-  const [detailDoc, setDetailDoc] = useState(null);
   const isMobile = useViewportFlag(MOBILE_BREAKPOINT);
   const isCompactMobile = useViewportFlag(COMPACT_MOBILE_BREAKPOINT);
 
   return (
     <div style={{ ...wrap, padding: isMobile ? '1rem 0.75rem' : '1.5rem 1rem' }}>
-      {detailDoc && (
-        <DetailModal
-          doc={detailDoc}
-          onClose={() => setDetailDoc(null)}
-          isMobile={isMobile}
-        />
-      )}
       {editDoc && (
         <EditModal
           doc={editDoc}
@@ -641,7 +573,6 @@ function HistoryView({
                 onDuplicate={setDuplicateDoc}
                 onEdit={setEditDoc}
                 onDownload={hDownload}
-                onShowDetail={setDetailDoc}
                 isCompact={isCompactMobile}
               />
             ))}
@@ -701,13 +632,7 @@ function HistoryView({
                     <td style={{ padding: '0.8rem 1rem', color: token.muted, fontWeight: 600 }}>{(currentPage - 1) * pageSize + idx + 1}</td>
                     <td style={{ padding: '0.8rem 1rem', fontWeight: 700, color: token.blue, whiteSpace: 'nowrap' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span 
-                          onClick={() => setDetailDoc(doc)}
-                          style={{ cursor: 'pointer', textDecoration: 'underline', textDecorationStyle: 'dashed', textUnderlineOffset: '4px' }}
-                          title="Lihat Detail"
-                        >
-                          {doc.doc_number}
-                        </span>
+                        {doc.doc_number}
                         <button 
                           onClick={() => {
                             navigator.clipboard.writeText(doc.doc_number);
