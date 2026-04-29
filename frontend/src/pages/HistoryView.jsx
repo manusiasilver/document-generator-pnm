@@ -174,7 +174,7 @@ function EditModal({ doc, templates, masterData, onClose, onSaved }) {
                 <option value="External">External</option>
               </Sel>
             </Field>
-            <Field label="PT">
+            <Field label="Kode PT">
               <Inp value={form.company} readOnly />
             </Field>
           </DetailGrid>
@@ -314,7 +314,7 @@ function DuplicateModal({ doc, templates, masterData, onClose, onSaved }) {
                 <option value="External">External</option>
               </Sel>
             </Field>
-            <Field label="PT">
+            <Field label="Kode PT">
               <Inp value={form.company} readOnly />
             </Field>
           </DetailGrid>
@@ -541,7 +541,7 @@ function HistoryView({
             <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
             <Inp
               type="text"
-              placeholder="Cari PT, nomor, judul, user..."
+              placeholder="Cari Kode PT, nomor, judul, user..."
               value={searchTerm}
               onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
               style={{ paddingLeft: '2.2rem' }}
@@ -593,7 +593,7 @@ function HistoryView({
                     ['No', '3rem'],
                     ['Nomor Dokumen', 'auto'],
                     ['Tanggal', '7rem'],
-                    ['PT', '4rem'],
+                    ['Kode PT', '4.5rem'],
                     ['Judul', 'auto'],
                     ['User', 'auto'],
                     ['Divisi', 'auto'],
