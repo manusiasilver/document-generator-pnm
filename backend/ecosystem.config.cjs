@@ -5,9 +5,9 @@ module.exports = {
     cwd: __dirname,
     watch: false,
     autorestart: true,
-    restart_delay: 3000,
+    restart_delay: 8096,
     env: {
-      PORT: 3001
+      PORT: 8096
     }
   }]
 }
