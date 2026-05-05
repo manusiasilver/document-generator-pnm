@@ -1,4 +1,7 @@
 @echo off
+setlocal
+cd /d "%~dp0"
+
 echo =========================================
 echo   Setup Document Generator - PNM
 echo   Jalankan sebagai Administrator!
@@ -20,7 +23,7 @@ if %errorLevel% neq 0 ( echo GAGAL install PM2 & pause & exit /b 1 )
 
 echo.
 echo [2/6] Install frontend dependencies...
-cd frontend
+cd /d "%~dp0frontend"
 call npm install
 if %errorLevel% neq 0 ( echo GAGAL install frontend & pause & exit /b 1 )
 
@@ -28,11 +31,10 @@ echo.
 echo [3/6] Build frontend...
 call npm run build
 if %errorLevel% neq 0 ( echo GAGAL build frontend & pause & exit /b 1 )
-cd ..
 
 echo.
 echo [4/6] Install backend dependencies...
-cd backend
+cd /d "%~dp0backend"
 call npm install
 if %errorLevel% neq 0 ( echo GAGAL install backend & pause & exit /b 1 )
 
@@ -40,7 +42,7 @@ echo.
 echo [5/6] Start app dengan PM2 (background)...
 call pm2 start ecosystem.config.cjs
 call pm2 save
-cd ..
+cd /d "%~dp0"
 
 echo.
 echo [6/6] Setup port forwarding 80 -> 3001...
