@@ -9,6 +9,7 @@ import FormView from './pages/FormView'
 import TemplatesView from './pages/TemplatesView'
 
 const API_URL = '/api'
+const asArray = (value) => (Array.isArray(value) ? value : [])
 
 function App() {
   const [collapsed, setCollapsed] = useState(false)
@@ -67,9 +68,12 @@ function App() {
         axios.get(`${API_URL}/documents`),
         axios.get(`${API_URL}/templates`),
       ])
-      setMasterData(d.data)
-      setDocuments(doc.data)
-      setTemplates(tpl.data)
+      setMasterData({
+        users: asArray(d.data?.users),
+        divisions: asArray(d.data?.divisions),
+      })
+      setDocuments(asArray(doc.data))
+      setTemplates(asArray(tpl.data))
     } catch (e) {
       console.error(e)
     } finally {
@@ -237,7 +241,7 @@ function App() {
     }
   }
 
-  const filtered = documents.filter((doc) => {
+  const filtered = asArray(documents).filter((doc) => {
     const s =
       !searchTerm ||
       [doc.company, doc.doc_number, doc.judul_dokumen, doc.user_name].some((f) =>

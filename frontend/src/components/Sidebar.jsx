@@ -21,8 +21,8 @@ const navItems = [
 function Sidebar({
   collapsed = false,
   mobileOpen = false,
-  userName = 'Al fatih',
-  userRole = 'Frontend Developer',
+  userName = 'Team IT',
+  userRole = 'Developer By IT Team',
   portalHref = '/',
   activePage = 'form',
   onNavigate,
