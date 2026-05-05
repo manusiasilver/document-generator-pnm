@@ -68,18 +68,18 @@ function HistoryFilters({ searchTerm, setSearchTerm, searchDate, setSearchDate, 
           autoComplete="off"
         />
       </label>
-      <select value={searchIntExt} onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }} style={hdrSelect}>
-        <option value="">Semua</option>
-        <option value="Internal">Internal</option>
-        <option value="External">External</option>
+      <select value={searchIntExt} onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }} style={hdrSelect} className="hdr-sel">
+        <option value="" style={{ color: '#1e293b', background: '#fff' }}>Semua</option>
+        <option value="Internal" style={{ color: '#1e293b', background: '#fff' }}>Internal</option>
+        <option value="External" style={{ color: '#1e293b', background: '#fff' }}>External</option>
       </select>
       <HeaderDatePicker value={searchDate} onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }} />
-      <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }} style={hdrSelect}>
-        <option value={10}>10</option>
-        <option value={25}>25</option>
-        <option value={50}>50</option>
-        <option value={75}>75</option>
-        <option value={100}>100</option>
+      <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }} style={hdrSelect} className="hdr-sel">
+        <option value={10} style={{ color: '#1e293b', background: '#fff' }}>10</option>
+        <option value={25} style={{ color: '#1e293b', background: '#fff' }}>25</option>
+        <option value={50} style={{ color: '#1e293b', background: '#fff' }}>50</option>
+        <option value={75} style={{ color: '#1e293b', background: '#fff' }}>75</option>
+        <option value={100} style={{ color: '#1e293b', background: '#fff' }}>100</option>
       </select>
       <button type="button" className="header-icon-button header-icon-button--compact" onClick={fetchData} disabled={tableLoading} title="Refresh">
         <RefreshCw size={14} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
