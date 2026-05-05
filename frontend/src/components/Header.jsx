@@ -343,8 +343,9 @@ function Header({
               type="button"
               className="header-edit-action"
               onClick={editAction.onClick}
+              title={editAction.label ?? 'Batal Edit'}
             >
-              {editAction.label ?? 'Batal Edit'}
+              <XClose size={18} />
             </button>
           ) : null}
         </div>
