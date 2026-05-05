@@ -801,18 +801,18 @@ function HistoryView({
             </div>
           </div>
         ) : (
-          <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
-            <table style={{ width: '100%', minWidth: '1220px', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
               <colgroup>
-                <col style={{ width: '52px' }} />
-                <col style={{ width: '92px' }} />
-                <col style={{ width: '240px' }} />
-                <col style={{ width: '300px' }} />
-                <col style={{ width: '122px' }} />
-                <col style={{ width: '160px' }} />
-                <col style={{ width: '170px' }} />
-                <col style={{ width: '104px' }} />
-                <col style={{ width: '132px' }} />
+                <col style={{ width: '4%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '22%' }} />
+                <col style={{ width: '9%' }} />
+                <col style={{ width: '11%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '8%' }} />
+                <col style={{ width: '10%' }} />
               </colgroup>
               <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
                 <tr>
