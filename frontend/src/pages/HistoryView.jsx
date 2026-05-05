@@ -396,6 +396,9 @@ function DuplicateModal({ doc, templates, masterData, onClose, onSaved }) {
 }
 
 function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact = false }) {
+  const mobileCardRadius = '0.9rem';
+  const mobileSectionRadius = '0.75rem';
+
   const renderMetaBlock = (label, value, span = '1fr') => (
     <div style={{ minWidth: 0, gridColumn: span }}>
       <div style={{ fontSize: '0.68rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.18rem' }}>{label}</div>
@@ -404,9 +407,9 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
   );
 
   return (
-    <div style={{ border: `1px solid ${token.border}`, borderRadius: '1rem', background: token.surface, padding: isCompact ? '0.85rem' : '1rem', boxShadow: '0 12px 28px rgba(17, 38, 75, 0.06)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.75rem', alignItems: 'flex-start', marginBottom: '0.8rem', flexDirection: isCompact ? 'column' : 'row' }}>
-        <div>
+    <div style={{ border: `1px solid ${token.border}`, borderRadius: mobileCardRadius, background: token.surface, padding: isCompact ? '1rem' : '1.1rem', boxShadow: '0 14px 32px rgba(17, 38, 75, 0.07)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.8rem', alignItems: isCompact ? 'stretch' : 'flex-start', marginBottom: '0.95rem', flexDirection: isCompact ? 'column' : 'row' }}>
+        <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: '0.68rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
             Dokumen #{index}
           </div>
@@ -414,16 +417,27 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
             {doc.doc_number}
           </div>
         </div>
-        <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.24rem 0.6rem', borderRadius: '999px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap' }}>{doc.company}</span>
+        <div style={{ display: 'flex', justifyContent: isCompact ? 'flex-start' : 'flex-end' }}>
+          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.24rem 0.6rem', borderRadius: '999px', fontSize: '0.7rem', fontWeight: 700, whiteSpace: 'nowrap' }}>{doc.company}</span>
+        </div>
       </div>
 
-      <div style={{ fontSize: '0.94rem', color: token.text, fontWeight: 700, marginBottom: '0.85rem', lineHeight: 1.45 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: '0.6rem', marginBottom: '0.95rem' }}>
+        <div style={{ padding: '0.75rem 0.85rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, rgba(26,42,87,0.06) 0%, rgba(26,42,87,0.03) 100%)', border: `1px solid ${token.border}` }}>
+          <div style={{ fontSize: '0.66rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Tanggal</div>
+          <div style={{ fontSize: '0.83rem', color: token.text, fontWeight: 700 }}>{formatDate(doc.doc_date)}</div>
+        </div>
+        <div style={{ padding: '0.75rem 0.85rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, rgba(26,42,87,0.06) 0%, rgba(26,42,87,0.03) 100%)', border: `1px solid ${token.border}` }}>
+          <div style={{ fontSize: '0.66rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Internal / External</div>
+          <div style={{ fontSize: '0.83rem', color: token.text, fontWeight: 700 }}>{dash(doc.internal_external)}</div>
+        </div>
+      </div>
+
+      <div style={{ fontSize: '0.94rem', color: token.text, fontWeight: 700, marginBottom: '0.95rem', lineHeight: 1.45, wordBreak: 'break-word' }}>
         {dash(doc.judul_dokumen)}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: '0.75rem 0.8rem', marginBottom: '1rem', padding: isCompact ? '0.75rem' : '0.85rem', borderRadius: '0.8rem', background: 'rgba(26,42,87,0.035)' }}>
-        {renderMetaBlock('Tanggal', formatDate(doc.doc_date))}
-        {renderMetaBlock('Int/Ext', dash(doc.internal_external))}
+      <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: '0.8rem 0.85rem', marginBottom: '1rem', padding: isCompact ? '0.85rem' : '0.95rem', borderRadius: mobileSectionRadius, background: 'rgba(26,42,87,0.035)', border: `1px solid ${token.border}` }}>
         {renderMetaBlock('User', dash(doc.user_name))}
         {renderMetaBlock('Divisi', dash(doc.division))}
         {renderMetaBlock('Klasifikasi', dash(doc.klasifikasi))}
@@ -432,25 +446,25 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
         {renderMetaBlock('Keterangan', dash(doc.keterangan), '1 / -1')}
       </div>
 
-      <div style={{ display: 'grid', gap: '0.55rem', paddingTop: '0.9rem', borderTop: `1px solid ${token.border}` }}>
-        <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr 1fr' : '1fr 1fr 1fr', gap: '0.45rem' }}>
-          <Btn variant="soft" style={{ padding: '0.55rem 0.35rem', fontSize: '0.74rem', justifyContent: 'center', gridColumn: isCompact ? '1 / -1' : 'auto' }} onClick={() => onDuplicate(doc)}>
+      <div style={{ display: 'grid', gap: '0.6rem', paddingTop: '0.95rem', borderTop: `1px solid ${token.border}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr 1fr' : 'repeat(3, minmax(0, 1fr))', gap: '0.45rem' }}>
+          <Btn variant="soft" style={{ padding: '0.6rem 0.45rem', fontSize: '0.74rem', justifyContent: 'center', gridColumn: isCompact ? '1 / -1' : 'auto' }} onClick={() => onDuplicate(doc)}>
             <Copy size={13} /> Duplikat
           </Btn>
-          <Btn variant="ghost" style={{ padding: '0.55rem 0.35rem', fontSize: '0.74rem', justifyContent: 'center' }} onClick={() => onEdit(doc)}>
+          <Btn variant="ghost" style={{ padding: '0.6rem 0.45rem', fontSize: '0.74rem', justifyContent: 'center' }} onClick={() => onEdit(doc)}>
             <Edit size={13} /> Edit
           </Btn>
-          <Btn variant="success" style={{ padding: '0.55rem 0.35rem', fontSize: '0.74rem', justifyContent: 'center' }} onClick={() => onDownload(doc)}>
+          <Btn variant="success" style={{ padding: '0.6rem 0.45rem', fontSize: '0.74rem', justifyContent: 'center' }} onClick={() => onDownload(doc)}>
             <Download size={13} /> Download
           </Btn>
         </div>
         {doc.link_document ? (
-          <a href={doc.link_document} target="_blank" rel="noopener noreferrer" style={{ color: token.blue, textDecoration: 'none', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, minHeight: '2.35rem', borderRadius: '0.7rem', background: 'rgba(26,42,87,0.05)', border: `1px solid ${token.border}` }}>
+          <a href={doc.link_document} target="_blank" rel="noopener noreferrer" style={{ color: token.blue, textDecoration: 'none', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', fontWeight: 700, minHeight: '2.5rem', borderRadius: '0.7rem', background: 'rgba(26,42,87,0.05)', border: `1px solid ${token.border}`, padding: '0.5rem 0.75rem', textAlign: 'center' }}>
             <Link size={14} />
             Buka Link
           </a>
         ) : (
-          <span style={{ color: token.muted, fontSize: '0.78rem', textAlign: 'center', minHeight: '2.35rem', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '0.7rem', background: 'rgba(148,163,184,0.08)' }}>Tidak ada link</span>
+          <span style={{ color: token.muted, fontSize: '0.78rem', textAlign: 'center', minHeight: '2.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '0.7rem', background: 'rgba(148,163,184,0.08)', padding: '0.5rem 0.75rem' }}>Tidak ada link</span>
         )}
       </div>
     </div>
@@ -517,6 +531,7 @@ function InfoPair({ label, value, muted = false, full = false }) {
 
 function DateFilterInput({ value, onChange, isMobile = false }) {
   const inputRef = React.useRef(null);
+  const controlHeight = '42px';
 
   const openPicker = () => {
     if (inputRef.current && typeof inputRef.current.showPicker === 'function') {
@@ -544,6 +559,8 @@ function DateFilterInput({ value, onChange, isMobile = false }) {
         alignItems: 'center',
         gap: '0.5rem',
         padding: '0.6rem 0.75rem',
+        minHeight: controlHeight,
+        boxSizing: 'border-box',
         background: token.surface,
         border: `1px solid ${token.border}`,
         borderRadius: '0.5rem',
@@ -612,18 +629,37 @@ function HistoryView({
     fetchData();
   };
 
+  const controlHeight = '42px';
+  const selectStyle = {
+    padding: '0.6rem 0.75rem',
+    minHeight: controlHeight,
+    boxSizing: 'border-box',
+    fontSize: '0.82rem',
+    background: token.surface,
+    border: `1px solid ${token.border}`,
+    borderRadius: '0.5rem',
+    cursor: 'pointer',
+    appearance: 'none',
+    WebkitAppearance: 'none',
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'right 0.6rem center',
+    paddingRight: '2rem',
+  };
+
   return (
     <div style={{
       position: 'fixed',
-      top: '170px',
-      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
+      top: isMobile ? '142px' : '170px',
+      left: isMobile ? '0' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
+      width: isMobile ? '100%' : 'auto',
       right: 0,
       bottom: 0,
-      padding: isMobile ? '0.75rem' : '0.75rem 1.5rem',
+      padding: isMobile ? '0.9rem 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px))' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflow: 'hidden',
+      overflow: isMobile ? 'auto' : 'hidden',
       background: 'transparent',
     }}>
       {editDoc && (
@@ -645,8 +681,8 @@ function HistoryView({
         />
       )}
 
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '1.1rem' }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '1rem' : '1rem', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '1.1rem', flexDirection: isMobile ? 'column' : 'row' }}>
           <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, margin: 0 }}>
             Riwayat Dokumen
           </h1>
@@ -659,7 +695,15 @@ function HistoryView({
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap', alignItems: 'center', flexDirection: isMobile ? 'column' : 'row' }}>
+        <div style={{
+          display: 'grid',
+          gap: '0.75rem',
+          marginBottom: '1.25rem',
+          padding: isMobile ? '1rem' : 0,
+          borderRadius: isMobile ? '0.9rem' : 0,
+          background: isMobile ? 'rgba(248,250,252,0.9)' : 'transparent',
+          border: isMobile ? `1px solid ${token.border}` : 'none',
+        }}>
           <div style={{ flex: '1 1 160px', position: 'relative', minWidth: 0, width: isMobile ? '100%' : 'auto' }}>
             <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
             <Inp
@@ -667,102 +711,82 @@ function HistoryView({
               placeholder="Cari nomor, judul, user..."
               value={searchTerm}
               onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              style={{ paddingLeft: '2.2rem', width: '100%' }}
+              style={{ paddingLeft: '2.2rem', width: '100%', minHeight: controlHeight, boxSizing: 'border-box' }}
             />
           </div>
-          <select
-            value={searchIntExt}
-            onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
-            style={{
-              padding: '0.6rem 0.75rem',
-              fontSize: '0.82rem',
-              background: token.surface,
-              border: `1px solid ${token.border}`,
-              borderRadius: '0.5rem',
-              cursor: 'pointer',
-              color: searchIntExt ? token.text : token.muted,
-              width: isMobile ? '100%' : '120px',
-              flex: '0 0 auto',
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.6rem center',
-              paddingRight: '2rem',
-            }}
-          >
-            <option value="">Semua</option>
-            <option value="Internal">Internal</option>
-            <option value="External">External</option>
-          </select>
-          <DateFilterInput
-            value={searchDate}
-            onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
-            isMobile={isMobile}
-          />
-          {(searchTerm || searchDate || searchIntExt) && (
-            <Btn
-              variant="danger"
-              onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
-              style={{ justifyContent: 'center', width: isMobile ? '100%' : 'auto', flex: '0 0 auto' }}
-              title="Hapus semua filter"
+          <div style={{ display: 'grid', gap: '0.5rem', gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : '160px 160px auto auto auto', alignItems: 'center' }}>
+            <select
+              value={searchIntExt}
+              onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
+              style={{
+                ...selectStyle,
+                color: searchIntExt ? token.text : token.muted,
+                width: '100%',
+              }}
             >
-              <X size={16} />
-              {isMobile && 'Reset'}
+              <option value="">Semua</option>
+              <option value="Internal">Internal</option>
+              <option value="External">External</option>
+            </select>
+            <DateFilterInput
+              value={searchDate}
+              onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+              isMobile={isMobile}
+            />
+            <select
+              value={pageSize}
+              onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+              style={{
+                ...selectStyle,
+                color: token.text,
+                width: '100%',
+              }}
+            >
+              <option value={10}>10 baris</option>
+              <option value={25}>25 baris</option>
+              <option value={50}>50 baris</option>
+              <option value={75}>75 baris</option>
+              <option value={100}>100 baris</option>
+            </select>
+            <Btn variant="ghost" onClick={handleRefresh} disabled={tableLoading} style={{ width: '100%', justifyContent: 'center', minHeight: controlHeight, boxSizing: 'border-box' }}>
+              <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
+              {tableLoading ? 'Memuat...' : 'Refresh'}
             </Btn>
-          )}
-          <select
-            value={pageSize}
-            onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-            style={{
-              padding: '0.6rem 0.75rem',
-              fontSize: '0.82rem',
-              cursor: 'pointer',
-              background: token.surface,
-              border: `1px solid ${token.border}`,
-              borderRadius: '0.5rem',
-              color: token.text,
-              width: isMobile ? '100%' : '120px',
-              flex: '0 0 auto',
-              appearance: 'none',
-              WebkitAppearance: 'none',
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 0.6rem center',
-              paddingRight: '2rem',
-            }}
-          >
-            <option value={10}>10 baris</option>
-            <option value={25}>25 baris</option>
-            <option value={50}>50 baris</option>
-            <option value={75}>75 baris</option>
-            <option value={100}>100 baris</option>
-          </select>
-          <Btn variant="ghost" onClick={handleRefresh} disabled={tableLoading} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center', flex: '0 0 auto' }}>
-            <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
-            {tableLoading ? 'Memuat...' : 'Refresh'}
-          </Btn>
+            {(searchTerm || searchDate || searchIntExt) && (
+              <Btn
+                variant="danger"
+                onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+                style={{ justifyContent: 'center', width: '100%', gridColumn: isMobile ? '1 / -1' : 'auto', minHeight: controlHeight, boxSizing: 'border-box' }}
+                title="Hapus semua filter"
+              >
+                <X size={16} />
+                Reset Filter
+              </Btn>
+            )}
+          </div>
         </div>
 
         {isMobile ? (
-          <div style={{ display: 'grid', gap: '0.9rem' }}>
-            {pageData.map((doc, idx) => (
-              <MobileDocCard
-                key={doc.id}
-                doc={doc}
-                index={(currentPage - 1) * pageSize + idx + 1}
-                onDuplicate={setDuplicateDoc}
-                onEdit={setEditDoc}
-                onDownload={hDownload}
-                isCompact={isCompactMobile}
-              />
-            ))}
-            {pageData.length === 0 && (
-              <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: token.muted, border: `1px solid ${token.border}`, borderRadius: '0.9rem' }}>
-                <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
-                Tidak ada data
-              </div>
-            )}
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: '0.1rem' }}>
+            <div style={{ display: 'grid', gap: '0.9rem' }}>
+              {pageData.map((doc, idx) => (
+                <MobileDocCard
+                  key={doc.id}
+                  doc={doc}
+                  index={(currentPage - 1) * pageSize + idx + 1}
+                  onDuplicate={setDuplicateDoc}
+                  onEdit={setEditDoc}
+                  onDownload={hDownload}
+                  isCompact={isCompactMobile}
+                />
+              ))}
+              {pageData.length === 0 && (
+                <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: token.muted, border: `1px solid ${token.border}`, borderRadius: '0.9rem' }}>
+                  <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
+                  Tidak ada data
+                </div>
+              )}
+            </div>
           </div>
         ) : (
           <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>

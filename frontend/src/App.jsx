@@ -269,7 +269,7 @@ function App() {
       />
       <div className="dashboard-stage">
         <Header
-          title="Document Generator"
+          title="QuickNum"
           showMenuButton={true}
           onMenuToggle={() => setMobileOpen((o) => !o)}
           breadcrumb={[{ label: pageTitle, href: '#', active: true }]}
