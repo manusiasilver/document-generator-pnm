@@ -219,7 +219,16 @@ app.post('/api/download', (req, res) => {
     });
 });
 
-const PORT = 3001;
+// Serve frontend build
+const distPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(distPath)) {
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+        res.sendFile(path.join(distPath, 'index.html'));
+    });
+}
+
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log(`Backend server running on http://localhost:${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });

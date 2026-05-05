@@ -8,7 +8,7 @@ import HistoryView from './pages/HistoryView'
 import FormView from './pages/FormView'
 import TemplatesView from './pages/TemplatesView'
 
-const API_URL = 'http://localhost:3001/api'
+const API_URL = '/api'
 
 function App() {
   const [collapsed, setCollapsed] = useState(false)

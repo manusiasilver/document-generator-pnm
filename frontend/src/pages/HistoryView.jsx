@@ -3,7 +3,7 @@ import axios from 'axios';
 import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save, CalendarDays } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 
-const API_URL = 'http://localhost:3001/api';
+const API_URL = '/api';
 const MOBILE_BREAKPOINT = 768;
 const COMPACT_MOBILE_BREAKPOINT = 480;
 
