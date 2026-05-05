@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
+import { Search, CalendarDays, RefreshCw, X } from 'lucide-react'
 import Header from './components/Header.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import BackgroundMain from './components/BackgroundMain.jsx'
@@ -7,6 +8,92 @@ import BackgroundMain from './components/BackgroundMain.jsx'
 import HistoryView from './pages/HistoryView'
 import FormView from './pages/FormView'
 import TemplatesView from './pages/TemplatesView'
+
+const hdrSelect = {
+  height: '32px',
+  padding: '0 1.6rem 0 0.65rem',
+  fontSize: '0.78rem',
+  background: 'rgba(255,255,255,0.1)',
+  border: '1px solid rgba(255,255,255,0.18)',
+  borderRadius: '8px',
+  color: 'rgba(255,255,255,0.92)',
+  cursor: 'pointer',
+  appearance: 'none',
+  WebkitAppearance: 'none',
+  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.55' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 0.45rem center',
+  outline: 'none',
+};
+
+function HeaderDatePicker({ value, onChange }) {
+  const ref = useRef(null);
+  const display = value
+    ? new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value + 'T00:00:00'))
+    : null;
+  return (
+    <div
+      onClick={() => ref.current?.showPicker?.()}
+      style={{ position: 'relative', width: '140px', cursor: 'pointer', flexShrink: 0 }}
+    >
+      <CalendarDays size={13} style={{ position: 'absolute', left: '0.55rem', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.6)', pointerEvents: 'none', zIndex: 1 }} />
+      <div style={{
+        height: '32px', display: 'flex', alignItems: 'center',
+        paddingLeft: '1.75rem', paddingRight: '0.65rem',
+        fontSize: '0.78rem', borderRadius: '8px',
+        background: 'rgba(255,255,255,0.1)',
+        border: '1px solid rgba(255,255,255,0.18)',
+        color: display ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.5)',
+        userSelect: 'none', pointerEvents: 'none', whiteSpace: 'nowrap', overflow: 'hidden',
+      }}>
+        {display || 'Filter Tanggal'}
+      </div>
+      <input ref={ref} type="date" value={value} onChange={onChange}
+        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%' }} />
+    </div>
+  );
+}
+
+function HistoryFilters({ searchTerm, setSearchTerm, searchDate, setSearchDate, searchIntExt, setSearchIntExt, pageSize, setPageSize, setCurrentPage, tableLoading, fetchData }) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'nowrap' }}>
+      <label className="header-search header-search--compact" style={{ width: 'clamp(130px,15vw,190px)' }}>
+        <Search size={14} className="header-search__icon header-search__icon--compact" />
+        <input
+          type="search"
+          className="header-search__input header-search__input--compact"
+          value={searchTerm}
+          placeholder="Cari dokumen..."
+          onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+          autoComplete="off"
+        />
+      </label>
+      <select value={searchIntExt} onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }} style={hdrSelect}>
+        <option value="">Semua</option>
+        <option value="Internal">Internal</option>
+        <option value="External">External</option>
+      </select>
+      <HeaderDatePicker value={searchDate} onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }} />
+      <select value={pageSize} onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }} style={hdrSelect}>
+        <option value={10}>10</option>
+        <option value={25}>25</option>
+        <option value={50}>50</option>
+        <option value={75}>75</option>
+        <option value={100}>100</option>
+      </select>
+      <button type="button" className="header-icon-button header-icon-button--compact" onClick={fetchData} disabled={tableLoading} title="Refresh">
+        <RefreshCw size={14} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
+      </button>
+      {(searchTerm || searchDate || searchIntExt) && (
+        <button type="button" className="header-icon-button header-icon-button--compact"
+          onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+          title="Reset Filter" style={{ background: 'rgba(239,68,68,0.2)', borderColor: 'rgba(239,68,68,0.35)' }}>
+          <X size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
 
 const API_URL = '/api'
 const asArray = (value) => (Array.isArray(value) ? value : [])
@@ -279,13 +366,19 @@ function App() {
           breadcrumb={[{ label: pageTitle, href: '#', active: true }]}
           editAction={
             activePage === 'form' && editingDoc
-              ? {
-                  show: true,
-                  label: 'Batal Edit',
-                  onClick: resetForm,
-                }
+              ? { show: true, label: 'Batal Edit', onClick: resetForm }
               : undefined
           }
+          toolbarSlot={activePage === 'history' ? (
+            <HistoryFilters
+              searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+              searchDate={searchDate} setSearchDate={setSearchDate}
+              searchIntExt={searchIntExt} setSearchIntExt={setSearchIntExt}
+              pageSize={pageSize} setPageSize={setPageSize}
+              setCurrentPage={setCurrentPage}
+              tableLoading={tableLoading} fetchData={fetchData}
+            />
+          ) : null}
         />
         <main
           className="dashboard-main"

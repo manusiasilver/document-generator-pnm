@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { RefreshCw, Search, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save, CalendarDays } from 'lucide-react';
+import { RefreshCw, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 
 const API_URL = '/api';
@@ -541,70 +541,6 @@ function InfoPair({ label, value, muted = false, full = false }) {
   );
 }
 
-function DateFilterInput({ value, onChange, isMobile = false }) {
-  const inputRef = React.useRef(null);
-  const controlHeight = '42px';
-
-  const openPicker = () => {
-    if (inputRef.current && typeof inputRef.current.showPicker === 'function') {
-      inputRef.current.showPicker();
-    }
-  };
-
-  const displayValue = value
-    ? new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(value + 'T00:00:00'))
-    : null;
-
-  return (
-    <div
-      onClick={openPicker}
-      style={{
-        position: 'relative',
-        width: isMobile ? '100%' : '160px',
-        flex: '0 0 auto',
-        cursor: 'pointer',
-      }}
-    >
-      {/* visible display layer */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        padding: '0.6rem 0.75rem',
-        minHeight: controlHeight,
-        boxSizing: 'border-box',
-        background: token.surface,
-        border: `1px solid ${token.border}`,
-        borderRadius: '0.5rem',
-        fontSize: '0.82rem',
-        color: displayValue ? token.text : token.muted,
-        userSelect: 'none',
-        pointerEvents: 'none',
-      }}>
-        <CalendarDays size={15} style={{ flex: '0 0 auto', color: token.muted }} />
-        <span style={{ flex: 1 }}>{displayValue || 'Filter Tanggal'}</span>
-      </div>
-
-      {/* hidden real input on top */}
-      <input
-        ref={inputRef}
-        type="date"
-        value={value}
-        onChange={onChange}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          opacity: 0,
-          width: '100%',
-          height: '100%',
-          cursor: 'pointer',
-          border: 'none',
-          padding: 0,
-        }}
-      />
-    </div>
-  );
-}
 
 function HistoryView({
   filtered,
@@ -641,23 +577,6 @@ function HistoryView({
     fetchData();
   };
 
-  const controlHeight = '42px';
-  const selectStyle = {
-    padding: '0.6rem 0.75rem',
-    minHeight: controlHeight,
-    boxSizing: 'border-box',
-    fontSize: '0.82rem',
-    background: token.surface,
-    border: `1px solid ${token.border}`,
-    borderRadius: '0.5rem',
-    cursor: 'pointer',
-    appearance: 'none',
-    WebkitAppearance: 'none',
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-    backgroundRepeat: 'no-repeat',
-    backgroundPosition: 'right 0.6rem center',
-    paddingRight: '2rem',
-  };
 
   return (
     <div style={{
@@ -705,77 +624,6 @@ function HistoryView({
           }}>
             {filtered.length} dokumen
           </span>
-        </div>
-
-        <div style={{
-          display: 'grid',
-          gap: '0.75rem',
-          marginBottom: '1.25rem',
-          padding: isMobile ? '1rem' : 0,
-          borderRadius: isMobile ? '0.9rem' : 0,
-          background: isMobile ? 'rgba(248,250,252,0.9)' : 'transparent',
-          border: isMobile ? `1px solid ${token.border}` : 'none',
-        }}>
-          <div style={{ flex: '1 1 160px', position: 'relative', minWidth: 0, width: isMobile ? '100%' : 'auto' }}>
-            <Search size={14} style={{ position: 'absolute', left: '0.75rem', top: '50%', transform: 'translateY(-50%)', color: token.muted, pointerEvents: 'none' }} />
-            <Inp
-              type="text"
-              placeholder="Cari nomor, judul, user..."
-              value={searchTerm}
-              onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              style={{ paddingLeft: '2.2rem', width: '100%', minHeight: controlHeight, boxSizing: 'border-box' }}
-            />
-          </div>
-          <div style={{ display: 'grid', gap: '0.5rem', gridTemplateColumns: isMobile ? 'repeat(2, minmax(0, 1fr))' : '160px 160px auto auto auto', alignItems: 'center' }}>
-            <select
-              value={searchIntExt}
-              onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
-              style={{
-                ...selectStyle,
-                color: searchIntExt ? token.text : token.muted,
-                width: '100%',
-              }}
-            >
-              <option value="">Semua</option>
-              <option value="Internal">Internal</option>
-              <option value="External">External</option>
-            </select>
-            <DateFilterInput
-              value={searchDate}
-              onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
-              isMobile={isMobile}
-            />
-            <select
-              value={pageSize}
-              onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-              style={{
-                ...selectStyle,
-                color: token.text,
-                width: '100%',
-              }}
-            >
-              <option value={10}>10 baris</option>
-              <option value={25}>25 baris</option>
-              <option value={50}>50 baris</option>
-              <option value={75}>75 baris</option>
-              <option value={100}>100 baris</option>
-            </select>
-            <Btn variant="ghost" onClick={handleRefresh} disabled={tableLoading} style={{ width: '100%', justifyContent: 'center', minHeight: controlHeight, boxSizing: 'border-box' }}>
-              <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
-              {tableLoading ? 'Memuat...' : 'Refresh'}
-            </Btn>
-            {(searchTerm || searchDate || searchIntExt) && (
-              <Btn
-                variant="danger"
-                onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
-                style={{ justifyContent: 'center', width: '100%', gridColumn: isMobile ? '1 / -1' : 'auto', minHeight: controlHeight, boxSizing: 'border-box' }}
-                title="Hapus semua filter"
-              >
-                <X size={16} />
-                Reset Filter
-              </Btn>
-            )}
-          </div>
         </div>
 
         {isMobile ? (

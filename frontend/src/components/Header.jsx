@@ -34,6 +34,7 @@ function Header({
   showMenuButton = false,
   departmentFilterProps,
   editAction,
+  toolbarSlot,
 }) {
   const hasSearch = Boolean(searchProps)
   const hasNotification = Boolean(notificationProps)
@@ -292,8 +293,9 @@ function Header({
             {renderBreadcrumb()}
           </nav>
 
-          {hasSearch || hasNotification || onRefresh ? (
+          {hasSearch || hasNotification || onRefresh || toolbarSlot ? (
             <div className="header-toolbar">
+              {toolbarSlot ?? null}
               {hasSearch ? (
                 <label
                   className="header-search header-search--compact"
