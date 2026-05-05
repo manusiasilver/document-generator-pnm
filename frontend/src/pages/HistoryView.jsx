@@ -489,6 +489,11 @@ const tableBodyCellStyle = {
   borderBottom: `1px solid ${token.border}`,
 };
 
+const tableBodyCellComfortStyle = {
+  ...tableBodyCellStyle,
+  padding: '0.95rem 1rem',
+};
+
 const tableLabelStyle = {
   fontSize: '0.66rem',
   color: token.muted,
@@ -514,6 +519,13 @@ const tableSecondaryTextStyle = {
 const clampTwoLinesStyle = {
   display: '-webkit-box',
   WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+};
+
+const clampThreeLinesStyle = {
+  display: '-webkit-box',
+  WebkitLineClamp: 3,
   WebkitBoxOrient: 'vertical',
   overflow: 'hidden',
 };
@@ -790,17 +802,17 @@ function HistoryView({
           </div>
         ) : (
           <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
-            <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
+            <table style={{ width: '100%', minWidth: '1220px', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
               <colgroup>
-                <col style={{ width: '44px' }} />
-                <col style={{ width: '80px' }} />
-                <col style={{ width: '200px' }} />
-                <col style={{ width: 'auto' }} />
-                <col style={{ width: '110px' }} />
-                <col style={{ width: '100px' }} />
-                <col style={{ width: '90px' }} />
-                <col style={{ width: '80px' }} />
-                <col style={{ width: '110px' }} />
+                <col style={{ width: '52px' }} />
+                <col style={{ width: '92px' }} />
+                <col style={{ width: '240px' }} />
+                <col style={{ width: '300px' }} />
+                <col style={{ width: '122px' }} />
+                <col style={{ width: '160px' }} />
+                <col style={{ width: '170px' }} />
+                <col style={{ width: '104px' }} />
+                <col style={{ width: '132px' }} />
               </colgroup>
               <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
                 <tr>
@@ -830,23 +842,23 @@ function HistoryView({
                         onMouseLeave={e => { e.currentTarget.style.background = isExpanded ? 'rgba(26,42,87,0.025)' : 'transparent'; }}
                         onClick={() => toggleRow(doc.id)}
                       >
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle', textAlign: 'center', padding: '0.75rem 0.4rem' }}>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle', textAlign: 'center', padding: '0.75rem 0.45rem' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.18rem' }}>
                             <span style={{ fontSize: '0.72rem', color: token.muted, fontWeight: 700, lineHeight: 1 }}>{(currentPage - 1) * pageSize + idx + 1}</span>
                             <ChevronDown size={12} style={{ color: token.muted, transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
                           </div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle', textAlign: 'center' }}>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle', textAlign: 'center' }}>
                           <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.5rem', borderRadius: '999px', fontSize: '0.67rem', fontWeight: 700, whiteSpace: 'nowrap', display: 'inline-block' }}>
                             {doc.company}
                           </span>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle, display: 'flex', alignItems: 'center', gap: '0.3rem', overflow: 'hidden' }}>
-                            <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', lineHeight: 1.45 }}>{doc.doc_number}</span>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, display: 'flex', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0 }}>
+                            <span style={{ flex: 1, lineHeight: 1.5, fontWeight: 700, wordBreak: 'break-word' }}>{doc.doc_number}</span>
                             <button
                               onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(doc.doc_number); alert('Nomor disalin!'); }}
-                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: 0, flex: '0 0 auto' }}
+                              style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: '0.15rem 0', flex: '0 0 auto' }}
                               title="Salin Nomor"
                               onMouseEnter={e => { e.stopPropagation(); e.currentTarget.style.color = token.blue; }}
                               onMouseLeave={e => { e.stopPropagation(); e.currentTarget.style.color = token.muted; }}
@@ -855,23 +867,23 @@ function HistoryView({
                             </button>
                           </div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.judul_dokumen)}</div>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, ...clampThreeLinesStyle, fontWeight: 600 }}>{dash(doc.judul_dokumen)}</div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
                           <div style={{ ...tablePrimaryTextStyle, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDate(doc.doc_date)}</div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.user_name)}</div>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, ...clampThreeLinesStyle }}>{dash(doc.user_name)}</div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tableSecondaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.division)}</div>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tableSecondaryTextStyle, ...clampThreeLinesStyle }}>{dash(doc.division)}</div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle }}>{dash(doc.internal_external)}</div>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
+                          <div style={{ ...tablePrimaryTextStyle, whiteSpace: 'nowrap' }}>{dash(doc.internal_external)}</div>
                         </td>
-                        <td style={{ ...tableBodyCellStyle, verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
-                          <div style={{ display: 'flex', flexDirection: 'row', gap: '0.3rem', alignItems: 'center' }}>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
+                          <div style={{ display: 'flex', flexDirection: 'row', gap: '0.35rem', alignItems: 'center', justifyContent: 'flex-start' }}>
                             <Btn variant="soft" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
                               <Copy size={13} />
                             </Btn>
@@ -886,8 +898,8 @@ function HistoryView({
                       </tr>
                       {isExpanded && (
                         <tr>
-                          <td colSpan={9} style={{ padding: '0 0.75rem 0.85rem', borderBottom: `1px solid ${token.border}`, background: 'rgba(248,250,252,0.6)' }}>
-                            <div style={{ padding: '0.75rem 1rem', borderRadius: '0.75rem', background: token.surface, border: `1px solid ${token.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem 1.25rem' }}>
+                          <td colSpan={9} style={{ padding: '0 0.9rem 1rem', borderBottom: `1px solid ${token.border}`, background: 'rgba(248,250,252,0.72)' }}>
+                            <div style={{ padding: '0.95rem 1.1rem', borderRadius: '0.85rem', background: token.surface, border: `1px solid ${token.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.9rem 1.3rem' }}>
                               <InfoPair label="Klasifikasi" value={doc.klasifikasi} muted full />
                               <InfoPair label="Penandatangan" value={doc.signed_by} full />
                               <div style={{ minWidth: 0 }}>
@@ -899,7 +911,7 @@ function HistoryView({
                                   : <div style={{ ...tableSecondaryTextStyle, marginTop: '0.2rem' }}>-</div>
                                 }
                               </div>
-                              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '0.75rem 1.25rem' }}>
+                              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.9rem 1.3rem' }}>
                                 <InfoPair label="Perihal" value={doc.perihal} full />
                                 <InfoPair label="Keterangan" value={doc.keterangan} muted full />
                               </div>
