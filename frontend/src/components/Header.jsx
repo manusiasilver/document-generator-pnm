@@ -33,6 +33,7 @@ function Header({
   searchProps,
   showMenuButton = false,
   departmentFilterProps,
+  editAction,
 }) {
   const hasSearch = Boolean(searchProps)
   const hasNotification = Boolean(notificationProps)
@@ -335,6 +336,16 @@ function Header({
                 </button>
               ) : null}
             </div>
+          ) : null}
+
+          {editAction?.show ? (
+            <button
+              type="button"
+              className="header-edit-action"
+              onClick={editAction.onClick}
+            >
+              {editAction.label ?? 'Batal Edit'}
+            </button>
           ) : null}
         </div>
       </div>

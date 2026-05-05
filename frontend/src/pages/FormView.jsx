@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { X, Copy, Download, RefreshCw, Save, Plus, CalendarDays } from 'lucide-react';
+import { Copy, Download, RefreshCw, Save, Plus, CalendarDays } from 'lucide-react';
 import { token, Btn, wrap, card, Divider, Field, Sel, Inp } from './SharedUI';
 
 const MOBILE_BREAKPOINT = 768;
@@ -216,11 +216,6 @@ function FormView({
               {editingDoc ? `Nomor aktif: ${editingDoc.doc_number}` : 'Isi form di bawah untuk membuat nomor dokumen'}
             </p>
           </div>
-          {editingDoc && (
-            <Btn variant="danger" onClick={resetForm} style={{ width: isMobile ? '100%' : 'auto', justifyContent: 'center', boxShadow: '0 10px 24px rgba(185, 28, 28, 0.10)' }}>
-              <X size={14} /> Batal Edit
-            </Btn>
-          )}
         </div>
 
         <form onSubmit={hSubmit}>

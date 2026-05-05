@@ -277,6 +277,15 @@ function App() {
           showMenuButton={true}
           onMenuToggle={() => setMobileOpen((o) => !o)}
           breadcrumb={[{ label: pageTitle, href: '#', active: true }]}
+          editAction={
+            activePage === 'form' && editingDoc
+              ? {
+                  show: true,
+                  label: 'Batal Edit',
+                  onClick: resetForm,
+                }
+              : undefined
+          }
         />
         <main
           className="dashboard-main"
