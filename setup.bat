@@ -1,11 +1,13 @@
 @echo off
+PUSHD "%~dp0"
 setlocal
-cd /d "%~dp0"
 
 echo =========================================
 echo   Setup Document Generator - PNM
 echo   Jalankan sebagai Administrator!
 echo =========================================
+echo.
+echo Direktori project: %CD%
 echo.
 
 :: Cek apakah Admin
@@ -13,36 +15,52 @@ net session >nul 2>&1
 if %errorLevel% neq 0 (
     echo ERROR: Harus dijalankan sebagai Administrator!
     echo Klik kanan setup.bat lalu pilih "Run as administrator"
+    POPD
+    pause
+    exit /b 1
+)
+
+:: Validasi folder
+if not exist "frontend" (
+    echo ERROR: Folder frontend tidak ditemukan di: %CD%
+    POPD
+    pause
+    exit /b 1
+)
+if not exist "backend" (
+    echo ERROR: Folder backend tidak ditemukan di: %CD%
+    POPD
     pause
     exit /b 1
 )
 
 echo [1/6] Install PM2 (process manager)...
 call npm install -g pm2
-if %errorLevel% neq 0 ( echo GAGAL install PM2 & pause & exit /b 1 )
+if %errorLevel% neq 0 ( echo GAGAL install PM2 & POPD & pause & exit /b 1 )
 
 echo.
 echo [2/6] Install frontend dependencies...
-cd /d "%~dp0frontend"
+PUSHD frontend
 call npm install
-if %errorLevel% neq 0 ( echo GAGAL install frontend & pause & exit /b 1 )
+if %errorLevel% neq 0 ( echo GAGAL install frontend & POPD & POPD & pause & exit /b 1 )
 
 echo.
 echo [3/6] Build frontend...
 call npm run build
-if %errorLevel% neq 0 ( echo GAGAL build frontend & pause & exit /b 1 )
+if %errorLevel% neq 0 ( echo GAGAL build frontend & POPD & POPD & pause & exit /b 1 )
+POPD
 
 echo.
 echo [4/6] Install backend dependencies...
-cd /d "%~dp0backend"
+PUSHD backend
 call npm install
-if %errorLevel% neq 0 ( echo GAGAL install backend & pause & exit /b 1 )
+if %errorLevel% neq 0 ( echo GAGAL install backend & POPD & POPD & pause & exit /b 1 )
 
 echo.
 echo [5/6] Start app dengan PM2 (background)...
 call pm2 start ecosystem.config.cjs
 call pm2 save
-cd /d "%~dp0"
+POPD
 
 echo.
 echo [6/6] Setup port forwarding 80 -> 3001...
@@ -60,4 +78,5 @@ echo.
 echo   Untuk setting domain lokal, lihat instruksi
 echo   di file README-DOMAIN.md
 echo =========================================
+POPD
 pause

@@ -1,15 +1,17 @@
 @echo off
+PUSHD "%~dp0"
 setlocal
-cd /d "%~dp0"
 
 echo [1/2] Build ulang frontend...
-cd /d "%~dp0frontend"
+PUSHD frontend
 call npm run build
-if %errorLevel% neq 0 ( echo GAGAL build & pause & exit /b 1 )
+if %errorLevel% neq 0 ( echo GAGAL build & POPD & POPD & pause & exit /b 1 )
+POPD
 
 echo [2/2] Restart app...
 call pm2 restart doc-generator
 
 echo.
 echo Selesai! App sudah diperbarui.
+POPD
 pause
