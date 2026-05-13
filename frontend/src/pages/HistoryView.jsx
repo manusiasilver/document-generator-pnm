@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { RefreshCw, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save } from 'lucide-react';
+import { RefreshCw, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save, SlidersHorizontal, Globe, LayoutList } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 import { useAuth } from '../context/AuthContext'
 
@@ -590,27 +590,48 @@ function HistoryView({
       <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: '1rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden' }}>
 
         {/* ── Filter Bar ── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', flex: 1 }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap',
+          marginBottom: '1rem', justifyContent: 'space-between',
+          padding: '0.55rem 0.85rem',
+          background: 'rgba(26,42,87,0.03)',
+          borderRadius: '0.75rem',
+          border: `1px solid ${token.border}`,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {/* Filter label */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: token.muted, paddingRight: '0.5rem', borderRight: `1px solid ${token.border}`, flexShrink: 0 }}>
+              <SlidersHorizontal size={13} />
+              <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Filter</span>
+            </div>
+
             {/* Int/Ext */}
-            <select
-              value={searchIntExt}
-              onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
-              style={{ height: '2.1rem', padding: '0 1.8rem 0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
-            >
-              <option value="">Semua</option>
-              <option value="Internal">Internal</option>
-              <option value="External">External</option>
-            </select>
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+              <Globe size={12} style={{ position: 'absolute', left: '0.55rem', color: token.muted, pointerEvents: 'none', zIndex: 1 }} />
+              <select
+                value={searchIntExt}
+                onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
+                style={{ height: '2.1rem', paddingLeft: '1.85rem', paddingRight: '1.8rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
+              >
+                <option value="">Semua</option>
+                <option value="Internal">Internal</option>
+                <option value="External">External</option>
+              </select>
+            </div>
+
             {/* Page size */}
-            <select
-              value={pageSize}
-              onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-              style={{ height: '2.1rem', padding: '0 1.8rem 0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
-            >
-              {[10,25,50,75,100].map(n => <option key={n} value={n}>{n}</option>)}
-            </select>
-            {/* Reset — clears all filters including search+date in header */}
+            <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+              <LayoutList size={12} style={{ position: 'absolute', left: '0.55rem', color: token.muted, pointerEvents: 'none', zIndex: 1 }} />
+              <select
+                value={pageSize}
+                onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+                style={{ height: '2.1rem', paddingLeft: '1.85rem', paddingRight: '1.8rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
+              >
+                {[10,25,50,75,100].map(n => <option key={n} value={n}>{n} baris</option>)}
+              </select>
+            </div>
+
+            {/* Reset */}
             {(searchTerm || searchDate || searchIntExt) && (
               <button
                 type="button"
@@ -622,16 +643,18 @@ function HistoryView({
               </button>
             )}
           </div>
+
           {/* Right: count + refresh */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: token.muted, background: 'rgba(26,42,87,0.07)', border: `1px solid ${token.border}`, padding: '0.22rem 0.65rem', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: token.blueMid, background: 'rgba(26,42,87,0.08)', border: `1px solid rgba(26,42,87,0.12)`, padding: '0.28rem 0.7rem', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <FileText size={11} />
               {filtered.length} dokumen
             </span>
             <button
               type="button"
               onClick={fetchData}
               disabled={tableLoading}
-              title="Refresh"
+              title="Refresh Data"
               style={{ height: '2.1rem', width: '2.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${token.border}`, borderRadius: '0.5rem', background: '#fff', cursor: tableLoading ? 'not-allowed' : 'pointer', color: token.muted, flexShrink: 0 }}
             >
               <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />

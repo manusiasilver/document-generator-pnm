@@ -296,7 +296,7 @@ function App() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 {/* Search with icon */}
                 <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
-                  <Search size={13} style={{ position: 'absolute', left: '0.5rem', color: 'rgba(255,255,255,0.55)', pointerEvents: 'none' }} />
+                  <Search size={13} style={{ position: 'absolute', left: '0.5rem', color: 'rgba(255,255,255,0.85)', pointerEvents: 'none' }} />
                   <input
                     type="search"
                     value={searchTerm}
@@ -306,13 +306,13 @@ function App() {
                     style={{
                       height: '32px', paddingLeft: '1.75rem', paddingRight: '0.65rem',
                       fontSize: '0.78rem',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: '1px solid rgba(255,255,255,0.18)',
+                      background: 'rgba(255,255,255,0.16)',
+                      border: '1px solid rgba(255,255,255,0.32)',
                       borderRadius: '8px',
-                      color: 'rgba(255,255,255,0.92)',
+                      color: '#fff',
                       outline: 'none',
                       fontFamily: 'inherit',
-                      width: '150px',
+                      width: '160px',
                     }}
                   />
                 </div>
@@ -325,16 +325,16 @@ function App() {
                     height: '32px', display: 'flex', alignItems: 'center', gap: '0.4rem',
                     paddingLeft: '0.55rem', paddingRight: '0.65rem',
                     fontSize: '0.78rem',
-                    background: 'rgba(255,255,255,0.1)',
-                    border: '1px solid rgba(255,255,255,0.18)',
+                    background: 'rgba(255,255,255,0.16)',
+                    border: '1px solid rgba(255,255,255,0.32)',
                     borderRadius: '8px',
-                    color: searchDate ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.45)',
+                    color: searchDate ? '#fff' : 'rgba(255,255,255,0.7)',
                     whiteSpace: 'nowrap',
                     userSelect: 'none',
                     pointerEvents: 'none',
                     minWidth: '120px',
                   }}>
-                    <CalendarDays size={12} style={{ color: 'rgba(255,255,255,0.55)', flexShrink: 0 }} />
+                    <CalendarDays size={12} style={{ color: 'rgba(255,255,255,0.85)', flexShrink: 0 }} />
                     {searchDate ? formatHeaderDate(searchDate) : 'Filter Tanggal'}
                   </div>
                   <input
