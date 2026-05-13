@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Copy, Download, RefreshCw, Save, Plus, CalendarDays } from 'lucide-react';
 import { token, Btn, wrap, card, Divider, Field, Sel, Inp } from './SharedUI';
+import { useAuth } from '../context/AuthContext'
 
 const MOBILE_BREAKPOINT = 768;
 const ANIMATION_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
@@ -78,12 +79,12 @@ function FormView({
   masterData,
   loading,
   hChange,
-  hUser,
   hSubmit,
   hDownload,
   resetForm,
   startDuplicate
 }) {
+  const { user } = useAuth();
   const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
   const [hoveredAction, setHoveredAction] = useState(false);
   const inpRO = { background: '#f1f5f9', color: token.muted, cursor: 'not-allowed' };
@@ -256,14 +257,14 @@ function FormView({
           </div>
           <div style={sectionStyle(340)}>
             <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr 1fr 1fr">
-              <Field label="User *">
-                <Sel name="user_name" value={formData.user_name} onChange={hUser} required style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }}>
-                  <option value="">-- Pilih --</option>
-                  {masterData.users.map((u, i) => <option key={i} value={u.name}>{u.name}</option>)}
-                </Sel>
+              <Field label="User">
+                <Inp value={user?.name || ''} readOnly />
               </Field>
-              <Field label="Divisi">
-                <Inp value={formData.division} readOnly placeholder="Otomatis" />
+              <Field label="Divisi *">
+                <Sel name="division" value={formData.division} onChange={hChange} required>
+                  <option value="">-- Pilih --</option>
+                  {masterData.divisions.map((d, i) => <option key={i} value={d.name}>{d.name}</option>)}
+                </Sel>
               </Field>
               <Field label="Tanggal Dokumen *">
                 <DateInputField
