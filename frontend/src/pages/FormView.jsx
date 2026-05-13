@@ -219,16 +219,6 @@ export default function FormView({
         animation: `fUp 600ms ${EASE} both`,
       }}>
 
-        {/* Header */}
-        <div style={{ marginBottom: '0.25rem' }}>
-          <h1 style={{ fontSize: '1.3rem', fontWeight: 800, color: token.blue, margin: 0, letterSpacing: '-0.02em' }}>
-            {editingDoc ? 'Edit Dokumen' : 'Generate Dokumen Baru'}
-          </h1>
-          <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: '0.15rem 0 0' }}>
-            {editingDoc ? `Nomor aktif: ${editingDoc.doc_number}` : 'Isi form di bawah untuk membuat nomor dokumen'}
-          </p>
-        </div>
-
         <form onSubmit={hSubmit}>
 
           {/* ── Perusahaan ── */}
