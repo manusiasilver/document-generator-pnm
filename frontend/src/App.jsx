@@ -357,11 +357,11 @@ function App() {
           style={{
             position: 'relative',
             minHeight: 0,
-            ...(activePage === 'history' ? { overflowY: 'hidden', padding: 0 } : {}),
+            ...((activePage === 'history' || activePage === 'templates') ? { overflowY: 'hidden', padding: 0 } : {}),
           }}
         >
           <BackgroundMain position="absolute" zIndex={0} />
-          <div style={{ position: 'relative', zIndex: 1, ...(activePage === 'history' ? { height: '100%' } : { minHeight: '100%' }) }}>
+          <div style={{ position: 'relative', zIndex: 1, ...((activePage === 'history' || activePage === 'templates') ? { height: '100%' } : { minHeight: '100%' }) }}>
             {activePage === 'templates' && (
               <TemplatesView
                 templates={templates}
