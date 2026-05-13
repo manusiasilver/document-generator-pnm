@@ -194,11 +194,11 @@ export default function FormView({
     <div style={{
       ...(isMobile ? {} : {}),
       position: isMobile ? 'static' : 'fixed',
-      top: isMobile ? 'auto' : '170px',
-      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
+      top: isMobile ? 'auto' : '80px',
+      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
       right: 0,
       bottom: isMobile ? 'auto' : 0,
-      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      padding: isMobile ? '1rem 0.75rem' : '1.25rem 1.75rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
@@ -211,17 +211,13 @@ export default function FormView({
 
       <div style={{
         background: '#fff',
-        border: '1.5px solid #dde3f0',
+        border: '1px solid #e2e8f0',
         borderRadius: isMobile ? '0.9rem' : '1rem',
-        boxShadow: '0 2px 8px rgba(26,42,87,0.06), 0 12px 32px rgba(26,42,87,0.08)',
+        boxShadow: '0 4px 12px rgba(26,42,87,0.08), 0 20px 48px rgba(26,42,87,0.10)',
         padding: isMobile ? '1.25rem 1rem' : '1.75rem 2rem',
         flex: '0 0 auto',
         animation: `fUp 600ms ${EASE} both`,
-        position: 'relative',
-        overflow: 'hidden',
       }}>
-        {/* top accent line */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${token.blue} 0%, ${token.blueMid} 60%, #6366f1 100%)`, borderRadius: '1rem 1rem 0 0' }} />
 
         <form onSubmit={hSubmit}>
 
