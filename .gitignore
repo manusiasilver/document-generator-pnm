@@ -10,3 +10,4 @@ frontend/dist-ssr/
 *.production
 .DS_Store
 Thumbs.db
+*/logs/
