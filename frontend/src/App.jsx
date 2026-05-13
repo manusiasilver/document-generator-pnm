@@ -350,7 +350,8 @@ function App() {
         collapsed={collapsed}
         mobileOpen={mobileOpen}
         userName={user?.name || 'Team IT'}
-        userRole={user?.department || 'PT Pilar Niaga Makmur'}
+        userRole={user?.job_position || 'PT Pilar Niaga Makmur'}
+        portalHref={import.meta.env.VITE_PILARGROUP_URL || 'https://pilargroup.id'}
         activePage={activePage}
         onNavigate={setActivePage}
         onToggleCollapse={() => setCollapsed((c) => !c)}
