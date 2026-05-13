@@ -12,6 +12,15 @@ const MOCK_PASS   = import.meta.env.VITE_MOCK_PASSWORD
 const TOKEN_KEY = 'pt_token'
 const USER_KEY  = 'pt_user'
 
+function parseJwt(token) {
+  try {
+    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    return JSON.parse(atob(base64))
+  } catch {
+    return null
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null)
   const [token, setToken]     = useState(null)
@@ -29,6 +38,35 @@ export function AuthProvider({ children }) {
 
   // Boot: cek localStorage, kalau kosong + mock auth → auto login
   useEffect(() => {
+    // 1. Cek token dari URL parameter (redirect dari pilargroup)
+    const urlParams = new URLSearchParams(window.location.search)
+    const urlToken = urlParams.get('token')
+
+    if (urlToken) {
+      const payload = parseJwt(urlToken)
+      if (payload && payload.apps?.includes('papertrail')) {
+        const userData = {
+          id:            payload.sub,
+          internal_id:   payload.internal_id,
+          username:      payload.username,
+          name:          payload.name,
+          email:         payload.email,
+          phone:         payload.phone,
+          department_id: payload.department_id,
+          department:    payload.department,
+          job_position:  payload.job_position,
+          apps:          payload.apps,
+          cv:            payload.cv,
+        }
+        saveSession(urlToken, userData)
+      }
+      // Bersihkan token dari URL
+      window.history.replaceState({}, '', window.location.pathname)
+      setLoading(false)
+      return
+    }
+
+    // 2. Cek localStorage
     const savedToken = localStorage.getItem(TOKEN_KEY)
     const savedUser  = localStorage.getItem(USER_KEY)
 
@@ -39,12 +77,13 @@ export function AuthProvider({ children }) {
       return
     }
 
+    // 3. Mock auth (local only)
     if (MOCK_AUTH) {
       mockLogin()
       return
     }
 
-    // Production: redirect ke pilargroup
+    // 4. Tidak ada sesi → ProtectedRoute akan redirect
     setLoading(false)
   }, [])
 
