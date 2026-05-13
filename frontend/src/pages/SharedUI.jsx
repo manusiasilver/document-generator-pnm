@@ -90,9 +90,9 @@ export function Btn({ children, variant = 'default', ...props }) {
 
 export const card = {
   background: token.surface,
-  border: `1px solid ${token.border}`,
+  border: '1px solid #dde3ef',
   borderRadius: '1rem',
-  boxShadow: '0 18px 36px rgba(17, 38, 75, 0.08)',
+  boxShadow: '0 2px 8px rgba(26,42,87,0.07), 0 8px 24px rgba(26,42,87,0.09), 0 24px 48px rgba(26,42,87,0.07)',
   padding: '1.5rem',
 };
 
