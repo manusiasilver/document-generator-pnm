@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { RefreshCw, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save, SlidersHorizontal, Globe, LayoutList } from 'lucide-react';
+import { RefreshCw, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save, SlidersHorizontal, Globe, LayoutList, Inbox, SearchX } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
 import { useAuth } from '../context/AuthContext'
 
@@ -522,6 +522,43 @@ function InfoPair({ label, value, muted = false, full = false }) {
 }
 
 
+function EmptyState({ hasFilters, onReset }) {
+  return (
+    <div style={{ padding: '4rem 2rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{
+        width: 72, height: 72, borderRadius: '1.25rem',
+        background: hasFilters ? 'rgba(239,68,68,0.07)' : 'rgba(26,42,87,0.07)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        marginBottom: '1.25rem',
+        boxShadow: hasFilters ? '0 0 0 8px rgba(239,68,68,0.05)' : '0 0 0 8px rgba(26,42,87,0.04)',
+      }}>
+        {hasFilters
+          ? <SearchX size={32} style={{ color: '#ef4444', opacity: 0.75 }} />
+          : <Inbox size={32} style={{ color: '#2d4a8c', opacity: 0.55 }} />
+        }
+      </div>
+      <div style={{ fontSize: '1rem', fontWeight: 800, color: hasFilters ? '#b91c1c' : '#1e293b', marginBottom: '0.45rem', letterSpacing: '-0.01em' }}>
+        {hasFilters ? 'Tidak ada hasil ditemukan' : 'Belum ada dokumen'}
+      </div>
+      <div style={{ fontSize: '0.82rem', color: '#8a93a6', maxWidth: '300px', lineHeight: 1.65, marginBottom: hasFilters ? '1.25rem' : 0 }}>
+        {hasFilters
+          ? 'Tidak ada dokumen yang cocok dengan pencarian atau filter yang aktif.'
+          : 'Dokumen yang berhasil digenerate akan muncul di sini secara otomatis.'
+        }
+      </div>
+      {hasFilters && (
+        <button
+          type="button"
+          onClick={onReset}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.5rem 1rem', fontSize: '0.82rem', fontWeight: 600, borderRadius: '0.55rem', border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.07)', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit' }}
+        >
+          <X size={13} /> Hapus Semua Filter
+        </button>
+      )}
+    </div>
+  );
+}
+
 function HistoryView({
   filtered,
   pageSize,
@@ -677,9 +714,11 @@ function HistoryView({
                 />
               ))}
               {pageData.length === 0 && (
-                <div style={{ padding: '2.5rem 1rem', textAlign: 'center', color: token.muted, border: `1px solid ${token.border}`, borderRadius: '0.9rem' }}>
-                  <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
-                  Tidak ada data
+                <div style={{ border: `1px solid ${token.border}`, borderRadius: '0.9rem', background: token.surface }}>
+                  <EmptyState
+                    hasFilters={!!(searchTerm || searchDate || searchIntExt)}
+                    onReset={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+                  />
                 </div>
               )}
             </div>
@@ -807,10 +846,14 @@ function HistoryView({
                   );
                 })}
                 {pageData.length === 0 && (
-                  <tr><td colSpan={9} style={{ padding: '3.5rem', textAlign: 'center', color: token.muted }}>
-                    <FileText size={28} style={{ display: 'block', margin: '0 auto 0.6rem', opacity: 0.35 }} />
-                    Tidak ada data
-                  </td></tr>
+                  <tr>
+                    <td colSpan={9}>
+                      <EmptyState
+                        hasFilters={!!(searchTerm || searchDate || searchIntExt)}
+                        onReset={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+                      />
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>

@@ -43,10 +43,7 @@ function TemplatesView({
 
         {/* ── Header ── */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'center', marginBottom: '1.75rem', gap: '0.75rem', flexDirection: isMobile ? 'column' : 'row' }}>
-          <div>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 800, color: token.blue, marginBottom: '0.2rem', letterSpacing: '-0.01em' }}>Kelola Template</h1>
-            <p style={{ fontSize: '0.82rem', color: token.muted }}>Upload dan kelola template dokumen .docx</p>
-          </div>
+          <div />
           <Btn variant={showNote ? 'primary' : 'ghost'} onClick={() => setShowNote(!showNote)} style={{ flexShrink: 0 }}>
             <StickyNote size={14} /> {showNote ? 'Tutup Petunjuk' : 'Petunjuk Tag'}
           </Btn>

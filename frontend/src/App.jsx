@@ -303,6 +303,7 @@ function App() {
                     placeholder="Cari dokumen..."
                     onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
                     autoComplete="off"
+                    className="header-search-input"
                     style={{
                       height: '32px', paddingLeft: '1.75rem', paddingRight: '0.65rem',
                       fontSize: '0.78rem',
