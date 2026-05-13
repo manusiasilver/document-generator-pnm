@@ -3,7 +3,7 @@ import {
   Copy, Download, RefreshCw, Save, Plus, CalendarDays,
   Building2, FileText, User, AlignLeft, CheckCircle2,
 } from 'lucide-react';
-import { token } from './SharedUI';
+import { token, card } from './SharedUI';
 import { useAuth } from '../context/AuthContext';
 
 const MOBILE_BP = 768;
@@ -194,11 +194,11 @@ export default function FormView({
     <div style={{
       ...(isMobile ? {} : {}),
       position: isMobile ? 'static' : 'fixed',
-      top: isMobile ? 'auto' : '170px',
+      top: isMobile ? 'auto' : '145px',
       left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
       right: 0,
       bottom: isMobile ? 'auto' : 0,
-      padding: isMobile ? '1rem 0.75rem' : '1.25rem 1.75rem',
+      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
@@ -209,15 +209,7 @@ export default function FormView({
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      <div style={{
-        background: '#fff',
-        border: '1px solid #e2e8f0',
-        borderRadius: isMobile ? '0.9rem' : '1rem',
-        boxShadow: '0 4px 12px rgba(26,42,87,0.08), 0 20px 48px rgba(26,42,87,0.10)',
-        padding: isMobile ? '1.25rem 1rem' : '1.75rem 2rem',
-        flex: '0 0 auto',
-        animation: `fUp 600ms ${EASE} both`,
-      }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem', flex: '0 0 auto', animation: `fUp 600ms ${EASE} both` }}>
 
         <form onSubmit={hSubmit}>
 
