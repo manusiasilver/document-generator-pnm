@@ -95,10 +95,10 @@ function Sidebar({
         <a
           href={portalHref}
           className="nav-item"
-          data-tooltip={collapsed ? 'Kembali ke Pilar Group' : undefined}
+          data-tooltip={collapsed ? 'Pilar Group' : undefined}
         >
           <ArrowLeft className="nav-icon" size={22} />
-          <span className="nav-text">Kembali ke Pilar Group</span>
+          <span className="nav-text">Pilar Group</span>
         </a>
 
         {!collapsed ? (
@@ -113,8 +113,8 @@ function Sidebar({
               lineHeight: 1.5,
             }}
           >
-            <div>© 2026 PT Pilar Niaga Makmur. All rights reserved.</div>
-            <div>Developed by IT Team PT Pilar Niaga Makmur.</div>
+            <div>© 2026 PT Pilar Niaga Makmur</div>
+            <div>Developed by IT Team</div>
           </div>
         ) : null}
       </div>

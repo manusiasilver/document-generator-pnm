@@ -11,6 +11,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const APP_PROFILE = {
+  name: process.env.PROFILE_NAME || 'Team IT',
+  role: process.env.PROFILE_ROLE || 'PT Pilar Niaga Makmur',
+};
+
+app.get('/api/profile', (req, res) => {
+  res.json(APP_PROFILE);
+});
+
 const templatesDir = path.resolve(__dirname, 'templates');
 if (!fs.existsSync(templatesDir)) fs.mkdirSync(templatesDir);
 

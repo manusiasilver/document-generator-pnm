@@ -102,6 +102,7 @@ function App() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activePage, setActivePage] = useState('form')
+  const [profile, setProfile] = useState({ name: '', role: '' })
   const [masterData, setMasterData] = useState({ users: [], divisions: [] })
   const [documents, setDocuments] = useState([])
   const [templates, setTemplates] = useState([])
@@ -136,6 +137,7 @@ function App() {
 
   useEffect(() => {
     fetchData()
+    axios.get(`${API_URL}/profile`).then((r) => setProfile(r.data)).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -353,6 +355,8 @@ function App() {
       <Sidebar
         collapsed={collapsed}
         mobileOpen={mobileOpen}
+        userName={profile.name || 'Team IT'}
+        userRole={profile.role || 'PT Pilar Niaga Makmur'}
         activePage={activePage}
         onNavigate={setActivePage}
         onToggleCollapse={() => setCollapsed((c) => !c)}
