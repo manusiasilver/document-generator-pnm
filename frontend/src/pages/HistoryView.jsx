@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { RefreshCw, X, Copy, Edit, Download, Link, FileText, ChevronLeft, ChevronRight, ChevronDown, Save } from 'lucide-react';
 import { token, Btn, wrap, card, Inp, badgeStyles, Field, Sel, Divider } from './SharedUI';
+import { useAuth } from '../context/AuthContext'
 
 const API_URL = '/api';
 const MOBILE_BREAKPOINT = 768;
@@ -116,6 +117,7 @@ function DetailGrid({ children, isMobile, columns }) {
 }
 
 function EditModal({ doc, templates, masterData, onClose, onSaved }) {
+  const { user } = useAuth()
   const [form, setForm] = useState({
     company:           doc.company,
     template_name:     doc.template_name || templates[0] || '',
@@ -135,20 +137,9 @@ function EditModal({ doc, templates, masterData, onClose, onSaved }) {
 
   const hChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  const hUser = e => {
-    const u = masterData.users.find(user => user.name === e.target.value);
-    const div = masterData.divisions.find(item => item.name === u?.division);
-    setForm(p => ({
-      ...p,
-      user_name: e.target.value,
-      division: u?.division || '',
-      klasifikasi: (div?.klasifikasi && div.klasifikasi !== '-') ? div.klasifikasi : p.klasifikasi,
-    }));
-  };
-
   const hSubmit = async e => {
     e.preventDefault();
-    if (!form.user_name || !form.doc_date) { alert('Harap isi User dan Tanggal!'); return; }
+    if (!form.division || !form.doc_date) { alert('Harap isi Divisi dan Tanggal!'); return; }
     setSaving(true);
     try {
       await axios.put(`${API_URL}/documents/${doc.id}`, form);
@@ -199,14 +190,14 @@ function EditModal({ doc, templates, masterData, onClose, onSaved }) {
 
           <Divider label="Pengguna & Tanggal" />
           <DetailGrid isMobile={isMobile} columns="1fr 1fr 1fr 1fr">
-            <Field label="User *">
-              <Sel name="user_name" value={form.user_name} onChange={hUser} required>
-                <option value="">-- Pilih --</option>
-                {masterData.users.map((u, i) => <option key={i} value={u.name}>{u.name}</option>)}
-              </Sel>
+            <Field label="User">
+              <Inp value={user?.name || ''} readOnly />
             </Field>
-            <Field label="Divisi">
-              <Inp value={form.division} readOnly placeholder="Otomatis" />
+            <Field label="Divisi *">
+              <Sel name="division" value={form.division} onChange={hChange} required>
+                <option value="">-- Pilih --</option>
+                {masterData.divisions.map((d, i) => <option key={i} value={d.name}>{d.name}</option>)}
+              </Sel>
             </Field>
             <Field label="Tanggal *">
               <Inp type="date" name="doc_date" value={form.doc_date} onChange={hChange} required />
@@ -275,23 +266,12 @@ function DuplicateModal({ doc, templates, masterData, onClose, onSaved }) {
 
   const hChange = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
 
-  const hUser = e => {
-    const u = masterData.users.find(user => user.name === e.target.value);
-    const div = masterData.divisions.find(item => item.name === u?.division);
-    setForm(p => ({
-      ...p,
-      user_name: e.target.value,
-      division: u?.division || '',
-      klasifikasi: (div?.klasifikasi && div.klasifikasi !== '-') ? div.klasifikasi : p.klasifikasi,
-    }));
-  };
-
   const hSubmit = async e => {
     e.preventDefault();
-    if (!form.user_name || !form.doc_date) { alert('Harap isi User dan Tanggal!'); return; }
+    if (!form.division || !form.doc_date) { alert('Harap isi Divisi dan Tanggal!'); return; }
     setSaving(true);
     try {
-      await axios.post(`${API_URL}/generate`, form);
+      await axios.post(`${API_URL}/generate`, { ...form, user_name: user?.name });
       onSaved();
       onClose();
     } catch {
@@ -339,14 +319,14 @@ function DuplicateModal({ doc, templates, masterData, onClose, onSaved }) {
 
           <Divider label="Pengguna & Tanggal" />
           <DetailGrid isMobile={isMobile} columns="1fr 1fr 1fr 1fr">
-            <Field label="User *">
-              <Sel name="user_name" value={form.user_name} onChange={hUser} required>
-                <option value="">-- Pilih --</option>
-                {masterData.users.map((u, i) => <option key={i} value={u.name}>{u.name}</option>)}
-              </Sel>
+            <Field label="User">
+              <Inp value={user?.name || ''} readOnly />
             </Field>
-            <Field label="Divisi">
-              <Inp value={form.division} readOnly placeholder="Otomatis" />
+            <Field label="Divisi *">
+              <Sel name="division" value={form.division} onChange={hChange} required>
+                <option value="">-- Pilih --</option>
+                {masterData.divisions.map((d, i) => <option key={i} value={d.name}>{d.name}</option>)}
+              </Sel>
             </Field>
             <Field label="Tanggal *">
               <Inp type="date" name="doc_date" value={form.doc_date} onChange={hChange} required />

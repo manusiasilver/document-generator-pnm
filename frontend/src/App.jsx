@@ -8,6 +8,7 @@ import BackgroundMain from './components/BackgroundMain.jsx'
 import HistoryView from './pages/HistoryView'
 import FormView from './pages/FormView'
 import TemplatesView from './pages/TemplatesView'
+import { useAuth } from './context/AuthContext'
 
 const hdrSelect = {
   height: '32px',
@@ -99,17 +100,17 @@ const API_URL = '/api'
 const asArray = (value) => (Array.isArray(value) ? value : [])
 
 function App() {
+  const { user, logout } = useAuth()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activePage, setActivePage] = useState('form')
-  const [masterData, setMasterData] = useState({ users: [], divisions: [] })
+  const [masterData, setMasterData] = useState({ divisions: [] })
   const [documents, setDocuments] = useState([])
   const [templates, setTemplates] = useState([])
   const [formData, setFormData] = useState({
     company: 'PNM',
     template_name: '',
     judul_dokumen: '',
-    user_name: '',
     division: '',
     internal_external: 'Internal',
     doc_date: new Date().toISOString().split('T')[0],
@@ -136,29 +137,24 @@ function App() {
 
   useEffect(() => {
     fetchData()
+    fetchDepartments(formData.company) // load departments sesuai company default
   }, [])
 
   useEffect(() => {
+    fetchDepartments(formData.company)
     if (templates.length > 0 && !editingDoc && !generatedDoc) {
-      const match = templates.find((t) =>
-        t.toLowerCase().includes(formData.company.toLowerCase()),
-      )
-      setFormData((p) => ({ ...p, template_name: match || templates[0] }))
+      const match = templates.find(t => t.toLowerCase().includes(formData.company.toLowerCase()))
+      setFormData(p => ({ ...p, template_name: match || templates[0], division: '' }))
     }
-  }, [formData.company, templates, editingDoc, generatedDoc])
+  }, [formData.company])
 
   const fetchData = async () => {
     setTableLoading(true)
     try {
-      const [d, doc, tpl] = await Promise.all([
-        axios.get(`${API_URL}/data`),
+      const [doc, tpl] = await Promise.all([
         axios.get(`${API_URL}/documents`),
         axios.get(`${API_URL}/templates`),
       ])
-      setMasterData({
-        users: asArray(d.data?.users),
-        divisions: asArray(d.data?.divisions),
-      })
       setDocuments(asArray(doc.data))
       setTemplates(asArray(tpl.data))
     } catch (e) {
@@ -168,16 +164,13 @@ function App() {
     }
   }
 
-  const hUser = (e) => {
-    const u = masterData.users.find((user) => user.name === e.target.value)
-    const div = masterData.divisions.find((d) => d.name === u?.division)
-    setFormData((p) => ({
-      ...p,
-      user_name: e.target.value,
-      division: u?.division || '',
-      klasifikasi:
-        div?.klasifikasi && div.klasifikasi !== '-' ? div.klasifikasi : p.klasifikasi,
-    }))
+  const fetchDepartments = async (company) => {
+    try {
+      const res = await axios.get(`${API_URL}/data`, { params: { company } })
+      setMasterData(prev => ({ ...prev, divisions: asArray(res.data.departments) }))
+    } catch (e) {
+      console.error(e)
+    }
   }
 
   const hChange = (e) =>
@@ -185,18 +178,22 @@ function App() {
 
   const hSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.judul_dokumen.trim() || !formData.user_name || !formData.doc_date) {
-      alert('Harap isi Judul Dokumen, User, dan Tanggal!')
+    if (!formData.judul_dokumen.trim() || !formData.doc_date) {
+      alert('Harap isi Judul Dokumen dan Tanggal!')
       return
     }
     setLoading(true)
     try {
+      // user_name tidak lagi dari formData, tapi dari token (dihandle BE)
+      // tapi tetap kirim untuk keperluan fallback display
+      const payload = { ...formData, user_name: user.name }
+  
       if (editingDoc) {
-        const r = await axios.put(`${API_URL}/documents/${editingDoc.id}`, formData)
+        const r = await axios.put(`${API_URL}/documents/${editingDoc.id}`, payload)
         alert('Dokumen diperbarui!')
         setGeneratedDoc(r.data)
       } else {
-        const r = await axios.post(`${API_URL}/generate`, formData)
+        const r = await axios.post(`${API_URL}/generate`, payload)
         setGeneratedDoc(r.data)
         setEditingDoc(r.data)
       }
@@ -240,7 +237,6 @@ function App() {
       company: 'PNM',
       template_name: templates[0] || '',
       judul_dokumen: '',
-      user_name: '',
       division: '',
       internal_external: 'Internal',
       doc_date: new Date().toISOString().split('T')[0],
@@ -360,7 +356,7 @@ function App() {
       />
       <div className="dashboard-stage">
         <Header
-          title="QuickNum"
+          title="Papertrail"
           showMenuButton={true}
           onMenuToggle={() => setMobileOpen((o) => !o)}
           breadcrumb={[{ label: pageTitle, href: '#', active: true }]}
@@ -379,6 +375,8 @@ function App() {
               tableLoading={tableLoading} fetchData={fetchData}
             />
           ) : null}
+          onLogout={logout}
+          userName={user?.name}
         />
         <main
           className="dashboard-main"
@@ -411,7 +409,6 @@ function App() {
                 masterData={masterData}
                 loading={loading}
                 hChange={hChange}
-                hUser={hUser}
                 hSubmit={hSubmit}
                 hDownload={hDownload}
                 resetForm={resetForm}
