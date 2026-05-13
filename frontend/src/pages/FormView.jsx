@@ -210,14 +210,18 @@ export default function FormView({
       `}</style>
 
       <div style={{
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.97) 0%, rgba(248,250,252,0.96) 100%)',
-        border: '1.5px solid #f1f5f9',
+        background: '#fff',
+        border: '1.5px solid #dde3f0',
         borderRadius: isMobile ? '0.9rem' : '1rem',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.04), 0 24px 48px rgba(26,42,87,0.08)',
+        boxShadow: '0 2px 8px rgba(26,42,87,0.06), 0 12px 32px rgba(26,42,87,0.08)',
         padding: isMobile ? '1.25rem 1rem' : '1.75rem 2rem',
         flex: '0 0 auto',
         animation: `fUp 600ms ${EASE} both`,
+        position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* top accent line */}
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${token.blue} 0%, ${token.blueMid} 60%, #6366f1 100%)`, borderRadius: '1rem 1rem 0 0' }} />
 
         <form onSubmit={hSubmit}>
 
