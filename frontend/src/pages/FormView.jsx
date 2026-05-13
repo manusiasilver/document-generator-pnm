@@ -1,16 +1,165 @@
 import React, { useEffect, useState } from 'react';
-import { Copy, Download, RefreshCw, Save, Plus, CalendarDays } from 'lucide-react';
-import { token, Btn, wrap, card, Divider, Field, Sel, Inp } from './SharedUI';
-import { useAuth } from '../context/AuthContext'
+import {
+  Copy, Download, RefreshCw, Save, Plus, CalendarDays,
+  Building2, FileText, User, AlignLeft, CheckCircle2,
+} from 'lucide-react';
+import { token, Btn } from './SharedUI';
+import { useAuth } from '../context/AuthContext';
 
-const MOBILE_BREAKPOINT = 768;
-const ANIMATION_EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+const MOBILE_BP = 768;
+const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
-function ResponsiveGrid({ isMobile, columns, children }) {
+/* ─── Primitives ─────────────────────────────────────────────── */
+
+function Label({ children, required }) {
+  return (
+    <span style={{
+      display: 'block',
+      fontSize: '0.72rem',
+      fontWeight: 700,
+      letterSpacing: '0.06em',
+      textTransform: 'uppercase',
+      color: '#64748b',
+      marginBottom: '0.35rem',
+    }}>
+      {children}{required && <span style={{ color: '#ef4444', marginLeft: 2 }}>*</span>}
+    </span>
+  );
+}
+
+const baseInp = {
+  width: '100%',
+  height: '2.65rem',
+  padding: '0 0.85rem',
+  fontSize: '0.875rem',
+  color: token.text,
+  background: '#fff',
+  border: '1.5px solid #e2e8f0',
+  borderRadius: '0.6rem',
+  outline: 'none',
+  fontFamily: 'inherit',
+  transition: `border-color 150ms ${EASE}, box-shadow 150ms ${EASE}`,
+  boxSizing: 'border-box',
+};
+
+function Inp({ readOnly, style, ...props }) {
+  const ro = readOnly ? {
+    background: '#f8fafc',
+    color: '#94a3b8',
+    cursor: 'not-allowed',
+    borderColor: '#f1f5f9',
+  } : {};
+  return (
+    <input
+      readOnly={readOnly}
+      {...props}
+      style={{ ...baseInp, ...ro, ...style }}
+      onFocus={e => { if (!readOnly) { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'; } }}
+      onBlur={e => { e.target.style.borderColor = ro.borderColor || '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+    />
+  );
+}
+
+function Sel({ children, style, ...props }) {
+  return (
+    <select
+      {...props}
+      style={{ ...baseInp, cursor: 'pointer', paddingRight: '2rem', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', ...style }}
+      onFocus={e => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'; }}
+      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+    >
+      {children}
+    </select>
+  );
+}
+
+function Textarea({ style, ...props }) {
+  return (
+    <textarea
+      {...props}
+      style={{ ...baseInp, height: 'auto', padding: '0.65rem 0.85rem', resize: 'vertical', lineHeight: 1.6, ...style }}
+      onFocus={e => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'; }}
+      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+    />
+  );
+}
+
+function DatePicker({ name, value, onChange, required }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      <div style={{
+        ...baseInp,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        cursor: 'pointer',
+        color: value ? token.text : '#94a3b8',
+      }}>
+        <span style={{ fontSize: '0.875rem' }}>{value || 'Pilih tanggal'}</span>
+        <CalendarDays size={15} style={{ color: '#94a3b8', flexShrink: 0 }} />
+      </div>
+      <input
+        type="date"
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', border: 'none' }}
+        onFocus={e => e.currentTarget.previousSibling.style.borderColor = '#3b82f6'}
+        onBlur={e => e.currentTarget.previousSibling.style.borderColor = '#e2e8f0'}
+        onClick={e => e.currentTarget.showPicker?.()}
+      />
+    </div>
+  );
+}
+
+/* ─── Section card ───────────────────────────────────────────── */
+
+function Section({ icon: Icon, label, accent = '#3b82f6', delay = 0, children }) {
+  return (
+    <div style={{
+      background: '#fff',
+      border: '1.5px solid #f1f5f9',
+      borderRadius: '1rem',
+      overflow: 'hidden',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(26,42,87,0.04)',
+      animation: `fUp 600ms ${EASE} both`,
+      animationDelay: `${delay}ms`,
+    }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.55rem',
+        padding: '0.9rem 1.25rem',
+        borderBottom: '1.5px solid #f1f5f9',
+        background: 'linear-gradient(90deg, rgba(248,250,252,0.8) 0%, #fff 100%)',
+      }}>
+        <div style={{
+          width: 30, height: 30,
+          borderRadius: '0.5rem',
+          background: `${accent}18`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          flexShrink: 0,
+        }}>
+          <Icon size={15} color={accent} />
+        </div>
+        <span style={{ fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#475569' }}>
+          {label}
+        </span>
+      </div>
+      <div style={{ padding: '1.25rem' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ─── Grid helper ────────────────────────────────────────────── */
+function Grid({ cols, isMobile, children }) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: isMobile ? '1fr' : columns,
+      gridTemplateColumns: isMobile ? '1fr' : cols,
       gap: '1rem',
     }}>
       {children}
@@ -18,60 +167,109 @@ function ResponsiveGrid({ isMobile, columns, children }) {
   );
 }
 
-function DateInputField({ name, value, onChange, required = false }) {
-  const openPicker = event => {
-    if (typeof event.currentTarget.showPicker === 'function') {
-      event.currentTarget.showPicker();
-    }
-  };
-
+/* ─── Field wrapper ──────────────────────────────────────────── */
+function F({ label, required, children }) {
   return (
-    <div style={{ position: 'relative' }}>
-      <div
-        style={{
-          width: '100%',
-          minHeight: '2.6rem',
-          borderRadius: '0.7rem',
-          border: `1px solid ${token.border}`,
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(247,249,252,0.92) 100%)',
-          padding: '0.6rem 0.8rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.75rem',
-          color: value ? token.text : token.muted,
-          fontSize: '0.88rem',
-          boxShadow: '0 1px 0 rgba(255,255,255,0.72) inset',
-          transition: `transform 180ms ${ANIMATION_EASE}, box-shadow 180ms ${ANIMATION_EASE}, border-color 180ms ${ANIMATION_EASE}`,
-        }}
-      >
-        <span>{value || 'Pilih tanggal'}</span>
-        <CalendarDays size={16} style={{ color: token.muted, flex: '0 0 auto' }} />
-      </div>
-      <input
-        type="date"
-        name={name}
-        value={value}
-        onChange={onChange}
-        onFocus={openPicker}
-        onClick={openPicker}
-        required={required}
-        style={{
-          position: 'absolute',
-          inset: 0,
-          opacity: 0,
-          width: '100%',
-          height: '100%',
-          cursor: 'pointer',
-          border: 'none',
-          padding: 0,
-        }}
-      />
+    <div>
+      <Label required={required}>{label}</Label>
+      {children}
     </div>
   );
 }
 
-function FormView({
+/* ─── Result Banner ──────────────────────────────────────────── */
+function ResultBanner({ doc, isMobile, loading, onCopy, onDownload, onDuplicate, onSave, onNew }) {
+  return (
+    <div style={{
+      background: 'linear-gradient(135deg, #1a2a57 0%, #2d4a8c 100%)',
+      borderRadius: '1rem',
+      padding: isMobile ? '1.5rem 1.25rem' : '2rem',
+      color: '#fff',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: '0 20px 48px rgba(26,42,87,0.22)',
+      animation: `fUp 500ms ${EASE} both`,
+    }}>
+      {/* subtle pattern */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(255,255,255,0.07) 0%, transparent 50%), radial-gradient(circle at 10% 80%, rgba(255,255,255,0.05) 0%, transparent 45%)', pointerEvents: 'none' }} />
+
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+          <CheckCircle2 size={16} color="#4ade80" />
+          <span style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)' }}>
+            Nomor Dokumen
+          </span>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.75rem', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: isMobile ? '1.3rem' : '1.65rem', fontWeight: 800, letterSpacing: '0.5px', wordBreak: 'break-all', lineHeight: 1.2 }}>
+            {doc.doc_number}
+          </span>
+          <button
+            type="button"
+            onClick={onCopy}
+            title="Salin"
+            style={{
+              background: 'rgba(255,255,255,0.12)',
+              border: '1px solid rgba(255,255,255,0.18)',
+              borderRadius: '0.5rem',
+              padding: '6px',
+              cursor: 'pointer',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              transition: `background 150ms ${EASE}`,
+              flexShrink: 0,
+            }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.22)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
+          >
+            <Copy size={15} />
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
+          <button type="button" onClick={onNew} style={actionBtn('#fff', token.blue)}>
+            <Plus size={14} /> Buat Baru
+          </button>
+          <button type="button" onClick={onDuplicate} style={actionBtn('rgba(255,255,255,0.12)', '#fff', true)}>
+            <Copy size={14} /> Duplikat
+          </button>
+          <button type="button" onClick={onDownload} style={actionBtn('#4ade80', '#14532d')}>
+            <Download size={14} /> Download .docx
+          </button>
+          <button type="submit" onClick={onSave} disabled={loading} style={actionBtn('rgba(255,255,255,0.1)', '#fff', true, loading)}>
+            {loading ? <RefreshCw size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={14} />}
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function actionBtn(bg, color, bordered = false, disabled = false) {
+  return {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    padding: '0.5rem 1rem',
+    fontSize: '0.82rem',
+    fontWeight: 600,
+    borderRadius: '0.55rem',
+    border: bordered ? '1px solid rgba(255,255,255,0.22)' : 'none',
+    background: bg,
+    color,
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    opacity: disabled ? 0.55 : 1,
+    fontFamily: 'inherit',
+    transition: 'opacity 150ms, transform 120ms',
+    flexShrink: 0,
+  };
+}
+
+/* ─── Main Component ─────────────────────────────────────────── */
+export default function FormView({
   editingDoc,
   generatedDoc,
   formData,
@@ -82,351 +280,195 @@ function FormView({
   hSubmit,
   hDownload,
   resetForm,
-  startDuplicate
+  startDuplicate,
 }) {
   const { user } = useAuth();
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BREAKPOINT);
-  const [hoveredAction, setHoveredAction] = useState(false);
-  const inpRO = { background: '#f1f5f9', color: token.muted, cursor: 'not-allowed' };
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_BP);
 
   useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth <= MOBILE_BREAKPOINT);
-    window.addEventListener('resize', onResize);
-    return () => window.removeEventListener('resize', onResize);
+    const fn = () => setIsMobile(window.innerWidth <= MOBILE_BP);
+    window.addEventListener('resize', fn);
+    return () => window.removeEventListener('resize', fn);
   }, []);
 
-  const textareaStyle = {
-    width: '100%',
-    padding: '0.6rem 0.8rem',
-    fontSize: '0.88rem',
-    color: token.text,
-    background: 'linear-gradient(180deg, rgba(255,255,255,0.95) 0%, rgba(247,249,252,0.92) 100%)',
-    border: `1px solid ${token.border}`,
-    borderRadius: '0.7rem',
-    outline: 'none',
-    transition: `border-color 180ms ${ANIMATION_EASE}, box-shadow 180ms ${ANIMATION_EASE}, transform 180ms ${ANIMATION_EASE}`,
-    fontFamily: 'inherit',
-    resize: 'vertical',
-    boxShadow: '0 1px 0 rgba(255,255,255,0.65) inset',
+  const copyDocNumber = () => {
+    navigator.clipboard.writeText(generatedDoc.doc_number);
+    alert('Nomor disalin!');
   };
-
-  const sectionStyle = delay => ({
-    position: 'relative',
-    zIndex: 1,
-    animation: `formFadeUp 720ms ${ANIMATION_EASE} both`,
-    animationDelay: `${delay}ms`,
-  });
-
-  const floatingOrbStyle = (style, duration, delay) => ({
-    position: 'absolute',
-    borderRadius: '999px',
-    pointerEvents: 'none',
-    animationName: 'formFloat, formPulse',
-    animationDuration: `${duration}ms, ${duration + 1800}ms`,
-    animationTimingFunction: 'ease-in-out, ease-in-out',
-    animationIterationCount: 'infinite, infinite',
-    animationDelay: `${delay}ms, ${delay}ms`,
-    ...style,
-  });
 
   return (
     <div style={{
-      ...(isMobile ? wrap : {}),
       position: isMobile ? 'static' : 'fixed',
       top: isMobile ? 'auto' : '170px',
-      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
+      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
       right: 0,
       bottom: isMobile ? 'auto' : 0,
-      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
-      display: 'flex',
-      flexDirection: 'column',
-      boxSizing: 'border-box',
+      padding: isMobile ? '1rem 0.75rem' : '1.25rem 1.75rem',
       overflowY: 'auto',
-      background: 'transparent',
+      boxSizing: 'border-box',
     }}>
       <style>{`
-        @keyframes formFadeUp {
-          from { opacity: 0; transform: translate3d(0, 28px, 0) scale(0.985); }
-          to { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+        @keyframes fUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        @keyframes formSheen {
-          0% { transform: translateX(-135%) skewX(-24deg); opacity: 0; }
-          10% { opacity: 0.18; }
-          34% { transform: translateX(165%) skewX(-24deg); opacity: 0; }
-          100% { transform: translateX(165%) skewX(-24deg); opacity: 0; }
-        }
-        @keyframes formPulse {
-          0%, 100% { opacity: 0.42; transform: scale(1); }
-          50% { opacity: 0.82; transform: scale(1.08); }
-        }
-        @keyframes formFloat {
-          0%, 100% { transform: translate3d(0, 0, 0); }
-          50% { transform: translate3d(0, -14px, 0); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      <div style={{
-        ...card,
-        padding: isMobile ? '1rem' : '1.5rem',
-        borderRadius: isMobile ? '0.9rem' : '1rem',
-        flex: '0 0 auto',
-        position: 'relative',
-        overflow: 'hidden',
-        background: 'linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.98) 28%, rgba(241,245,252,0.92) 100%)',
-        boxShadow: '0 28px 60px rgba(17, 38, 75, 0.10), 0 10px 24px rgba(26, 42, 87, 0.06)',
-        backdropFilter: 'blur(14px)',
-        animation: `formFadeUp 780ms ${ANIMATION_EASE} both`,
-      }}>
-        <div style={floatingOrbStyle({
-          top: '-44px',
-          right: isMobile ? '-24px' : '24px',
-          width: isMobile ? '110px' : '160px',
-          height: isMobile ? '110px' : '160px',
-          background: 'radial-gradient(circle, rgba(45,74,140,0.14) 0%, rgba(45,74,140,0) 72%)',
-        }, 9000, 0)} />
-        <div style={floatingOrbStyle({
-          bottom: '12%',
-          left: '-30px',
-          width: isMobile ? '86px' : '118px',
-          height: isMobile ? '86px' : '118px',
-          background: 'radial-gradient(circle, rgba(244,169,64,0.18) 0%, rgba(244,169,64,0) 74%)',
-        }, 10800, 700)} />
-        <div style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.46) 50%, transparent 100%)',
-          transform: 'translateX(-135%) skewX(-24deg)',
-          animation: 'formSheen 7.5s linear infinite',
-          pointerEvents: 'none',
-        }} />
+      <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-        <div style={{ ...sectionStyle(80), display: 'flex', justifyContent: 'space-between', alignItems: isMobile ? 'stretch' : 'flex-start', marginBottom: '1.75rem', gap: '0.9rem', flexDirection: isMobile ? 'column' : 'row' }}>
-          <div>
-            <h1 style={{
-              fontSize: '1.35rem',
-              fontWeight: 800,
-              color: token.blue,
-              marginBottom: '0.2rem',
-              lineHeight: 1.25,
-              letterSpacing: '-0.02em',
-              textShadow: '0 10px 25px rgba(26,42,87,0.10)',
-            }}>
-              {editingDoc ? 'Edit Dokumen' : 'Generate Dokumen Baru'}
-            </h1>
-            <p style={{ fontSize: '0.83rem', color: token.muted, maxWidth: '42rem' }}>
-              {editingDoc ? `Nomor aktif: ${editingDoc.doc_number}` : 'Isi form di bawah untuk membuat nomor dokumen'}
-            </p>
-          </div>
+        {/* ── Page Header ── */}
+        <div style={{ animation: `fUp 500ms ${EASE} both`, paddingBottom: '0.25rem' }}>
+          <h1 style={{ fontSize: isMobile ? '1.2rem' : '1.45rem', fontWeight: 800, color: token.blue, margin: 0, letterSpacing: '-0.02em' }}>
+            {editingDoc ? 'Edit Dokumen' : 'Generate Dokumen Baru'}
+          </h1>
+          <p style={{ fontSize: '0.83rem', color: '#94a3b8', margin: '0.2rem 0 0' }}>
+            {editingDoc ? `Mengedit: ${editingDoc.doc_number}` : 'Isi form untuk membuat nomor dokumen baru'}
+          </p>
         </div>
 
-        <form onSubmit={hSubmit}>
-          <div style={sectionStyle(140)}>
-            <Divider label="Perusahaan" />
-          </div>
-          <div style={sectionStyle(190)}>
-            <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr 1fr">
-              <Field label="Pilih Perusahaan">
-                <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc} style={editingDoc ? inpRO : { boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }}>
+        <form onSubmit={hSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+
+          {/* ── Konfigurasi Dokumen ── */}
+          <Section icon={Building2} label="Konfigurasi Dokumen" accent="#6366f1" delay={60}>
+            <Grid cols="1fr 1fr 1fr" isMobile={isMobile}>
+              <F label="Perusahaan">
+                <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc}
+                  style={editingDoc ? { background: '#f8fafc', color: '#94a3b8', cursor: 'not-allowed' } : {}}>
                   <option value="PNM">PT Pilar Niaga Makmur (PNM)</option>
                   <option value="PKS">PT Pilkada (PKS)</option>
                   <option value="PKP">PT Pikasa (PKP)</option>
                 </Sel>
-              </Field>
-              <Field label="Template Dokumen">
-                <Sel name="template_name" value={formData.template_name} onChange={hChange} style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }}>
-                  {templates.length === 0 ? <option value="">-- Belum ada template --</option> : templates.map(t => <option key={t} value={t}>{t}</option>)}
+              </F>
+              <F label="Template">
+                <Sel name="template_name" value={formData.template_name} onChange={hChange}>
+                  {templates.length === 0
+                    ? <option value="">— Belum ada template —</option>
+                    : templates.map(t => <option key={t} value={t}>{t}</option>)
+                  }
                 </Sel>
-              </Field>
-              <Field label="Internal / External">
-                <Sel name="internal_external" value={formData.internal_external} onChange={hChange} style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }}>
+              </F>
+              <F label="Jenis Dokumen">
+                <Sel name="internal_external" value={formData.internal_external} onChange={hChange}>
                   <option value="Internal">Internal</option>
                   <option value="External">External</option>
                 </Sel>
-              </Field>
-            </ResponsiveGrid>
-          </div>
+              </F>
+            </Grid>
+          </Section>
 
-          <div style={{ ...sectionStyle(240), marginTop: '1rem' }}>
-            <Field label="Judul Dokumen *">
-              <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama..." required style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }} />
-            </Field>
-          </div>
+          {/* ── Judul ── */}
+          <Section icon={FileText} label="Judul Dokumen" accent="#3b82f6" delay={120}>
+            <F label="Judul Dokumen" required>
+              <Inp
+                type="text"
+                name="judul_dokumen"
+                value={formData.judul_dokumen}
+                onChange={hChange}
+                placeholder="Contoh: Perjanjian Kerja Sama Pemasaran..."
+                required
+              />
+            </F>
+          </Section>
 
-          <div style={sectionStyle(290)}>
-            <Divider label="Pengguna & Tanggal" />
-          </div>
-          <div style={sectionStyle(340)}>
-            <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr 1fr 1fr">
-              <Field label="User">
+          {/* ── Pengguna & Tanggal ── */}
+          <Section icon={User} label="Pengguna & Tanggal" accent="#10b981" delay={180}>
+            <Grid cols="1fr 1fr 1fr 1fr" isMobile={isMobile}>
+              <F label="User">
                 <Inp value={user?.name || ''} readOnly />
-              </Field>
-              <Field label="Divisi *">
+              </F>
+              <F label="Divisi" required>
                 <Sel name="division" value={formData.division} onChange={hChange} required>
-                  <option value="">-- Pilih --</option>
-                  {masterData.divisions.map((d, i) => <option key={i} value={d.name}>{d.name}</option>)}
+                  <option value="">— Pilih Divisi —</option>
+                  {masterData.divisions.map((d, i) => (
+                    <option key={i} value={d.name}>{d.name}</option>
+                  ))}
                 </Sel>
-              </Field>
-              <Field label="Tanggal Dokumen *">
-                <DateInputField
-                  name="doc_date"
-                  value={formData.doc_date}
+              </F>
+              <F label="Tanggal Dokumen" required>
+                <DatePicker name="doc_date" value={formData.doc_date} onChange={hChange} required />
+              </F>
+              <F label="Klasifikasi">
+                <Inp
+                  type="text"
+                  name="klasifikasi"
+                  value={formData.klasifikasi}
                   onChange={hChange}
-                  required
+                  placeholder="Surat Edaran..."
                 />
-              </Field>
-              <Field label="Klasifikasi">
-                <Inp type="text" name="klasifikasi" value={formData.klasifikasi} onChange={hChange} placeholder="Surat Edaran..." style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }} />
-              </Field>
-            </ResponsiveGrid>
-          </div>
+              </F>
+            </Grid>
+          </Section>
 
-          <div style={sectionStyle(390)}>
-            <Divider label="Detail Dokumen" />
-          </div>
-          <div style={sectionStyle(440)}>
-            <ResponsiveGrid isMobile={isMobile} columns="1fr 1fr">
-              <Field label="Perihal">
-                <Inp type="text" name="perihal" value={formData.perihal} onChange={hChange} placeholder="Deskripsi perihal..." style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }} />
-              </Field>
-              <Field label="Di Tanda Tangani Oleh">
-                <Inp type="text" name="signed_by" value={formData.signed_by} onChange={hChange} placeholder="Nama penandatangan" style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }} />
-              </Field>
-              <Field label="Link Dokumen">
-                <Inp type="text" name="link_document" value={formData.link_document} onChange={hChange} placeholder="https://..." style={{ boxShadow: '0 1px 0 rgba(255,255,255,0.7) inset' }} />
-              </Field>
-              <Field label="Keterangan">
-                <textarea
-                  name="keterangan"
-                  value={formData.keterangan}
-                  onChange={hChange}
-                  placeholder="Catatan opsional..."
-                  rows={isMobile ? 3 : 2}
-                  style={textareaStyle}
-                  onFocus={e => {
-                    e.target.style.borderColor = token.blueMid;
-                    e.target.style.boxShadow = '0 0 0 4px rgba(45,74,140,0.10)';
-                    e.target.style.transform = 'translateY(-1px)';
-                  }}
-                  onBlur={e => {
-                    e.target.style.borderColor = token.border;
-                    e.target.style.boxShadow = '0 1px 0 rgba(255,255,255,0.65) inset';
-                    e.target.style.transform = 'translateY(0)';
-                  }}
-                />
-              </Field>
-            </ResponsiveGrid>
-          </div>
+          {/* ── Detail ── */}
+          <Section icon={AlignLeft} label="Detail Dokumen" accent="#f59e0b" delay={240}>
+            <Grid cols="1fr 1fr" isMobile={isMobile}>
+              <F label="Perihal">
+                <Inp type="text" name="perihal" value={formData.perihal} onChange={hChange} placeholder="Perihal dokumen..." />
+              </F>
+              <F label="Ditandatangani Oleh">
+                <Inp type="text" name="signed_by" value={formData.signed_by} onChange={hChange} placeholder="Nama penandatangan" />
+              </F>
+              <F label="Link Dokumen">
+                <Inp type="text" name="link_document" value={formData.link_document} onChange={hChange} placeholder="https://..." />
+              </F>
+              <F label="Keterangan">
+                <Textarea name="keterangan" value={formData.keterangan} onChange={hChange} placeholder="Catatan opsional..." rows={2} />
+              </F>
+            </Grid>
+          </Section>
 
-          <div style={{ ...sectionStyle(510), marginTop: '2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-            {generatedDoc ? (
-              <div style={{
-                background: 'linear-gradient(145deg, rgba(233,240,255,0.88) 0%, rgba(248,250,255,0.96) 100%)',
-                border: `1px solid rgba(26,42,87,0.12)`,
-                borderRadius: '1rem',
-                padding: isMobile ? '1.25rem 1rem' : '1.5rem',
-                width: '100%',
-                textAlign: 'center',
-                boxShadow: '0 20px 40px rgba(26, 42, 87, 0.10)',
-                position: 'relative',
-                overflow: 'hidden',
-                animation: `formFadeUp 720ms ${ANIMATION_EASE} both`,
-              }}>
-                <div style={{
-                  position: 'absolute',
-                  inset: 'auto -20% -55% auto',
-                  width: isMobile ? '180px' : '240px',
-                  height: isMobile ? '180px' : '240px',
-                  borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(45,74,140,0.14) 0%, rgba(45,74,140,0) 72%)',
-                  animationName: 'formFloat, formPulse',
-                  animationDuration: '9000ms, 7600ms',
-                  animationTimingFunction: 'ease-in-out, ease-in-out',
-                  animationIterationCount: 'infinite, infinite',
-                }} />
-                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: token.muted, display: 'block', marginBottom: '0.5rem', position: 'relative', zIndex: 1 }}>
-                  Nomor Dokumen Berhasil Dibuat:
-                </span>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', marginBottom: '1.5rem', position: 'relative', zIndex: 1 }}>
-                  <span style={{ fontSize: isMobile ? '1.4rem' : '1.75rem', fontWeight: 800, color: token.blue, letterSpacing: '1px', wordBreak: 'break-all', textShadow: '0 10px 24px rgba(26,42,87,0.08)' }}>{generatedDoc.doc_number}</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      navigator.clipboard.writeText(generatedDoc.doc_number);
-                      alert('Nomor disalin!');
-                    }}
-                    style={{
-                      background: 'white',
-                      border: `1px solid ${token.border}`,
-                      borderRadius: '0.7rem',
-                      cursor: 'pointer',
-                      color: token.blue,
-                      display: 'flex',
-                      alignItems: 'center',
-                      padding: '8px',
-                      boxShadow: '0 10px 22px rgba(0,0,0,0.06)',
-                      transition: `transform 180ms ${ANIMATION_EASE}, box-shadow 180ms ${ANIMATION_EASE}`,
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-                      e.currentTarget.style.boxShadow = '0 16px 28px rgba(26,42,87,0.10)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                      e.currentTarget.style.boxShadow = '0 10px 22px rgba(0,0,0,0.06)';
-                    }}
-                    title="Salin Nomor"
-                  >
-                    <Copy size={18} />
-                  </button>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row', position: 'relative', zIndex: 1 }}>
-                  <Btn variant="soft" type="button" onClick={() => startDuplicate(generatedDoc)} style={{ width: isMobile ? '100%' : 'auto', boxShadow: '0 14px 26px rgba(67, 56, 202, 0.10)' }}>
-                    <Copy size={15} /> Duplikat
-                  </Btn>
-                  <Btn variant="success" type="button" onClick={() => hDownload(generatedDoc)} style={{ width: isMobile ? '100%' : 'auto', boxShadow: '0 14px 26px rgba(5, 122, 90, 0.12)' }}>
-                    <Download size={15} /> Download .docx
-                  </Btn>
-                  <Btn variant="primary" type="submit" disabled={loading} style={{ width: isMobile ? '100%' : 'auto', boxShadow: '0 18px 32px rgba(26, 42, 87, 0.18)' }}>
-                    {loading ? <RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <><Save size={18} /> Simpan Perubahan</>}
-                  </Btn>
-                  <Btn variant="ghost" type="button" onClick={resetForm} style={{ width: isMobile ? '100%' : 'auto', boxShadow: '0 12px 24px rgba(26, 42, 87, 0.06)' }}>
-                    <Plus size={15} /> Buat Baru
-                  </Btn>
-                </div>
-              </div>
-            ) : (
-              <Btn
-                variant="primary"
+          {/* ── Result / Submit ── */}
+          {generatedDoc ? (
+            <ResultBanner
+              doc={generatedDoc}
+              isMobile={isMobile}
+              loading={loading}
+              onCopy={copyDocNumber}
+              onDownload={() => hDownload(generatedDoc)}
+              onDuplicate={() => startDuplicate(generatedDoc)}
+              onSave={hSubmit}
+              onNew={resetForm}
+            />
+          ) : (
+            <div style={{ animation: `fUp 600ms ${EASE} both`, animationDelay: '280ms', display: 'flex', justifyContent: isMobile ? 'stretch' : 'flex-end' }}>
+              <button
                 type="submit"
                 disabled={loading}
-                onMouseEnter={() => setHoveredAction(true)}
-                onMouseLeave={() => setHoveredAction(false)}
                 style={{
-                  padding: '0.8rem 2.5rem',
-                  fontSize: '1rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 2rem',
+                  fontSize: '0.9rem',
+                  fontWeight: 700,
+                  borderRadius: '0.7rem',
+                  border: 'none',
+                  background: `linear-gradient(135deg, ${token.blue} 0%, ${token.blueMid} 100%)`,
+                  color: '#fff',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                  boxShadow: '0 8px 24px rgba(26,42,87,0.22)',
+                  fontFamily: 'inherit',
+                  transition: `transform 150ms ${EASE}, box-shadow 150ms ${EASE}`,
                   width: isMobile ? '100%' : 'auto',
-                  boxShadow: hoveredAction
-                    ? '0 24px 44px rgba(26, 42, 87, 0.24)'
-                    : '0 18px 34px rgba(26, 42, 87, 0.18)',
-                  transform: hoveredAction ? 'translateY(-2px) scale(1.01)' : 'translateY(0) scale(1)',
-                  transition: `transform 180ms ${ANIMATION_EASE}, box-shadow 180ms ${ANIMATION_EASE}`,
+                  justifyContent: 'center',
                 }}
+                onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 32px rgba(26,42,87,0.28)'; } }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(26,42,87,0.22)'; }}
               >
-                {loading ? <RefreshCw size={20} style={{ animation: 'spin 1s linear infinite' }} /> : (editingDoc ? <><Save size={18} /> Simpan Perubahan</> : <><Plus size={20} /> Generate Nomor Baru</>)}
-              </Btn>
-            )}
+                {loading
+                  ? <><RefreshCw size={18} style={{ animation: 'spin 1s linear infinite' }} /> Memproses...</>
+                  : editingDoc
+                    ? <><Save size={18} /> Simpan Perubahan</>
+                    : <><Plus size={18} /> Generate Nomor</>
+                }
+              </button>
+            </div>
+          )}
 
-            {!generatedDoc && editingDoc && (
-              <p style={{ fontSize: '0.85rem', color: token.muted, animation: `formFadeUp 720ms ${ANIMATION_EASE} both`, animationDelay: '560ms' }}>
-                Mengedit dokumen: <b>{editingDoc.doc_number}</b>
-              </p>
-            )}
-          </div>
         </form>
       </div>
     </div>
   );
 }
-
-export default FormView;

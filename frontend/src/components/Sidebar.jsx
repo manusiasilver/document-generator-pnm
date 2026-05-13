@@ -98,7 +98,7 @@ function Sidebar({
           data-tooltip={collapsed ? 'Pilar Group' : undefined}
         >
           <ArrowLeft className="nav-icon" size={22} />
-          <span className="nav-text">Pilar Group</span>
+          <span className="nav-text">Pilargroup</span>
         </a>
 
         {!collapsed ? (
