@@ -560,17 +560,13 @@ function HistoryView({
 
   return (
     <div style={{
-      position: isMobile ? 'static' : 'fixed',
-      top: isMobile ? 'auto' : '170px',
-      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
-      right: 0,
-      bottom: isMobile ? 'auto' : 0,
+      position: 'relative',
+      height: isMobile ? 'auto' : '100%',
       padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
       overflow: isMobile ? 'visible' : 'hidden',
-      background: 'transparent',
     }}>
       {editDoc && (
         <EditModal
@@ -612,7 +608,7 @@ function HistoryView({
               onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
               style={{ height: '2.1rem', padding: '0 1.8rem 0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
             >
-              {[10,25,50,75,100].map(n => <option key={n} value={n}>{n} / hal</option>)}
+              {[10,25,50,75,100].map(n => <option key={n} value={n}>{n}</option>)}
             </select>
             {/* Reset — clears all filters including search+date in header */}
             {(searchTerm || searchDate || searchIntExt) && (

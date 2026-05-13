@@ -191,17 +191,11 @@ export default function FormView({
 
   return (
     <div style={{
-      ...(isMobile ? {} : {}),
-      position: isMobile ? 'static' : 'fixed',
-      top: isMobile ? 'auto' : '170px',
-      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
-      right: 0,
-      bottom: isMobile ? 'auto' : 0,
-      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      padding: isMobile ? '0.5rem 0' : '0',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflowY: 'auto',
+      minHeight: '100%',
     }}>
       <style>{`
         @keyframes fUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }

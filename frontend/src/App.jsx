@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
+import { Search, CalendarDays } from 'lucide-react'
 import Header from './components/Header.jsx'
 import Sidebar from './components/Sidebar.jsx'
 import BackgroundMain from './components/BackgroundMain.jsx'
@@ -42,6 +43,15 @@ function App() {
   const [showNote, setShowNote] = useState(false)
 
   const fileInputRef = useRef(null)
+  const headerDateRef = useRef(null)
+
+  const formatHeaderDate = (dateStr) => {
+    try {
+      return new Intl.DateTimeFormat('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(dateStr + 'T00:00:00'))
+    } catch {
+      return dateStr
+    }
+  }
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [searchTerm, setSearchTerm] = useState('')
@@ -284,41 +294,57 @@ function App() {
           toolbarSlot={
             activePage === 'history' ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <input
-                  type="search"
-                  value={searchTerm}
-                  placeholder="Cari dokumen..."
-                  onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                  autoComplete="off"
-                  style={{
-                    height: '32px', padding: '0 0.65rem',
-                    fontSize: '0.78rem',
-                    background: 'rgba(255,255,255,0.1)',
-                    border: '1px solid rgba(255,255,255,0.18)',
-                    borderRadius: '8px',
-                    color: 'rgba(255,255,255,0.92)',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                    width: '150px',
-                  }}
-                />
-                <input
-                  type="date"
-                  value={searchDate}
-                  onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
-                  style={{
-                    height: '32px', padding: '0 0.65rem',
+                {/* Search with icon */}
+                <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+                  <Search size={13} style={{ position: 'absolute', left: '0.5rem', color: 'rgba(255,255,255,0.55)', pointerEvents: 'none' }} />
+                  <input
+                    type="search"
+                    value={searchTerm}
+                    placeholder="Cari dokumen..."
+                    onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                    autoComplete="off"
+                    style={{
+                      height: '32px', paddingLeft: '1.75rem', paddingRight: '0.65rem',
+                      fontSize: '0.78rem',
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.18)',
+                      borderRadius: '8px',
+                      color: 'rgba(255,255,255,0.92)',
+                      outline: 'none',
+                      fontFamily: 'inherit',
+                      width: '150px',
+                    }}
+                  />
+                </div>
+                {/* Styled date picker */}
+                <div
+                  style={{ position: 'relative', cursor: 'pointer', flexShrink: 0 }}
+                  onClick={() => headerDateRef.current?.showPicker?.()}
+                >
+                  <div style={{
+                    height: '32px', display: 'flex', alignItems: 'center', gap: '0.4rem',
+                    paddingLeft: '0.55rem', paddingRight: '0.65rem',
                     fontSize: '0.78rem',
                     background: 'rgba(255,255,255,0.1)',
                     border: '1px solid rgba(255,255,255,0.18)',
                     borderRadius: '8px',
                     color: searchDate ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.45)',
-                    outline: 'none',
-                    fontFamily: 'inherit',
-                    cursor: 'pointer',
-                    colorScheme: 'dark',
-                  }}
-                />
+                    whiteSpace: 'nowrap',
+                    userSelect: 'none',
+                    pointerEvents: 'none',
+                    minWidth: '120px',
+                  }}>
+                    <CalendarDays size={12} style={{ color: 'rgba(255,255,255,0.55)', flexShrink: 0 }} />
+                    {searchDate ? formatHeaderDate(searchDate) : 'Filter Tanggal'}
+                  </div>
+                  <input
+                    ref={headerDateRef}
+                    type="date"
+                    value={searchDate}
+                    onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+                    style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', border: 'none' }}
+                  />
+                </div>
               </div>
             ) : null
           }
@@ -330,10 +356,11 @@ function App() {
           style={{
             position: 'relative',
             minHeight: 0,
+            ...(activePage === 'history' ? { overflowY: 'hidden', padding: 0 } : {}),
           }}
         >
           <BackgroundMain position="absolute" zIndex={0} />
-          <div style={{ position: 'relative', zIndex: 1, minHeight: '100%' }}>
+          <div style={{ position: 'relative', zIndex: 1, ...(activePage === 'history' ? { height: '100%' } : { minHeight: '100%' }) }}>
             {activePage === 'templates' && (
               <TemplatesView
                 templates={templates}
