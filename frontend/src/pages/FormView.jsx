@@ -194,7 +194,7 @@ export default function FormView({
     <div style={{
       ...(isMobile ? {} : {}),
       position: isMobile ? 'static' : 'fixed',
-      top: isMobile ? 'auto' : '80px',
+      top: isMobile ? 'auto' : '170px',
       left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
       right: 0,
       bottom: isMobile ? 'auto' : 0,
