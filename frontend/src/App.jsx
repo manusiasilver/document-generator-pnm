@@ -281,7 +281,47 @@ function App() {
               ? { show: true, label: 'Batal Edit', onClick: resetForm }
               : undefined
           }
-          toolbarSlot={null}
+          toolbarSlot={
+            activePage === 'history' ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <input
+                  type="search"
+                  value={searchTerm}
+                  placeholder="Cari dokumen..."
+                  onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                  autoComplete="off"
+                  style={{
+                    height: '32px', padding: '0 0.65rem',
+                    fontSize: '0.78rem',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    borderRadius: '8px',
+                    color: 'rgba(255,255,255,0.92)',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    width: '150px',
+                  }}
+                />
+                <input
+                  type="date"
+                  value={searchDate}
+                  onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+                  style={{
+                    height: '32px', padding: '0 0.65rem',
+                    fontSize: '0.78rem',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.18)',
+                    borderRadius: '8px',
+                    color: searchDate ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.45)',
+                    outline: 'none',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                    colorScheme: 'dark',
+                  }}
+                />
+              </div>
+            ) : null
+          }
           onLogout={logout}
           userName={user?.name}
         />

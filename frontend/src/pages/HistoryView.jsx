@@ -596,19 +596,6 @@ function HistoryView({
         {/* ── Filter Bar ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', flex: 1 }}>
-            {/* Search */}
-            <div style={{ position: 'relative', minWidth: 160, flex: '1 1 160px', maxWidth: 220 }}>
-              <input
-                type="search"
-                value={searchTerm}
-                placeholder="Cari dokumen..."
-                onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                autoComplete="off"
-                style={{ width: '100%', height: '2.1rem', padding: '0 0.75rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', boxSizing: 'border-box' }}
-                onFocus={e => e.target.style.borderColor = token.blueMid}
-                onBlur={e => e.target.style.borderColor = token.border}
-              />
-            </div>
             {/* Int/Ext */}
             <select
               value={searchIntExt}
@@ -619,13 +606,6 @@ function HistoryView({
               <option value="Internal">Internal</option>
               <option value="External">External</option>
             </select>
-            {/* Date */}
-            <input
-              type="date"
-              value={searchDate}
-              onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
-              style={{ height: '2.1rem', padding: '0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: searchDate ? token.text : '#94a3b8', background: '#fff', cursor: 'pointer' }}
-            />
             {/* Page size */}
             <select
               value={pageSize}
@@ -634,7 +614,7 @@ function HistoryView({
             >
               {[10,25,50,75,100].map(n => <option key={n} value={n}>{n} / hal</option>)}
             </select>
-            {/* Reset */}
+            {/* Reset — clears all filters including search+date in header */}
             {(searchTerm || searchDate || searchIntExt) && (
               <button
                 type="button"

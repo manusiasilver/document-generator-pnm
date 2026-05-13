@@ -111,7 +111,6 @@ function SectionDivider({ icon: Icon, label, accent }) {
         <Icon size={13} color={accent} />
       </div>
       <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#475569', whiteSpace: 'nowrap' }}>{label}</span>
-      <div style={{ flex: 1, height: '1px', background: '#f1f5f9' }} />
     </div>
   );
 }
