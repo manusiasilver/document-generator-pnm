@@ -560,17 +560,16 @@ function HistoryView({
 
   return (
     <div style={{
-      position: 'fixed',
-      top: isMobile ? '142px' : '170px',
-      left: isMobile ? '0' : 'calc(var(--sidebar-current-width, 280px) + 0px)',
-      width: isMobile ? '100%' : 'auto',
+      position: isMobile ? 'static' : 'fixed',
+      top: isMobile ? 'auto' : '170px',
+      left: isMobile ? 'auto' : 'calc(var(--sidebar-current-width, 280px))',
       right: 0,
-      bottom: 0,
-      padding: isMobile ? '0.9rem 0.75rem calc(1rem + env(safe-area-inset-bottom, 0px))' : '0.75rem 1.5rem',
+      bottom: isMobile ? 'auto' : 0,
+      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflow: isMobile ? 'auto' : 'hidden',
+      overflow: isMobile ? 'visible' : 'hidden',
       background: 'transparent',
     }}>
       {editDoc && (
@@ -592,18 +591,76 @@ function HistoryView({
         />
       )}
 
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '1rem' : '1rem', flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
-        <div style={{ display: 'flex', alignItems: isMobile ? 'flex-start' : 'center', justifyContent: 'space-between', gap: '0.65rem', flexWrap: 'wrap', marginBottom: '1.1rem', flexDirection: isMobile ? 'column' : 'row' }}>
-          <h1 style={{ fontSize: '1.35rem', fontWeight: 800, color: token.blue, margin: 0 }}>
-            Riwayat Dokumen
-          </h1>
-          <span style={{
-            fontSize: '0.72rem', fontWeight: 700, color: token.muted,
-            background: 'rgba(26,42,87,0.07)', border: `1px solid ${token.border}`,
-            padding: '0.22rem 0.65rem', borderRadius: '999px',
-          }}>
-            {filtered.length} dokumen
-          </span>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: '1rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden' }}>
+
+        {/* ── Filter Bar ── */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', flex: 1 }}>
+            {/* Search */}
+            <div style={{ position: 'relative', minWidth: 160, flex: '1 1 160px', maxWidth: 220 }}>
+              <input
+                type="search"
+                value={searchTerm}
+                placeholder="Cari dokumen..."
+                onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                autoComplete="off"
+                style={{ width: '100%', height: '2.1rem', padding: '0 0.75rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', boxSizing: 'border-box' }}
+                onFocus={e => e.target.style.borderColor = token.blueMid}
+                onBlur={e => e.target.style.borderColor = token.border}
+              />
+            </div>
+            {/* Int/Ext */}
+            <select
+              value={searchIntExt}
+              onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
+              style={{ height: '2.1rem', padding: '0 1.8rem 0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
+            >
+              <option value="">Semua</option>
+              <option value="Internal">Internal</option>
+              <option value="External">External</option>
+            </select>
+            {/* Date */}
+            <input
+              type="date"
+              value={searchDate}
+              onChange={e => { setSearchDate(e.target.value); setCurrentPage(1); }}
+              style={{ height: '2.1rem', padding: '0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: searchDate ? token.text : '#94a3b8', background: '#fff', cursor: 'pointer' }}
+            />
+            {/* Page size */}
+            <select
+              value={pageSize}
+              onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+              style={{ height: '2.1rem', padding: '0 1.8rem 0 0.65rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
+            >
+              {[10,25,50,75,100].map(n => <option key={n} value={n}>{n} / hal</option>)}
+            </select>
+            {/* Reset */}
+            {(searchTerm || searchDate || searchIntExt) && (
+              <button
+                type="button"
+                onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
+                title="Reset Filter"
+                style={{ height: '2.1rem', padding: '0 0.65rem', fontSize: '0.82rem', fontWeight: 600, border: '1px solid rgba(239,68,68,0.3)', borderRadius: '0.5rem', background: 'rgba(239,68,68,0.07)', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+              >
+                <X size={13} /> Reset
+              </button>
+            )}
+          </div>
+          {/* Right: count + refresh */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: token.muted, background: 'rgba(26,42,87,0.07)', border: `1px solid ${token.border}`, padding: '0.22rem 0.65rem', borderRadius: '999px', whiteSpace: 'nowrap' }}>
+              {filtered.length} dokumen
+            </span>
+            <button
+              type="button"
+              onClick={fetchData}
+              disabled={tableLoading}
+              title="Refresh"
+              style={{ height: '2.1rem', width: '2.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${token.border}`, borderRadius: '0.5rem', background: '#fff', cursor: tableLoading ? 'not-allowed' : 'pointer', color: token.muted, flexShrink: 0 }}
+            >
+              <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
+            </button>
+          </div>
         </div>
 
         {isMobile ? (
