@@ -138,12 +138,12 @@ function TemplatesView({
   return (
     <div style={{
       position: 'relative',
-      height: '100%',
-      padding: isMobile ? '0.75rem' : '0.75rem 1.5rem',
+      height: isMobile ? 'auto' : '100%',
+      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflow: 'hidden',
+      overflow: isMobile ? 'visible' : 'hidden',
     }}>
 
       {showNote && <NoteModal onClose={() => setShowNote(false)} isMobile={isMobile} />}
@@ -152,11 +152,11 @@ function TemplatesView({
         ...card,
         padding: isMobile ? '1rem' : '1.5rem',
         borderRadius: '1rem',
-        flex: 1,
+        flex: isMobile ? '0 0 auto' : 1,
         display: 'flex',
         flexDirection: 'column',
-        minHeight: 0,
-        overflow: 'hidden',
+        minHeight: isMobile ? 'auto' : 0,
+        overflow: isMobile ? 'visible' : 'hidden',
       }}>
 
         {/* ── Header ── */}
