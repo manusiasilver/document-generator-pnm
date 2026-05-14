@@ -19,26 +19,45 @@ function NoteModal({ onClose, isMobile }) {
       />
       <div style={{
         position: 'fixed',
-        top: isMobile ? 'max(12px, env(safe-area-inset-top, 0px))' : '50%',
-        left: '50%',
-        transform: isMobile ? 'translateX(-50%)' : 'translate(-50%, -50%)',
+        ...(isMobile ? {
+          bottom: 0,
+          left: 0,
+          right: 0,
+          top: 'auto',
+          transform: 'none',
+          width: '100%',
+          maxWidth: '100%',
+          maxHeight: '85dvh',
+          borderRadius: '1.25rem 1.25rem 0 0',
+        } : {
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '92vw',
+          maxWidth: '560px',
+          maxHeight: '88vh',
+          borderRadius: '1.1rem',
+        }),
         zIndex: 9001,
-        width: isMobile ? 'calc(100vw - 24px)' : '92vw',
-        maxWidth: '560px',
-        maxHeight: isMobile ? 'calc(100dvh - 24px)' : '88vh',
         overflowY: 'auto',
         background: 'linear-gradient(135deg, #fffbeb 0%, #fefce8 100%)',
-        borderRadius: '1.1rem',
         border: '1.5px solid #fde68a',
-        boxShadow: '0 30px 80px rgba(15,23,42,0.2)',
+        boxShadow: '0 -8px 40px rgba(15,23,42,0.18)',
       }}>
+        {/* Drag handle (mobile only) */}
+        {isMobile && (
+          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '0.65rem', paddingBottom: '0.25rem', flexShrink: 0 }}>
+            <div style={{ width: 36, height: 4, borderRadius: 999, background: 'rgba(180,83,9,0.25)' }} />
+          </div>
+        )}
+
         {/* Modal Header */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
           padding: '1.1rem 1.25rem', borderBottom: '1px solid #fde68a',
           position: 'sticky', top: 0,
           background: 'linear-gradient(135deg, #fffbeb 0%, #fefce8 100%)',
-          zIndex: 1, borderRadius: '1.1rem 1.1rem 0 0',
+          zIndex: 1, borderRadius: isMobile ? 0 : '1.1rem 1.1rem 0 0',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
             <div style={{ width: 28, height: 28, borderRadius: '0.4rem', background: 'rgba(180,83,9,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -119,12 +138,12 @@ function TemplatesView({
   return (
     <div style={{
       position: 'relative',
-      height: isMobile ? 'auto' : '100%',
-      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      height: '100%',
+      padding: isMobile ? '0.75rem' : '0.75rem 1.5rem',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflow: isMobile ? 'visible' : 'hidden',
+      overflow: 'hidden',
     }}>
 
       {showNote && <NoteModal onClose={() => setShowNote(false)} isMobile={isMobile} />}
@@ -133,11 +152,11 @@ function TemplatesView({
         ...card,
         padding: isMobile ? '1rem' : '1.5rem',
         borderRadius: '1rem',
-        flex: isMobile ? '0 0 auto' : 1,
+        flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        minHeight: isMobile ? 'auto' : 0,
-        overflow: isMobile ? 'visible' : 'hidden',
+        minHeight: 0,
+        overflow: 'hidden',
       }}>
 
         {/* ── Header ── */}
