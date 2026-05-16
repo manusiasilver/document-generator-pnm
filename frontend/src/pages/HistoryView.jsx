@@ -452,10 +452,10 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
 }
 
 const tableHeaderCellStyle = {
-  padding: '0.9rem 1rem',
+  padding: '1rem 1.15rem',
   textAlign: 'left',
   fontWeight: 700,
-  fontSize: '0.68rem',
+  fontSize: '0.66rem',
   letterSpacing: '0.09em',
   textTransform: 'uppercase',
   color: token.muted,
@@ -464,14 +464,14 @@ const tableHeaderCellStyle = {
 };
 
 const tableBodyCellStyle = {
-  padding: '1rem',
+  padding: '1rem 1.15rem',
   verticalAlign: 'top',
   borderBottom: `1px solid ${token.border}`,
 };
 
 const tableBodyCellComfortStyle = {
   ...tableBodyCellStyle,
-  padding: '0.95rem 1rem',
+  padding: '1rem 1.15rem',
 };
 
 const tableLabelStyle = {
@@ -483,17 +483,17 @@ const tableLabelStyle = {
 };
 
 const tablePrimaryTextStyle = {
-  fontSize: '0.86rem',
+  fontSize: '0.82rem',
   color: token.text,
   fontWeight: 500,
-  lineHeight: 1.45,
+  lineHeight: 1.55,
 };
 
 const tableSecondaryTextStyle = {
-  fontSize: '0.86rem',
-  color: token.text,
+  fontSize: '0.8rem',
+  color: '#51627f',
   fontWeight: 500,
-  lineHeight: 1.45,
+  lineHeight: 1.55,
 };
 
 const clampTwoLinesStyle = {
@@ -727,18 +727,18 @@ function HistoryView({
             </div>
           </div>
         ) : (
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', borderRadius: '1rem', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
-            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '0.45rem', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', borderRadius: '1rem', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
+            <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.845rem', tableLayout: 'fixed', background: '#fff', borderRadius: '0.85rem', overflow: 'hidden' }}>
               <colgroup>
-                <col style={{ width: '4%' }} />
-                <col style={{ width: '7%' }} />
-                <col style={{ width: '17%' }} />
-                <col style={{ width: '22%' }} />
-                <col style={{ width: '9%' }} />
-                <col style={{ width: '11%' }} />
-                <col style={{ width: '12%' }} />
+                <col style={{ width: '5%' }} />
                 <col style={{ width: '8%' }} />
+                <col style={{ width: '19%' }} />
+                <col style={{ width: '20%' }} />
                 <col style={{ width: '10%' }} />
+                <col style={{ width: '12%' }} />
+                <col style={{ width: '13%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '6%' }} />
               </colgroup>
               <thead style={{ position: 'sticky', top: 0, zIndex: 2 }}>
                 <tr>
@@ -763,25 +763,25 @@ function HistoryView({
                   return (
                     <React.Fragment key={doc.id}>
                       <tr
-                        style={{ transition: 'background 0.15s ease', cursor: 'pointer', background: isExpanded ? 'rgba(26,42,87,0.025)' : 'transparent' }}
-                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,42,87,0.04)'; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = isExpanded ? 'rgba(26,42,87,0.025)' : 'transparent'; }}
+                        style={{ transition: 'background 0.15s ease', cursor: 'pointer', background: isExpanded ? 'rgba(26,42,87,0.018)' : 'transparent' }}
+                        onMouseEnter={e => { e.currentTarget.style.background = 'rgba(26,42,87,0.03)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = isExpanded ? 'rgba(26,42,87,0.018)' : 'transparent'; }}
                         onClick={() => toggleRow(doc.id)}
                       >
-                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle', textAlign: 'center', padding: '0.75rem 0.45rem' }}>
+                        <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle', textAlign: 'center', padding: '0.9rem 0.55rem' }}>
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.18rem' }}>
                             <span style={{ fontSize: '0.72rem', color: token.muted, fontWeight: 700, lineHeight: 1 }}>{(currentPage - 1) * pageSize + idx + 1}</span>
                             <ChevronDown size={12} style={{ color: token.muted, transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
                           </div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle', textAlign: 'center' }}>
-                          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.18rem 0.5rem', borderRadius: '999px', fontSize: '0.67rem', fontWeight: 700, whiteSpace: 'nowrap', display: 'inline-block' }}>
+                          <span style={{ ...(badgeStyles[doc.company] || badgeStyles.PKP), padding: '0.24rem 0.58rem', borderRadius: '999px', fontSize: '0.66rem', fontWeight: 700, whiteSpace: 'nowrap', display: 'inline-block' }}>
                             {doc.company}
                           </span>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle, display: 'flex', alignItems: 'flex-start', gap: '0.4rem', minWidth: 0 }}>
-                            <span style={{ flex: 1, lineHeight: 1.5, fontWeight: 700, wordBreak: 'break-word' }}>{doc.doc_number}</span>
+                          <div style={{ ...tablePrimaryTextStyle, display: 'flex', alignItems: 'flex-start', gap: '0.5rem', minWidth: 0 }}>
+                            <span style={{ flex: 1, lineHeight: 1.55, fontWeight: 700, wordBreak: 'break-word' }}>{doc.doc_number}</span>
                             <button
                               onClick={e => { e.stopPropagation(); navigator.clipboard.writeText(doc.doc_number); alert('Nomor disalin!'); }}
                               style={{ background: 'none', border: 'none', cursor: 'pointer', color: token.muted, display: 'flex', alignItems: 'center', padding: '0.15rem 0', flex: '0 0 auto' }}
@@ -794,29 +794,29 @@ function HistoryView({
                           </div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle, ...clampThreeLinesStyle, fontWeight: 600 }}>{dash(doc.judul_dokumen)}</div>
+                          <div style={{ ...tablePrimaryTextStyle, ...clampTwoLinesStyle, fontWeight: 600 }}>{dash(doc.judul_dokumen)}</div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
                           <div style={{ ...tablePrimaryTextStyle, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{formatDate(doc.doc_date)}</div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tablePrimaryTextStyle, ...clampThreeLinesStyle }}>{dash(doc.user_name)}</div>
+                          <div style={{ ...tablePrimaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.user_name)}</div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
-                          <div style={{ ...tableSecondaryTextStyle, ...clampThreeLinesStyle }}>{dash(doc.division)}</div>
+                          <div style={{ ...tableSecondaryTextStyle, ...clampTwoLinesStyle }}>{dash(doc.division)}</div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }}>
                           <div style={{ ...tablePrimaryTextStyle, whiteSpace: 'nowrap' }}>{dash(doc.internal_external)}</div>
                         </td>
                         <td style={{ ...tableBodyCellComfortStyle, verticalAlign: 'middle' }} onClick={e => e.stopPropagation()}>
-                          <div style={{ display: 'flex', flexDirection: 'row', gap: '0.35rem', alignItems: 'center', justifyContent: 'flex-start' }}>
-                            <Btn variant="soft" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
+                          <div style={{ display: 'flex', flexDirection: 'row', gap: '0.45rem', alignItems: 'center', justifyContent: 'flex-start' }}>
+                            <Btn variant="soft" style={{ padding: '0.46rem', justifyContent: 'center', flex: '0 0 auto', minWidth: '2rem' }} onClick={() => setDuplicateDoc(doc)} title="Duplikat">
                               <Copy size={13} />
                             </Btn>
-                            <Btn variant="ghost" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => setEditDoc(doc)} title="Edit">
+                            <Btn variant="ghost" style={{ padding: '0.46rem', justifyContent: 'center', flex: '0 0 auto', minWidth: '2rem' }} onClick={() => setEditDoc(doc)} title="Edit">
                               <Edit size={13} />
                             </Btn>
-                            <Btn variant="success" style={{ padding: '0.42rem', justifyContent: 'center', flex: '0 0 auto' }} onClick={() => hDownload(doc)} title="Unduh">
+                            <Btn variant="success" style={{ padding: '0.46rem', justifyContent: 'center', flex: '0 0 auto', minWidth: '2rem' }} onClick={() => hDownload(doc)} title="Unduh">
                               <Download size={13} />
                             </Btn>
                           </div>
@@ -824,8 +824,8 @@ function HistoryView({
                       </tr>
                       {isExpanded && (
                         <tr>
-                          <td colSpan={9} style={{ padding: '0 0.9rem 1rem', borderBottom: `1px solid ${token.border}`, background: 'rgba(248,250,252,0.72)' }}>
-                            <div style={{ padding: '0.95rem 1.1rem', borderRadius: '0.85rem', background: token.surface, border: `1px solid ${token.border}`, display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '0.9rem 1.3rem' }}>
+                          <td colSpan={9} style={{ padding: '0 1rem 1rem', borderBottom: `1px solid ${token.border}`, background: 'rgba(248,250,252,0.62)' }}>
+                            <div style={{ padding: '1.1rem 1.2rem', borderRadius: '0.95rem', background: 'linear-gradient(180deg, #ffffff 0%, #f8fafc 100%)', border: `1px solid ${token.border}`, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '1rem 1.6rem' }}>
                               <InfoPair label="Klasifikasi" value={doc.klasifikasi} muted full />
                               <InfoPair label="Penandatangan" value={doc.signed_by} full />
                               <div style={{ minWidth: 0 }}>
@@ -837,7 +837,7 @@ function HistoryView({
                                   : <div style={{ ...tableSecondaryTextStyle, marginTop: '0.2rem' }}>-</div>
                                 }
                               </div>
-                              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '0.9rem 1.3rem' }}>
+                              <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '1rem 1.6rem', paddingTop: '0.15rem', borderTop: '1px solid rgba(26,42,87,0.06)' }}>
                                 <InfoPair label="Perihal" value={doc.perihal} full />
                                 <InfoPair label="Keterangan" value={doc.keterangan} muted full />
                               </div>

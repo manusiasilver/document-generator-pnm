@@ -9,34 +9,38 @@ import { useAuth } from '../context/AuthContext';
 const MOBILE_BP = 768;
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 const MOBILE_INPUT_FONT_SIZE = '16px';
+const FIELD_HEIGHT = '2.75rem';
+const FIELD_PADDING_X = '0.95rem';
+const FIELD_BORDER_COLOR = 'rgba(26,42,87,0.10)';
+const FIELD_SHADOW = '0 8px 18px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.75)';
 
 /* ─── Primitives ─────────────────────────────────────────────── */
 
 const baseInp = {
   width: '100%',
-  height: '2.5rem',
-  padding: '0 0.8rem',
+  height: FIELD_HEIGHT,
+  padding: `0 ${FIELD_PADDING_X}`,
   fontSize: '0.875rem',
   color: token.text,
   background: 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)',
-  border: '1px solid rgba(26,42,87,0.12)',
+  border: `1px solid ${FIELD_BORDER_COLOR}`,
   borderRadius: '0.9rem',
   outline: 'none',
   fontFamily: 'inherit',
   transition: `border-color 150ms ${EASE}, box-shadow 150ms ${EASE}, background 150ms ${EASE}`,
   boxSizing: 'border-box',
-  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
+  boxShadow: FIELD_SHADOW,
 };
 
 function Inp({ readOnly, style, isMobile, ...props }) {
-  const ro = readOnly ? { background: 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)', color: '#7c8aa5', cursor: 'not-allowed', borderColor: 'rgba(26,42,87,0.08)' } : {};
+  const ro = readOnly ? { background: 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)', color: '#7c8aa5', cursor: 'not-allowed', borderColor: 'rgba(26,42,87,0.08)', boxShadow: 'none' } : {};
   return (
     <input
       readOnly={readOnly}
       {...props}
       style={{ ...baseInp, ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null), ...ro, ...style }}
       onFocus={e => { if (!readOnly) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
-      onBlur={e => { e.target.style.borderColor = ro.borderColor || 'rgba(26,42,87,0.12)'; e.target.style.background = ro.background || 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+      onBlur={e => { e.target.style.borderColor = ro.borderColor || FIELD_BORDER_COLOR; e.target.style.background = ro.background || 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = ro.boxShadow || FIELD_SHADOW; }}
     />
   );
 }
@@ -53,18 +57,18 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           cursor: disabled ? 'not-allowed' : 'pointer',
           background: disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)',
           color: disabled ? '#7c8aa5' : token.text,
-          height: '2.75rem',
-          paddingLeft: '0.95rem',
+          height: FIELD_HEIGHT,
+          paddingLeft: FIELD_PADDING_X,
           paddingRight: '3rem',
           appearance: 'none',
           WebkitAppearance: 'none',
           MozAppearance: 'none',
-          borderColor: disabled ? 'rgba(26,42,87,0.08)' : 'rgba(26,42,87,0.10)',
-          boxShadow: disabled ? 'none' : '0 8px 18px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.75)',
+          borderColor: disabled ? 'rgba(26,42,87,0.08)' : FIELD_BORDER_COLOR,
+          boxShadow: disabled ? 'none' : FIELD_SHADOW,
           ...style,
         }}
         onFocus={e => { if (!disabled) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
-        onBlur={e => { e.target.style.borderColor = disabled ? 'rgba(26,42,87,0.08)' : 'rgba(26,42,87,0.10)'; e.target.style.background = disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = disabled ? 'none' : '0 8px 18px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.75)'; }}
+        onBlur={e => { e.target.style.borderColor = disabled ? 'rgba(26,42,87,0.08)' : FIELD_BORDER_COLOR; e.target.style.background = disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = disabled ? 'none' : FIELD_SHADOW; }}
       >
         {children}
       </select>
@@ -118,8 +122,8 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
         style={{
           ...baseInp,
           ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null),
-          height: '2.75rem',
-          paddingLeft: '0.95rem',
+          height: FIELD_HEIGHT,
+          paddingLeft: FIELD_PADDING_X,
           paddingRight: '3.1rem',
           color: value ? token.text : '#94a3b8',
           cursor: 'pointer',
@@ -129,7 +133,7 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
           colorScheme: 'light',
         }}
         onFocus={e => { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; }}
-        onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+        onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = FIELD_SHADOW; }}
         onClick={e => e.currentTarget.showPicker?.()}
       />
       <div

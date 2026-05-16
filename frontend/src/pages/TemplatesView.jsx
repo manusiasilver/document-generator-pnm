@@ -150,7 +150,7 @@ function TemplatesView({
 
       <div style={{
         ...card,
-        padding: isMobile ? '1rem' : '1.5rem',
+        padding: isMobile ? '1rem' : '1.75rem',
         borderRadius: isMobile ? '1rem' : '1.2rem',
         flex: isMobile ? '0 0 auto' : 1,
         display: 'flex',
@@ -163,7 +163,7 @@ function TemplatesView({
       }}>
 
         {/* ── Header ── */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '1.25rem', flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: isMobile ? '1.25rem' : '1.45rem', flexShrink: 0 }}>
           <Btn variant={showNote ? 'primary' : 'ghost'} onClick={() => setShowNote(!showNote)}>
             <StickyNote size={14} /> Petunjuk Tag
           </Btn>
@@ -178,11 +178,11 @@ function TemplatesView({
           style={{
             border: `2px dashed ${dragOver ? token.blueMid : uploadMsg.type === 'ok' ? '#16a34a' : uploadMsg.type === 'err' ? '#dc2626' : 'rgba(26,42,87,0.14)'}`,
             borderRadius: '1.1rem',
-            padding: isMobile ? '1.75rem 1.25rem' : '2.25rem 2rem',
+            padding: isMobile ? '1.75rem 1.25rem' : '2.65rem 2.4rem',
             textAlign: 'center',
             cursor: uploadLoading ? 'wait' : 'pointer',
             background: dragOver ? 'linear-gradient(180deg, rgba(45,74,140,0.06) 0%, rgba(45,74,140,0.02) 100%)' : uploadMsg.type === 'ok' ? 'linear-gradient(180deg, rgba(22,163,74,0.06) 0%, rgba(22,163,74,0.02) 100%)' : uploadMsg.type === 'err' ? 'linear-gradient(180deg, rgba(220,38,38,0.06) 0%, rgba(220,38,38,0.02) 100%)' : 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
-            marginBottom: '1.25rem',
+            marginBottom: isMobile ? '1.25rem' : '1.55rem',
             transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
             flexShrink: 0,
             boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
@@ -192,10 +192,10 @@ function TemplatesView({
         >
           <input ref={fileInputRef} type="file" accept=".docx" style={{ display: 'none' }} onChange={hUpload} />
           <div style={{
-            width: 52, height: 52, borderRadius: '0.875rem',
+            width: 56, height: 56, borderRadius: '1rem',
             background: uploadMsg.type === 'ok' ? 'rgba(22,163,74,0.1)' : uploadMsg.type === 'err' ? 'rgba(220,38,38,0.1)' : 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 1rem',
+            margin: '0 auto 1.1rem',
             transition: 'background 0.2s',
             boxShadow: '0 10px 22px rgba(148,163,184,0.10)',
           }}>
@@ -206,7 +206,7 @@ function TemplatesView({
               : <CloudUpload size={24} style={{ color: token.blueMid }} />
             }
           </div>
-          <p style={{ fontWeight: 700, color: uploadMsg.type === 'ok' ? '#15803d' : uploadMsg.type === 'err' ? '#b91c1c' : token.blue, fontSize: '0.9rem', marginBottom: '0.3rem', lineHeight: 1.45 }}>
+          <p style={{ fontWeight: 700, color: uploadMsg.type === 'ok' ? '#15803d' : uploadMsg.type === 'err' ? '#b91c1c' : token.blue, fontSize: isMobile ? '0.9rem' : '0.96rem', marginBottom: '0.38rem', lineHeight: 1.5 }}>
             {uploadLoading ? 'Mengupload...' : uploadMsg.text ? uploadMsg.text : 'Klik atau seret file .docx ke sini'}
           </p>
           {!uploadMsg.text && (
@@ -215,7 +215,7 @@ function TemplatesView({
         </div>
 
         {/* ── Template List Header ── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: isMobile ? '0.75rem' : '0.95rem', flexShrink: 0 }}>
           <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: token.muted }}>Template tersimpan</span>
           <span style={{ fontSize: '0.7rem', fontWeight: 700, color: token.blueMid, background: 'rgba(26,42,87,0.06)', border: '1px solid rgba(26,42,87,0.10)', padding: '0.22rem 0.62rem', borderRadius: '999px' }}>
             {templates.length}
@@ -223,7 +223,7 @@ function TemplatesView({
         </div>
 
         {/* ── Template List (scrollable) ── */}
-        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+        <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', paddingRight: isMobile ? 0 : '0.2rem' }}>
           {templates.length === 0 ? (
             <div style={{ padding: '2.75rem 1rem', textAlign: 'center', border: '1.5px dashed rgba(26,42,87,0.14)', borderRadius: '1rem', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)' }}>
               <div style={{ width: 52, height: 52, borderRadius: '0.95rem', background: 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.85rem', boxShadow: '0 12px 24px rgba(148,163,184,0.12)' }}>
@@ -233,12 +233,12 @@ function TemplatesView({
               <p style={{ color: token.muted, fontSize: '0.79rem' }}>Upload file .docx pertama Anda di atas</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '0.5rem' : '0.7rem' }}>
               {templates.map(t => (
                 <div key={t} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0.85rem 1rem',
-                  borderRadius: '0.95rem',
+                  padding: isMobile ? '0.85rem 1rem' : '1rem 1.1rem',
+                  borderRadius: '1rem',
                   background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)',
                   border: '1px solid rgba(26,42,87,0.10)',
                   transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.15s',
@@ -246,13 +246,13 @@ function TemplatesView({
                   onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(26,42,87,0.18)'; e.currentTarget.style.boxShadow = '0 14px 28px rgba(17,38,75,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                   onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,42,87,0.10)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: '0.75rem', background: 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(26,42,87,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', minWidth: 0 }}>
+                    <div style={{ width: 40, height: 40, borderRadius: '0.85rem', background: 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(26,42,87,0.08)' }}>
                       <FileText size={15} style={{ color: token.blueMid }} />
                     </div>
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: '0.86rem', fontWeight: 600, color: token.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
-                      <div style={{ fontSize: '0.71rem', color: token.muted, marginTop: '0.05rem' }}>.docx template</div>
+                      <div style={{ fontSize: isMobile ? '0.86rem' : '0.88rem', fontWeight: 600, color: token.text, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{t}</div>
+                      <div style={{ fontSize: '0.72rem', color: token.muted, marginTop: '0.08rem' }}>.docx template</div>
                     </div>
                   </div>
                   <button
@@ -260,7 +260,7 @@ function TemplatesView({
                     title={`Hapus "${t}"`}
                     style={{
                       background: 'linear-gradient(180deg, #ffffff 0%, #fff4f4 100%)', border: '1px solid rgba(220,38,38,0.18)',
-                      borderRadius: '0.7rem', padding: '0.42rem', cursor: 'pointer',
+                      borderRadius: '0.75rem', padding: '0.48rem', cursor: 'pointer',
                       color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       flexShrink: 0, transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
                     }}
