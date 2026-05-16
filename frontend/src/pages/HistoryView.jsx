@@ -627,18 +627,6 @@ function HistoryView({
       <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '1rem' : '1.2rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 24px 48px rgba(17,38,75,0.08)' }}>
 
         {/* ── Filter Bar ── */}
-        <div style={{ margin: isMobile ? '-1rem -1rem 1rem' : '-1.5rem -1.5rem 1.25rem', padding: isMobile ? '1rem' : '1.15rem 1.5rem', background: 'linear-gradient(180deg, #f7f8fa 0%, #eef2f6 100%)', color: token.blue, borderBottom: '1px solid rgba(26,42,87,0.08)' }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.35rem' }}>
-            Document Generator
-          </div>
-          <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 800, lineHeight: 1.3, color: '#1e293b' }}>
-            Riwayat Nomor Dokumen
-          </div>
-          <div style={{ fontSize: '0.83rem', color: '#64748b', marginTop: '0.3rem' }}>
-            Kelola hasil generate, cek detail dokumen, lalu edit atau unduh dari satu tampilan yang seragam.
-          </div>
-        </div>
-
         <div style={{
           display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap',
           marginBottom: '1rem', justifyContent: 'space-between',

@@ -53,14 +53,18 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           cursor: disabled ? 'not-allowed' : 'pointer',
           background: disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)',
           color: disabled ? '#7c8aa5' : token.text,
-          paddingRight: '2.6rem',
+          height: '2.75rem',
+          paddingLeft: '0.95rem',
+          paddingRight: '3rem',
           appearance: 'none',
           WebkitAppearance: 'none',
           MozAppearance: 'none',
+          borderColor: disabled ? 'rgba(26,42,87,0.08)' : 'rgba(26,42,87,0.10)',
+          boxShadow: disabled ? 'none' : '0 8px 18px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.75)',
           ...style,
         }}
         onFocus={e => { if (!disabled) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
-        onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+        onBlur={e => { e.target.style.borderColor = disabled ? 'rgba(26,42,87,0.08)' : 'rgba(26,42,87,0.10)'; e.target.style.background = disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = disabled ? 'none' : '0 8px 18px rgba(148,163,184,0.08), inset 0 1px 0 rgba(255,255,255,0.75)'; }}
       >
         {children}
       </select>
@@ -68,20 +72,21 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
         style={{
           position: 'absolute',
           top: '50%',
-          right: '0.9rem',
+          right: '0.8rem',
           transform: 'translateY(-50%)',
-          width: '1.55rem',
-          height: '1.55rem',
-          borderRadius: '999px',
-          background: disabled ? 'rgba(148,163,184,0.12)' : 'rgba(26,42,87,0.06)',
+          width: '1.8rem',
+          height: '1.8rem',
+          borderRadius: '0.7rem',
+          background: disabled ? 'rgba(148,163,184,0.12)' : 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           pointerEvents: 'none',
           border: '1px solid rgba(26,42,87,0.08)',
+          boxShadow: '0 4px 12px rgba(148,163,184,0.10)',
         }}
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </div>
@@ -105,6 +110,7 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
     <div style={{ position: 'relative' }}>
       <input
         type="date"
+        className="formview-date-input"
         name={name}
         value={value}
         onChange={onChange}
@@ -112,6 +118,8 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
         style={{
           ...baseInp,
           ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null),
+          height: '2.75rem',
+          paddingLeft: '0.95rem',
           paddingRight: '3.1rem',
           color: value ? token.text : '#94a3b8',
           cursor: 'pointer',
@@ -132,13 +140,14 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
           transform: 'translateY(-50%)',
           width: '1.8rem',
           height: '1.8rem',
-          borderRadius: '999px',
-          background: 'rgba(26,42,87,0.06)',
+          borderRadius: '0.7rem',
+          background: 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
           border: '1px solid rgba(26,42,87,0.08)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           pointerEvents: 'none',
+          boxShadow: '0 4px 12px rgba(148,163,184,0.10)',
         }}
       >
         <CalendarDays size={14} style={{ color: '#64748b', flexShrink: 0 }} />
@@ -255,6 +264,17 @@ export default function FormView({
       <style>{`
         @keyframes fUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { to { transform: rotate(360deg); } }
+        .formview-date-input::-webkit-calendar-picker-indicator {
+          opacity: 0;
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          cursor: pointer;
+        }
+        .formview-date-input::-webkit-datetime-edit {
+          color: inherit;
+        }
       `}</style>
 
       <div style={{
@@ -268,24 +288,6 @@ export default function FormView({
         boxShadow: '0 24px 48px rgba(17,38,75,0.08)',
         overflow: 'hidden',
       }}>
-        <div style={{
-          margin: isMobile ? '-1rem -1rem 1rem' : '-1.5rem -1.5rem 1.25rem',
-          padding: isMobile ? '1rem' : '1.15rem 1.5rem',
-          background: 'linear-gradient(180deg, #f7f8fa 0%, #eef2f6 100%)',
-          color: token.blue,
-          borderBottom: '1px solid rgba(26,42,87,0.08)',
-        }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.35rem' }}>
-            Document Generator
-          </div>
-          <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 800, lineHeight: 1.3, color: '#1e293b' }}>
-            Form Pembuatan Nomor Dokumen
-          </div>
-          <div style={{ fontSize: '0.83rem', color: '#64748b', marginTop: '0.3rem' }}>
-            Gunakan template yang tersedia lalu lengkapi detail dokumen dengan format yang rapi.
-          </div>
-        </div>
-
         <form onSubmit={hSubmit}>
 
           {/* ── Perusahaan ── */}

@@ -1044,7 +1044,7 @@ select {
 
 .breadcrumb-link.active {
   color: var(--accent-gold);
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .breadcrumb-item--group {

@@ -139,7 +139,7 @@ function TemplatesView({
     <div style={{
       position: 'relative',
       height: isMobile ? 'auto' : '100%',
-      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      padding: isMobile ? '0.5rem 0' : '0',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
@@ -151,12 +151,15 @@ function TemplatesView({
       <div style={{
         ...card,
         padding: isMobile ? '1rem' : '1.5rem',
-        borderRadius: '1rem',
+        borderRadius: isMobile ? '1rem' : '1.2rem',
         flex: isMobile ? '0 0 auto' : 1,
         display: 'flex',
         flexDirection: 'column',
         minHeight: isMobile ? 'auto' : 0,
         overflow: isMobile ? 'visible' : 'hidden',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)',
+        border: '1px solid rgba(26,42,87,0.10)',
+        boxShadow: '0 24px 48px rgba(17,38,75,0.08)',
       }}>
 
         {/* ── Header ── */}
@@ -173,26 +176,28 @@ function TemplatesView({
           onDragLeave={() => setDragOver(false)}
           onDrop={handleDrop}
           style={{
-            border: `2px dashed ${dragOver ? token.blueMid : uploadMsg.type === 'ok' ? '#16a34a' : uploadMsg.type === 'err' ? '#dc2626' : token.border}`,
-            borderRadius: '1rem',
+            border: `2px dashed ${dragOver ? token.blueMid : uploadMsg.type === 'ok' ? '#16a34a' : uploadMsg.type === 'err' ? '#dc2626' : 'rgba(26,42,87,0.14)'}`,
+            borderRadius: '1.1rem',
             padding: isMobile ? '1.75rem 1.25rem' : '2.25rem 2rem',
             textAlign: 'center',
             cursor: uploadLoading ? 'wait' : 'pointer',
-            background: dragOver ? 'rgba(45,74,140,0.04)' : uploadMsg.type === 'ok' ? 'rgba(22,163,74,0.03)' : uploadMsg.type === 'err' ? 'rgba(220,38,38,0.03)' : token.surface,
+            background: dragOver ? 'linear-gradient(180deg, rgba(45,74,140,0.06) 0%, rgba(45,74,140,0.02) 100%)' : uploadMsg.type === 'ok' ? 'linear-gradient(180deg, rgba(22,163,74,0.06) 0%, rgba(22,163,74,0.02) 100%)' : uploadMsg.type === 'err' ? 'linear-gradient(180deg, rgba(220,38,38,0.06) 0%, rgba(220,38,38,0.02) 100%)' : 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
             marginBottom: '1.25rem',
-            transition: 'border-color 0.2s, background 0.2s',
+            transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
             flexShrink: 0,
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
           }}
-          onMouseEnter={e => { if (!uploadLoading) e.currentTarget.style.borderColor = token.blueMid; }}
-          onMouseLeave={e => { e.currentTarget.style.borderColor = dragOver ? token.blueMid : uploadMsg.type === 'ok' ? '#16a34a' : uploadMsg.type === 'err' ? '#dc2626' : token.border; }}
+          onMouseEnter={e => { if (!uploadLoading) { e.currentTarget.style.borderColor = token.blueMid; e.currentTarget.style.boxShadow = '0 16px 32px rgba(17,38,75,0.06), inset 0 1px 0 rgba(255,255,255,0.7)'; } }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = dragOver ? token.blueMid : uploadMsg.type === 'ok' ? '#16a34a' : uploadMsg.type === 'err' ? '#dc2626' : 'rgba(26,42,87,0.14)'; e.currentTarget.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
         >
           <input ref={fileInputRef} type="file" accept=".docx" style={{ display: 'none' }} onChange={hUpload} />
           <div style={{
             width: 52, height: 52, borderRadius: '0.875rem',
-            background: uploadMsg.type === 'ok' ? 'rgba(22,163,74,0.1)' : uploadMsg.type === 'err' ? 'rgba(220,38,38,0.1)' : 'rgba(26,42,87,0.07)',
+            background: uploadMsg.type === 'ok' ? 'rgba(22,163,74,0.1)' : uploadMsg.type === 'err' ? 'rgba(220,38,38,0.1)' : 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 1rem',
             transition: 'background 0.2s',
+            boxShadow: '0 10px 22px rgba(148,163,184,0.10)',
           }}>
             {uploadMsg.type === 'ok'
               ? <CheckCircle2 size={24} style={{ color: '#16a34a' }} />
@@ -201,7 +206,7 @@ function TemplatesView({
               : <CloudUpload size={24} style={{ color: token.blueMid }} />
             }
           </div>
-          <p style={{ fontWeight: 700, color: uploadMsg.type === 'ok' ? '#15803d' : uploadMsg.type === 'err' ? '#b91c1c' : token.blue, fontSize: '0.9rem', marginBottom: '0.3rem' }}>
+          <p style={{ fontWeight: 700, color: uploadMsg.type === 'ok' ? '#15803d' : uploadMsg.type === 'err' ? '#b91c1c' : token.blue, fontSize: '0.9rem', marginBottom: '0.3rem', lineHeight: 1.45 }}>
             {uploadLoading ? 'Mengupload...' : uploadMsg.text ? uploadMsg.text : 'Klik atau seret file .docx ke sini'}
           </p>
           {!uploadMsg.text && (
@@ -212,7 +217,7 @@ function TemplatesView({
         {/* ── Template List Header ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', flexShrink: 0 }}>
           <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.09em', textTransform: 'uppercase', color: token.muted }}>Template tersimpan</span>
-          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: token.blueMid, background: 'rgba(26,42,87,0.08)', border: `1px solid rgba(26,42,87,0.12)`, padding: '0.15rem 0.55rem', borderRadius: '999px' }}>
+          <span style={{ fontSize: '0.7rem', fontWeight: 700, color: token.blueMid, background: 'rgba(26,42,87,0.06)', border: '1px solid rgba(26,42,87,0.10)', padding: '0.22rem 0.62rem', borderRadius: '999px' }}>
             {templates.length}
           </span>
         </div>
@@ -220,8 +225,8 @@ function TemplatesView({
         {/* ── Template List (scrollable) ── */}
         <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
           {templates.length === 0 ? (
-            <div style={{ padding: '2.5rem 1rem', textAlign: 'center', border: `1.5px dashed ${token.border}`, borderRadius: '0.75rem', background: 'rgba(26,42,87,0.02)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ width: 52, height: 52, borderRadius: '0.875rem', background: 'rgba(26,42,87,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.85rem', boxShadow: '0 0 0 8px rgba(26,42,87,0.04)' }}>
+            <div style={{ padding: '2.75rem 1rem', textAlign: 'center', border: '1.5px dashed rgba(26,42,87,0.14)', borderRadius: '1rem', background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)' }}>
+              <div style={{ width: 52, height: 52, borderRadius: '0.95rem', background: 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.85rem', boxShadow: '0 12px 24px rgba(148,163,184,0.12)' }}>
                 <FileText size={24} style={{ color: token.blueMid, opacity: 0.6 }} />
               </div>
               <p style={{ color: token.text, fontSize: '0.9rem', fontWeight: 700, marginBottom: '0.35rem' }}>Belum ada template</p>
@@ -232,17 +237,17 @@ function TemplatesView({
               {templates.map(t => (
                 <div key={t} style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0.75rem 1rem',
-                  borderRadius: '0.7rem',
-                  background: token.surface,
-                  border: `1.5px solid ${token.border}`,
-                  transition: 'border-color 0.15s, box-shadow 0.15s',
+                  padding: '0.85rem 1rem',
+                  borderRadius: '0.95rem',
+                  background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)',
+                  border: '1px solid rgba(26,42,87,0.10)',
+                  transition: 'border-color 0.15s, box-shadow 0.15s, transform 0.15s',
                 }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(26,42,87,0.18)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(26,42,87,0.07)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = token.border; e.currentTarget.style.boxShadow = 'none'; }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(26,42,87,0.18)'; e.currentTarget.style.boxShadow = '0 14px 28px rgba(17,38,75,0.08)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(26,42,87,0.10)'; e.currentTarget.style.boxShadow = 'none'; e.currentTarget.style.transform = 'translateY(0)'; }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', minWidth: 0 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '0.45rem', background: 'rgba(26,42,87,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: '0.75rem', background: 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid rgba(26,42,87,0.08)' }}>
                       <FileText size={15} style={{ color: token.blueMid }} />
                     </div>
                     <div style={{ minWidth: 0 }}>
@@ -254,13 +259,13 @@ function TemplatesView({
                     onClick={() => hDeleteTemplate(t)}
                     title={`Hapus "${t}"`}
                     style={{
-                      background: 'none', border: '1.5px solid rgba(220,38,38,0.2)',
-                      borderRadius: '0.45rem', padding: '0.35rem', cursor: 'pointer',
+                      background: 'linear-gradient(180deg, #ffffff 0%, #fff4f4 100%)', border: '1px solid rgba(220,38,38,0.18)',
+                      borderRadius: '0.7rem', padding: '0.42rem', cursor: 'pointer',
                       color: '#ef4444', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      flexShrink: 0, transition: 'background 0.15s, border-color 0.15s',
+                      flexShrink: 0, transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(220,38,38,0.08)'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.4)'; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.2)'; }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'rgba(220,38,38,0.08)'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.4)'; e.currentTarget.style.boxShadow = '0 10px 18px rgba(220,38,38,0.10)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(180deg, #ffffff 0%, #fff4f4 100%)'; e.currentTarget.style.borderColor = 'rgba(220,38,38,0.2)'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     <Trash2 size={14} />
                   </button>
