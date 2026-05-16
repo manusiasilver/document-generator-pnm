@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 
 const MOBILE_BP = 768;
 const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+const MOBILE_INPUT_FONT_SIZE = '16px';
 
 /* ─── Primitives ─────────────────────────────────────────────── */
 
@@ -17,7 +18,7 @@ const baseInp = {
   padding: '0 0.8rem',
   fontSize: '0.875rem',
   color: token.text,
-  background: 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)',
+  background: 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)',
   border: '1px solid rgba(26,42,87,0.12)',
   borderRadius: '0.9rem',
   outline: 'none',
@@ -27,69 +28,121 @@ const baseInp = {
   boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
 };
 
-function Inp({ readOnly, style, ...props }) {
+function Inp({ readOnly, style, isMobile, ...props }) {
   const ro = readOnly ? { background: 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)', color: '#7c8aa5', cursor: 'not-allowed', borderColor: 'rgba(26,42,87,0.08)' } : {};
   return (
     <input
       readOnly={readOnly}
       {...props}
-      style={{ ...baseInp, ...ro, ...style }}
+      style={{ ...baseInp, ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null), ...ro, ...style }}
       onFocus={e => { if (!readOnly) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
-      onBlur={e => { e.target.style.borderColor = ro.borderColor || 'rgba(26,42,87,0.12)'; e.target.style.background = ro.background || 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+      onBlur={e => { e.target.style.borderColor = ro.borderColor || 'rgba(26,42,87,0.12)'; e.target.style.background = ro.background || 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
     />
   );
 }
 
-function Sel({ children, style, disabled, ...props }) {
+function Sel({ children, style, disabled, isMobile, ...props }) {
   return (
-    <select
-      disabled={disabled}
-      {...props}
-      style={{
-        ...baseInp,
-        cursor: disabled ? 'not-allowed' : 'pointer',
-        background: disabled ? 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)' : 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)',
-        color: disabled ? '#7c8aa5' : token.text,
-        paddingRight: '2rem',
-        appearance: 'none',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-        backgroundRepeat: 'no-repeat',
-        backgroundPosition: 'right 0.7rem center',
-        ...style,
-      }}
-      onFocus={e => { if (!disabled) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
-      onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = disabled ? 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)' : 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
-    >
-      {children}
-    </select>
+    <div style={{ position: 'relative' }}>
+      <select
+        disabled={disabled}
+        {...props}
+        style={{
+          ...baseInp,
+          ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null),
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          background: disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)',
+          color: disabled ? '#7c8aa5' : token.text,
+          paddingRight: '2.6rem',
+          appearance: 'none',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          ...style,
+        }}
+        onFocus={e => { if (!disabled) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
+        onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+      >
+        {children}
+      </select>
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: '0.9rem',
+          transform: 'translateY(-50%)',
+          width: '1.55rem',
+          height: '1.55rem',
+          borderRadius: '999px',
+          background: disabled ? 'rgba(148,163,184,0.12)' : 'rgba(26,42,87,0.06)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          border: '1px solid rgba(26,42,87,0.08)',
+        }}
+      >
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </div>
+    </div>
   );
 }
 
-function Textarea({ style, ...props }) {
+function Textarea({ style, isMobile, ...props }) {
   return (
     <textarea
       {...props}
-      style={{ ...baseInp, height: 'auto', padding: '0.6rem 0.8rem', resize: 'vertical', lineHeight: 1.6, ...style }}
+      style={{ ...baseInp, ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null), height: 'auto', padding: '0.6rem 0.8rem', resize: 'vertical', lineHeight: 1.6, ...style }}
       onFocus={e => { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; }}
-      onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+      onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
     />
   );
 }
 
-function DatePicker({ name, value, onChange, required }) {
+function DatePicker({ name, value, onChange, required, isMobile }) {
   return (
     <div style={{ position: 'relative' }}>
-      <div style={{ ...baseInp, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', color: value ? token.text : '#94a3b8' }}>
-        <span style={{ fontSize: '0.875rem' }}>{value || 'Pilih tanggal'}</span>
-        <CalendarDays size={14} style={{ color: '#94a3b8', flexShrink: 0 }} />
-      </div>
       <input
-        type="date" name={name} value={value} onChange={onChange} required={required}
-        style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', border: 'none' }}
-        onFocus={e => { e.currentTarget.previousSibling.style.borderColor = '#2a9d8f'; e.currentTarget.previousSibling.style.background = '#ffffff'; e.currentTarget.previousSibling.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; }}
-        onBlur={e => { e.currentTarget.previousSibling.style.borderColor = 'rgba(26,42,87,0.12)'; e.currentTarget.previousSibling.style.background = 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.currentTarget.previousSibling.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
+        type="date"
+        name={name}
+        value={value}
+        onChange={onChange}
+        required={required}
+        style={{
+          ...baseInp,
+          ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null),
+          paddingRight: '3.1rem',
+          color: value ? token.text : '#94a3b8',
+          cursor: 'pointer',
+          WebkitAppearance: 'none',
+          MozAppearance: 'none',
+          appearance: 'none',
+          colorScheme: 'light',
+        }}
+        onFocus={e => { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; }}
+        onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
         onClick={e => e.currentTarget.showPicker?.()}
       />
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: '0.75rem',
+          transform: 'translateY(-50%)',
+          width: '1.8rem',
+          height: '1.8rem',
+          borderRadius: '999px',
+          background: 'rgba(26,42,87,0.06)',
+          border: '1px solid rgba(26,42,87,0.08)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+        }}
+      >
+        <CalendarDays size={14} style={{ color: '#64748b', flexShrink: 0 }} />
+      </div>
     </div>
   );
 }
@@ -218,17 +271,17 @@ export default function FormView({
         <div style={{
           margin: isMobile ? '-1rem -1rem 1rem' : '-1.5rem -1.5rem 1.25rem',
           padding: isMobile ? '1rem' : '1.15rem 1.5rem',
-          background: 'linear-gradient(135deg, rgba(26,42,87,0.98) 0%, rgba(45,74,140,0.96) 100%)',
-          color: '#fff',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          background: 'linear-gradient(180deg, #f7f8fa 0%, #eef2f6 100%)',
+          color: token.blue,
+          borderBottom: '1px solid rgba(26,42,87,0.08)',
         }}>
-          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(233,196,106,0.9)', marginBottom: '0.35rem' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.35rem' }}>
             Document Generator
           </div>
-          <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 800, lineHeight: 1.3 }}>
+          <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 800, lineHeight: 1.3, color: '#1e293b' }}>
             Form Pembuatan Nomor Dokumen
           </div>
-          <div style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.74)', marginTop: '0.3rem' }}>
+          <div style={{ fontSize: '0.83rem', color: '#64748b', marginTop: '0.3rem' }}>
             Gunakan template yang tersedia lalu lengkapi detail dokumen dengan format yang rapi.
           </div>
         </div>
@@ -239,14 +292,14 @@ export default function FormView({
           <SectionDivider icon={Building2} label="Perusahaan" accent="#6366f1" />
           <Grid cols="1fr 1fr 1fr" isMobile={isMobile}>
             <Field label="Pilih Perusahaan">
-              <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc}>
+              <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc} isMobile={isMobile}>
                 <option value="PNM">PT Pilar Niaga Makmur (PNM)</option>
                 <option value="PKS">PT Pilkada (PKS)</option>
                 <option value="PKP">PT Pikasa (PKP)</option>
               </Sel>
             </Field>
             <Field label="Template Dokumen">
-              <Sel name="template_name" value={formData.template_name} onChange={hChange}>
+              <Sel name="template_name" value={formData.template_name} onChange={hChange} isMobile={isMobile}>
                 {templates.length === 0
                   ? <option value="">— Belum ada template —</option>
                   : templates.map(t => <option key={t} value={t}>{t}</option>)
@@ -254,7 +307,7 @@ export default function FormView({
               </Sel>
             </Field>
             <Field label="Internal / External">
-              <Sel name="internal_external" value={formData.internal_external} onChange={hChange}>
+              <Sel name="internal_external" value={formData.internal_external} onChange={hChange} isMobile={isMobile}>
                 <option value="Internal">Internal</option>
                 <option value="External">External</option>
               </Sel>
@@ -264,26 +317,26 @@ export default function FormView({
           {/* ── Judul ── */}
           <SectionDivider icon={FileText} label="Judul Dokumen" accent="#3b82f6" />
           <Field label="Judul Dokumen" required>
-            <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama Pemasaran..." required />
+            <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama Pemasaran..." required isMobile={isMobile} />
           </Field>
 
           {/* ── Pengguna & Tanggal ── */}
           <SectionDivider icon={User} label="Pengguna & Tanggal" accent="#10b981" />
           <Grid cols="1fr 1fr 1fr 1fr" isMobile={isMobile}>
             <Field label="User">
-              <Inp value={user?.name || ''} readOnly />
+              <Inp value={user?.name || ''} readOnly isMobile={isMobile} />
             </Field>
             <Field label="Divisi" required>
-              <Sel name="division" value={formData.division} onChange={hChange} required>
+              <Sel name="division" value={formData.division} onChange={hChange} required isMobile={isMobile}>
                 <option value="">— Pilih —</option>
                 {masterData.divisions.map((d, i) => <option key={i} value={d.name}>{d.name}</option>)}
               </Sel>
             </Field>
             <Field label="Tanggal Dokumen" required>
-              <DatePicker name="doc_date" value={formData.doc_date} onChange={hChange} required />
+              <DatePicker name="doc_date" value={formData.doc_date} onChange={hChange} required isMobile={isMobile} />
             </Field>
             <Field label="Klasifikasi">
-              <Inp type="text" name="klasifikasi" value={formData.klasifikasi} onChange={hChange} placeholder="Surat Edaran..." />
+              <Inp type="text" name="klasifikasi" value={formData.klasifikasi} onChange={hChange} placeholder="Surat Edaran..." isMobile={isMobile} />
             </Field>
           </Grid>
 
@@ -291,16 +344,16 @@ export default function FormView({
           <SectionDivider icon={AlignLeft} label="Detail Dokumen" accent="#f59e0b" />
           <Grid cols="1fr 1fr" isMobile={isMobile}>
             <Field label="Perihal">
-              <Inp type="text" name="perihal" value={formData.perihal} onChange={hChange} placeholder="Perihal dokumen..." />
+              <Inp type="text" name="perihal" value={formData.perihal} onChange={hChange} placeholder="Perihal dokumen..." isMobile={isMobile} />
             </Field>
             <Field label="Ditandatangani Oleh">
-              <Inp type="text" name="signed_by" value={formData.signed_by} onChange={hChange} placeholder="Nama penandatangan" />
+              <Inp type="text" name="signed_by" value={formData.signed_by} onChange={hChange} placeholder="Nama penandatangan" isMobile={isMobile} />
             </Field>
             <Field label="Link Dokumen">
-              <Inp type="text" name="link_document" value={formData.link_document} onChange={hChange} placeholder="https://..." />
+              <Inp type="text" name="link_document" value={formData.link_document} onChange={hChange} placeholder="https://..." isMobile={isMobile} />
             </Field>
             <Field label="Keterangan">
-              <Textarea name="keterangan" value={formData.keterangan} onChange={hChange} placeholder="Catatan opsional..." rows={2} />
+              <Textarea name="keterangan" value={formData.keterangan} onChange={hChange} placeholder="Catatan opsional..." rows={2} isMobile={isMobile} />
             </Field>
           </Grid>
 

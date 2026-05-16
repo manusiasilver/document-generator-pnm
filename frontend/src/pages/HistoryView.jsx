@@ -387,7 +387,7 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
   );
 
   return (
-    <div style={{ border: `1px solid ${token.border}`, borderRadius: mobileCardRadius, background: token.surface, padding: isCompact ? '1rem' : '1.1rem', boxShadow: '0 14px 32px rgba(17, 38, 75, 0.07)' }}>
+    <div style={{ border: '1px solid rgba(26,42,87,0.10)', borderRadius: '1rem', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', padding: isCompact ? '1rem' : '1.1rem', boxShadow: '0 18px 36px rgba(17, 38, 75, 0.08)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.8rem', alignItems: isCompact ? 'stretch' : 'flex-start', marginBottom: '0.95rem', flexDirection: isCompact ? 'column' : 'row' }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: '0.68rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.25rem' }}>
@@ -403,11 +403,11 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : 'repeat(2, minmax(0, 1fr))', gap: '0.6rem', marginBottom: '0.95rem' }}>
-        <div style={{ padding: '0.75rem 0.85rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, rgba(26,42,87,0.06) 0%, rgba(26,42,87,0.03) 100%)', border: `1px solid ${token.border}` }}>
+        <div style={{ padding: '0.75rem 0.85rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, #f7f8fa 0%, #eef2f6 100%)', border: '1px solid rgba(26,42,87,0.08)' }}>
           <div style={{ fontSize: '0.66rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Tanggal</div>
           <div style={{ fontSize: '0.83rem', color: token.text, fontWeight: 700 }}>{formatDate(doc.doc_date)}</div>
         </div>
-        <div style={{ padding: '0.75rem 0.85rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, rgba(26,42,87,0.06) 0%, rgba(26,42,87,0.03) 100%)', border: `1px solid ${token.border}` }}>
+        <div style={{ padding: '0.75rem 0.85rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, #f7f8fa 0%, #eef2f6 100%)', border: '1px solid rgba(26,42,87,0.08)' }}>
           <div style={{ fontSize: '0.66rem', color: token.muted, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.2rem' }}>Internal / External</div>
           <div style={{ fontSize: '0.83rem', color: token.text, fontWeight: 700 }}>{dash(doc.internal_external)}</div>
         </div>
@@ -417,7 +417,7 @@ function MobileDocCard({ doc, index, onDuplicate, onEdit, onDownload, isCompact 
         {dash(doc.judul_dokumen)}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: '0.8rem 0.85rem', marginBottom: '1rem', padding: isCompact ? '0.85rem' : '0.95rem', borderRadius: mobileSectionRadius, background: 'rgba(26,42,87,0.035)', border: `1px solid ${token.border}` }}>
+      <div style={{ display: 'grid', gridTemplateColumns: isCompact ? '1fr' : '1fr 1fr', gap: '0.8rem 0.85rem', marginBottom: '1rem', padding: isCompact ? '0.85rem' : '0.95rem', borderRadius: mobileSectionRadius, background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)', border: '1px solid rgba(26,42,87,0.08)' }}>
         {renderMetaBlock('User', dash(doc.user_name))}
         {renderMetaBlock('Divisi', dash(doc.division))}
         {renderMetaBlock('Klasifikasi', dash(doc.klasifikasi))}
@@ -460,7 +460,7 @@ const tableHeaderCellStyle = {
   textTransform: 'uppercase',
   color: token.muted,
   whiteSpace: 'nowrap',
-  background: 'rgba(248, 250, 252, 0.96)',
+  background: 'linear-gradient(180deg, #f8fafc 0%, #eef2f6 100%)',
 };
 
 const tableBodyCellStyle = {
@@ -599,7 +599,7 @@ function HistoryView({
     <div style={{
       position: 'relative',
       height: isMobile ? 'auto' : '100%',
-      padding: isMobile ? '1rem 0.75rem' : '0.75rem 1.5rem',
+      padding: isMobile ? '0.5rem 0' : '0',
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
@@ -624,20 +624,33 @@ function HistoryView({
         />
       )}
 
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: '1rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden' }}>
+      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '1rem' : '1.2rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 24px 48px rgba(17,38,75,0.08)' }}>
 
         {/* ── Filter Bar ── */}
+        <div style={{ margin: isMobile ? '-1rem -1rem 1rem' : '-1.5rem -1.5rem 1.25rem', padding: isMobile ? '1rem' : '1.15rem 1.5rem', background: 'linear-gradient(180deg, #f7f8fa 0%, #eef2f6 100%)', color: token.blue, borderBottom: '1px solid rgba(26,42,87,0.08)' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: '#64748b', marginBottom: '0.35rem' }}>
+            Document Generator
+          </div>
+          <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 800, lineHeight: 1.3, color: '#1e293b' }}>
+            Riwayat Nomor Dokumen
+          </div>
+          <div style={{ fontSize: '0.83rem', color: '#64748b', marginTop: '0.3rem' }}>
+            Kelola hasil generate, cek detail dokumen, lalu edit atau unduh dari satu tampilan yang seragam.
+          </div>
+        </div>
+
         <div style={{
-          display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap',
+          display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap',
           marginBottom: '1rem', justifyContent: 'space-between',
-          padding: '0.55rem 0.85rem',
-          background: 'rgba(26,42,87,0.03)',
-          borderRadius: '0.75rem',
-          border: `1px solid ${token.border}`,
+          padding: isMobile ? '0.8rem' : '0.85rem 1rem',
+          background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
+          borderRadius: '1rem',
+          border: '1px solid rgba(26,42,87,0.08)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             {/* Filter label */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: token.muted, paddingRight: '0.5rem', borderRight: `1px solid ${token.border}`, flexShrink: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: token.muted, paddingRight: '0.65rem', borderRight: '1px solid rgba(26,42,87,0.08)', flexShrink: 0 }}>
               <SlidersHorizontal size={13} />
               <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Filter</span>
             </div>
@@ -648,12 +661,13 @@ function HistoryView({
               <select
                 value={searchIntExt}
                 onChange={e => { setSearchIntExt(e.target.value); setCurrentPage(1); }}
-                style={{ height: '2.1rem', paddingLeft: '1.85rem', paddingRight: '1.8rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
+                style={{ height: '2.35rem', paddingLeft: '1.85rem', paddingRight: '2.1rem', fontSize: '0.82rem', border: '1px solid rgba(26,42,87,0.10)', borderRadius: '0.8rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)', cursor: 'pointer', appearance: 'none', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)' }}
               >
                 <option value="">Semua</option>
                 <option value="Internal">Internal</option>
                 <option value="External">External</option>
               </select>
+              <ChevronDown size={12} style={{ position: 'absolute', right: '0.65rem', color: '#64748b', pointerEvents: 'none' }} />
             </div>
 
             {/* Page size */}
@@ -662,10 +676,11 @@ function HistoryView({
               <select
                 value={pageSize}
                 onChange={e => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
-                style={{ height: '2.1rem', paddingLeft: '1.85rem', paddingRight: '1.8rem', fontSize: '0.82rem', border: `1px solid ${token.border}`, borderRadius: '0.5rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: '#fff', cursor: 'pointer', appearance: 'none', backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center' }}
+                style={{ height: '2.35rem', paddingLeft: '1.85rem', paddingRight: '2.1rem', fontSize: '0.82rem', border: '1px solid rgba(26,42,87,0.10)', borderRadius: '0.8rem', outline: 'none', fontFamily: 'inherit', color: token.text, background: 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)', cursor: 'pointer', appearance: 'none', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)' }}
               >
                 {[10,25,50,75,100].map(n => <option key={n} value={n}>{n} baris</option>)}
               </select>
+              <ChevronDown size={12} style={{ position: 'absolute', right: '0.65rem', color: '#64748b', pointerEvents: 'none' }} />
             </div>
 
             {/* Reset */}
@@ -674,7 +689,7 @@ function HistoryView({
                 type="button"
                 onClick={() => { setSearchTerm(''); setSearchDate(''); setSearchIntExt(''); setCurrentPage(1); }}
                 title="Reset Filter"
-                style={{ height: '2.1rem', padding: '0 0.65rem', fontSize: '0.82rem', fontWeight: 600, border: '1px solid rgba(239,68,68,0.3)', borderRadius: '0.5rem', background: 'rgba(239,68,68,0.07)', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.3rem' }}
+                style={{ height: '2.35rem', padding: '0 0.8rem', fontSize: '0.82rem', fontWeight: 700, border: '1px solid rgba(239,68,68,0.24)', borderRadius: '0.8rem', background: 'rgba(239,68,68,0.07)', color: '#dc2626', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '0.35rem' }}
               >
                 <X size={13} /> Reset
               </button>
@@ -683,7 +698,7 @@ function HistoryView({
 
           {/* Right: count + refresh */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexShrink: 0 }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: token.blueMid, background: 'rgba(26,42,87,0.08)', border: `1px solid rgba(26,42,87,0.12)`, padding: '0.28rem 0.7rem', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: token.blueMid, background: 'rgba(26,42,87,0.06)', border: '1px solid rgba(26,42,87,0.10)', padding: '0.38rem 0.8rem', borderRadius: '999px', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
               <FileText size={11} />
               {filtered.length} dokumen
             </span>
@@ -692,7 +707,7 @@ function HistoryView({
               onClick={fetchData}
               disabled={tableLoading}
               title="Refresh Data"
-              style={{ height: '2.1rem', width: '2.1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${token.border}`, borderRadius: '0.5rem', background: '#fff', cursor: tableLoading ? 'not-allowed' : 'pointer', color: token.muted, flexShrink: 0 }}
+              style={{ height: '2.35rem', width: '2.35rem', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(26,42,87,0.10)', borderRadius: '0.8rem', background: 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)', cursor: tableLoading ? 'not-allowed' : 'pointer', color: token.muted, flexShrink: 0, boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)' }}
             >
               <RefreshCw size={13} style={tableLoading ? { animation: 'spin 1s linear infinite' } : {}} />
             </button>
@@ -724,7 +739,7 @@ function HistoryView({
             </div>
           </div>
         ) : (
-          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: token.surface, borderRadius: '1rem', border: `1px solid ${token.border}`, boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
+          <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', borderRadius: '1rem', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 18px 44px rgba(15, 23, 42, 0.06)' }}>
             <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: 0, fontSize: '0.855rem', tableLayout: 'fixed' }}>
               <colgroup>
                 <col style={{ width: '4%' }} />
