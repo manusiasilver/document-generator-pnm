@@ -17,24 +17,25 @@ const baseInp = {
   padding: '0 0.8rem',
   fontSize: '0.875rem',
   color: token.text,
-  background: '#fff',
-  border: '1.5px solid #e2e8f0',
-  borderRadius: '0.55rem',
+  background: 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)',
+  border: '1px solid rgba(26,42,87,0.12)',
+  borderRadius: '0.9rem',
   outline: 'none',
   fontFamily: 'inherit',
-  transition: `border-color 150ms ${EASE}, box-shadow 150ms ${EASE}`,
+  transition: `border-color 150ms ${EASE}, box-shadow 150ms ${EASE}, background 150ms ${EASE}`,
   boxSizing: 'border-box',
+  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.7)',
 };
 
 function Inp({ readOnly, style, ...props }) {
-  const ro = readOnly ? { background: '#f8fafc', color: '#94a3b8', cursor: 'not-allowed', borderColor: '#f1f5f9' } : {};
+  const ro = readOnly ? { background: 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)', color: '#7c8aa5', cursor: 'not-allowed', borderColor: 'rgba(26,42,87,0.08)' } : {};
   return (
     <input
       readOnly={readOnly}
       {...props}
       style={{ ...baseInp, ...ro, ...style }}
-      onFocus={e => { if (!readOnly) { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.10)'; } }}
-      onBlur={e => { e.target.style.borderColor = ro.borderColor || '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+      onFocus={e => { if (!readOnly) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
+      onBlur={e => { e.target.style.borderColor = ro.borderColor || 'rgba(26,42,87,0.12)'; e.target.style.background = ro.background || 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
     />
   );
 }
@@ -47,8 +48,8 @@ function Sel({ children, style, disabled, ...props }) {
       style={{
         ...baseInp,
         cursor: disabled ? 'not-allowed' : 'pointer',
-        background: disabled ? '#f8fafc' : '#fff',
-        color: disabled ? '#94a3b8' : token.text,
+        background: disabled ? 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)' : 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)',
+        color: disabled ? '#7c8aa5' : token.text,
         paddingRight: '2rem',
         appearance: 'none',
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
@@ -56,8 +57,8 @@ function Sel({ children, style, disabled, ...props }) {
         backgroundPosition: 'right 0.7rem center',
         ...style,
       }}
-      onFocus={e => { if (!disabled) { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.10)'; } }}
-      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+      onFocus={e => { if (!disabled) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
+      onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = disabled ? 'linear-gradient(180deg, #f3f6fa 0%, #e9eef5 100%)' : 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
     >
       {children}
     </select>
@@ -69,8 +70,8 @@ function Textarea({ style, ...props }) {
     <textarea
       {...props}
       style={{ ...baseInp, height: 'auto', padding: '0.6rem 0.8rem', resize: 'vertical', lineHeight: 1.6, ...style }}
-      onFocus={e => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.10)'; }}
-      onBlur={e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.boxShadow = 'none'; }}
+      onFocus={e => { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; }}
+      onBlur={e => { e.target.style.borderColor = 'rgba(26,42,87,0.12)'; e.target.style.background = 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.target.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
     />
   );
 }
@@ -85,8 +86,8 @@ function DatePicker({ name, value, onChange, required }) {
       <input
         type="date" name={name} value={value} onChange={onChange} required={required}
         style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer', width: '100%', height: '100%', border: 'none' }}
-        onFocus={e => { e.currentTarget.previousSibling.style.borderColor = '#3b82f6'; e.currentTarget.previousSibling.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.10)'; }}
-        onBlur={e => { e.currentTarget.previousSibling.style.borderColor = '#e2e8f0'; e.currentTarget.previousSibling.style.boxShadow = 'none'; }}
+        onFocus={e => { e.currentTarget.previousSibling.style.borderColor = '#2a9d8f'; e.currentTarget.previousSibling.style.background = '#ffffff'; e.currentTarget.previousSibling.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; }}
+        onBlur={e => { e.currentTarget.previousSibling.style.borderColor = 'rgba(26,42,87,0.12)'; e.currentTarget.previousSibling.style.background = 'linear-gradient(180deg, rgba(248,249,250,0.98) 0%, #eef3f8 100%)'; e.currentTarget.previousSibling.style.boxShadow = 'inset 0 1px 0 rgba(255,255,255,0.7)'; }}
         onClick={e => e.currentTarget.showPicker?.()}
       />
     </div>
@@ -106,11 +107,12 @@ function Field({ label, required, children }) {
 
 function SectionDivider({ icon: Icon, label, accent }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', margin: '1.5rem 0 1rem' }}>
-      <div style={{ width: 26, height: 26, borderRadius: '0.4rem', background: `${accent}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', margin: '1.65rem 0 1rem' }}>
+      <div style={{ width: 30, height: 30, borderRadius: '0.75rem', background: `linear-gradient(135deg, ${accent}24 0%, rgba(255,255,255,0.95) 100%)`, border: `1px solid ${accent}26`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <Icon size={13} color={accent} />
       </div>
-      <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#475569', whiteSpace: 'nowrap' }}>{label}</span>
+      <span style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#475569', whiteSpace: 'nowrap' }}>{label}</span>
+      <div style={{ flex: 1, height: '1px', background: `linear-gradient(90deg, ${accent}30 0%, rgba(26,42,87,0.08) 60%, transparent 100%)` }} />
     </div>
   );
 }
@@ -202,7 +204,34 @@ export default function FormView({
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '0.9rem' : '1rem', flex: '0 0 auto', animation: `fUp 600ms ${EASE} both` }}>
+      <div style={{
+        ...card,
+        padding: isMobile ? '1rem' : '1.5rem',
+        borderRadius: isMobile ? '1rem' : '1.2rem',
+        flex: '0 0 auto',
+        animation: `fUp 600ms ${EASE} both`,
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)',
+        border: '1px solid rgba(26,42,87,0.10)',
+        boxShadow: '0 24px 48px rgba(17,38,75,0.08)',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          margin: isMobile ? '-1rem -1rem 1rem' : '-1.5rem -1.5rem 1.25rem',
+          padding: isMobile ? '1rem' : '1.15rem 1.5rem',
+          background: 'linear-gradient(135deg, rgba(26,42,87,0.98) 0%, rgba(45,74,140,0.96) 100%)',
+          color: '#fff',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+        }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(233,196,106,0.9)', marginBottom: '0.35rem' }}>
+            Document Generator
+          </div>
+          <div style={{ fontSize: isMobile ? '1rem' : '1.2rem', fontWeight: 800, lineHeight: 1.3 }}>
+            Form Pembuatan Nomor Dokumen
+          </div>
+          <div style={{ fontSize: '0.83rem', color: 'rgba(255,255,255,0.74)', marginTop: '0.3rem' }}>
+            Gunakan template yang tersedia lalu lengkapi detail dokumen dengan format yang rapi.
+          </div>
+        </div>
 
         <form onSubmit={hSubmit}>
 
