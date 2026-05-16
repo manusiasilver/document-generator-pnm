@@ -46,6 +46,8 @@ function Inp({ readOnly, style, isMobile, ...props }) {
 }
 
 function Sel({ children, style, disabled, isMobile, ...props }) {
+  const hasValue = String(props.value ?? '').trim() !== '';
+
   return (
     <div style={{ position: 'relative' }}>
       <select
@@ -56,15 +58,18 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null),
           cursor: disabled ? 'not-allowed' : 'pointer',
           background: disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : 'linear-gradient(180deg, #f4f6f8 0%, #eceff3 100%)',
-          color: disabled ? '#7c8aa5' : token.text,
+          color: disabled ? '#7c8aa5' : hasValue ? '#1e293b' : '#94a3b8',
           height: FIELD_HEIGHT,
           paddingLeft: FIELD_PADDING_X,
-          paddingRight: '3rem',
+          paddingRight: '3.2rem',
+          fontWeight: hasValue ? 600 : 500,
+          letterSpacing: hasValue ? '-0.01em' : '0',
           appearance: 'none',
           WebkitAppearance: 'none',
           MozAppearance: 'none',
           borderColor: disabled ? 'rgba(26,42,87,0.08)' : FIELD_BORDER_COLOR,
           boxShadow: disabled ? 'none' : FIELD_SHADOW,
+          lineHeight: 1.2,
           ...style,
         }}
         onFocus={e => { if (!disabled) { e.target.style.borderColor = '#2a9d8f'; e.target.style.background = '#ffffff'; e.target.style.boxShadow = '0 0 0 4px rgba(42,157,143,0.12)'; } }}
@@ -72,25 +77,41 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
       >
         {children}
       </select>
+      {!disabled && hasValue ? (
+        <div
+          style={{
+            position: 'absolute',
+            left: '0.65rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '0.4rem',
+            height: '0.4rem',
+            borderRadius: '999px',
+            background: '#2a9d8f',
+            boxShadow: '0 0 0 4px rgba(42,157,143,0.12)',
+            pointerEvents: 'none',
+          }}
+        />
+      ) : null}
       <div
         style={{
           position: 'absolute',
           top: '50%',
           right: '0.8rem',
           transform: 'translateY(-50%)',
-          width: '1.8rem',
-          height: '1.8rem',
+          width: '1.9rem',
+          height: '1.9rem',
           borderRadius: '0.7rem',
-          background: disabled ? 'rgba(148,163,184,0.12)' : 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
+          background: disabled ? 'rgba(148,163,184,0.12)' : hasValue ? 'linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%)' : 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           pointerEvents: 'none',
-          border: '1px solid rgba(26,42,87,0.08)',
-          boxShadow: '0 4px 12px rgba(148,163,184,0.10)',
+          border: hasValue ? '1px solid rgba(16,185,129,0.18)' : '1px solid rgba(26,42,87,0.08)',
+          boxShadow: hasValue ? '0 6px 14px rgba(16,185,129,0.12)' : '0 4px 12px rgba(148,163,184,0.10)',
         }}
       >
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={hasValue ? '#0f766e' : '#64748b'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <polyline points="6 9 12 15 18 9" />
         </svg>
       </div>
