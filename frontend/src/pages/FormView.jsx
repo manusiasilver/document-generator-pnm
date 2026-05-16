@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Copy, Download, RefreshCw, Save, Plus, CalendarDays,
   Building2, FileText, User, AlignLeft, CheckCircle2,
@@ -46,7 +46,172 @@ function Inp({ readOnly, style, isMobile, ...props }) {
 }
 
 function Sel({ children, style, disabled, isMobile, ...props }) {
+  const [open, setOpen] = useState(false);
+  const wrapRef = useRef(null);
   const hasValue = String(props.value ?? '').trim() !== '';
+  const options = useMemo(
+    () =>
+      React.Children.toArray(children)
+        .filter(React.isValidElement)
+        .map((child) => ({
+          value: child.props.value ?? '',
+          label: child.props.children,
+          disabled: Boolean(child.props.disabled),
+        })),
+    [children],
+  );
+  const selectedOption = options.find((option) => String(option.value) === String(props.value ?? ''));
+
+  useEffect(() => {
+    if (isMobile || disabled || !open) {
+      return undefined;
+    }
+
+    const handlePointerDown = (event) => {
+      if (!wrapRef.current?.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('mousedown', handlePointerDown);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('mousedown', handlePointerDown);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [disabled, isMobile, open]);
+
+  if (!isMobile) {
+    return (
+      <div ref={wrapRef} style={{ position: 'relative' }}>
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={() => {
+            if (!disabled) {
+              setOpen((current) => !current);
+            }
+          }}
+          style={{
+            ...baseInp,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '0.8rem',
+            cursor: disabled ? 'not-allowed' : 'pointer',
+            background: disabled ? 'linear-gradient(180deg, #f1f4f7 0%, #e7ebf0 100%)' : '#ffffff',
+            color: disabled ? '#7c8aa5' : hasValue ? '#1e293b' : '#94a3b8',
+            paddingLeft: FIELD_PADDING_X,
+            paddingRight: '0.8rem',
+            borderColor: open ? '#2a9d8f' : disabled ? 'rgba(26,42,87,0.08)' : FIELD_BORDER_COLOR,
+            boxShadow: open ? '0 0 0 4px rgba(42,157,143,0.12)' : disabled ? 'none' : FIELD_SHADOW,
+            fontWeight: hasValue ? 600 : 500,
+            letterSpacing: hasValue ? '-0.01em' : '0',
+            textAlign: 'left',
+          }}
+        >
+          <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            {selectedOption?.label ?? options[0]?.label ?? ''}
+          </span>
+          <span
+            style={{
+              width: '1.9rem',
+              height: '1.9rem',
+              borderRadius: '0.7rem',
+              background: disabled ? 'rgba(148,163,184,0.12)' : open || hasValue ? 'linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%)' : 'linear-gradient(180deg, #ffffff 0%, #eef2f7 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: open || hasValue ? '1px solid rgba(16,185,129,0.18)' : '1px solid rgba(26,42,87,0.08)',
+              boxShadow: open || hasValue ? '0 6px 14px rgba(16,185,129,0.12)' : '0 4px 12px rgba(148,163,184,0.10)',
+              flexShrink: 0,
+            }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={open || hasValue ? '#0f766e' : '#64748b'} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 150ms ease' }}>
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </span>
+        </button>
+
+        {open ? (
+          <div
+            style={{
+              position: 'absolute',
+              top: 'calc(100% + 0.45rem)',
+              left: 0,
+              right: 0,
+              zIndex: 30,
+              padding: '0.45rem',
+              borderRadius: '1rem',
+              background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)',
+              border: '1px solid rgba(26,42,87,0.10)',
+              boxShadow: '0 20px 40px rgba(15,23,42,0.12)',
+            }}
+          >
+            <div style={{ display: 'grid', gap: '0.25rem', maxHeight: '220px', overflowY: 'auto' }}>
+              {options.map((option) => {
+                const isSelected = String(option.value) === String(props.value ?? '');
+
+                return (
+                  <button
+                    key={String(option.value)}
+                    type="button"
+                    disabled={option.disabled}
+                    onClick={() => {
+                      if (option.disabled) {
+                        return;
+                      }
+
+                      props.onChange?.({
+                        target: {
+                          name: props.name,
+                          value: option.value,
+                        },
+                      });
+                      setOpen(false);
+                    }}
+                    style={{
+                      minHeight: '2.7rem',
+                      padding: '0.72rem 0.85rem',
+                      border: isSelected ? '1px solid rgba(16,185,129,0.18)' : '1px solid transparent',
+                      borderRadius: '0.8rem',
+                      background: isSelected ? 'linear-gradient(180deg, #ecfdf5 0%, #d1fae5 100%)' : 'transparent',
+                      color: option.disabled ? '#94a3b8' : isSelected ? '#0f766e' : '#334155',
+                      fontSize: '0.86rem',
+                      fontWeight: isSelected ? 700 : 500,
+                      textAlign: 'left',
+                      cursor: option.disabled ? 'not-allowed' : 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'background 150ms ease, border-color 150ms ease, color 150ms ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!option.disabled && !isSelected) {
+                        e.currentTarget.style.background = 'rgba(26,42,87,0.05)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!option.disabled && !isSelected) {
+                        e.currentTarget.style.background = 'transparent';
+                      }
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -77,22 +242,6 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
       >
         {children}
       </select>
-      {!disabled && hasValue ? (
-        <div
-          style={{
-            position: 'absolute',
-            left: '0.65rem',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: '0.4rem',
-            height: '0.4rem',
-            borderRadius: '999px',
-            background: '#2a9d8f',
-            boxShadow: '0 0 0 4px rgba(42,157,143,0.12)',
-            pointerEvents: 'none',
-          }}
-        />
-      ) : null}
       <div
         style={{
           position: 'absolute',
