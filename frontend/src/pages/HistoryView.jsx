@@ -624,13 +624,13 @@ function HistoryView({
         />
       )}
 
-      <div style={{ ...card, padding: isMobile ? '1rem' : '1.5rem', borderRadius: isMobile ? '1rem' : '1.2rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 24px 48px rgba(17,38,75,0.08)' }}>
+      <div style={{ ...card, padding: isMobile ? '0.75rem' : '1rem', borderRadius: isMobile ? '1rem' : '1.2rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 24px 48px rgba(17,38,75,0.08)' }}>
 
         {/* ── Filter Bar ── */}
         <div style={{
           display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap',
-          marginBottom: '1rem', justifyContent: 'space-between',
-          padding: isMobile ? '0.8rem' : '0.85rem 1rem',
+          marginBottom: '0.75rem', justifyContent: 'space-between',
+          padding: isMobile ? '0.6rem 0.75rem' : '0.6rem 0.85rem',
           background: 'linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)',
           borderRadius: '1rem',
           border: '1px solid rgba(26,42,87,0.08)',

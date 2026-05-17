@@ -3,7 +3,7 @@ import {
   Copy, Download, RefreshCw, Save, Plus, CalendarDays,
   Building2, FileText, User, AlignLeft, CheckCircle2, Check,
 } from 'lucide-react';
-import { token, card } from './SharedUI';
+import { token, card, Btn } from './SharedUI';
 import { useAuth } from '../context/AuthContext';
 
 const MOBILE_BP = 768;
@@ -24,7 +24,7 @@ const baseInp = {
   padding: `0 ${FIELD_PADDING_X}`,
   fontSize: '0.875rem',
   color: '#1e293b',
-  background: '#ffffff',
+  background: '#f1f5f9',
   border: `1.5px solid ${FIELD_BORDER_COLOR}`,
   borderRadius: '0.75rem',
   outline: 'none',
@@ -36,15 +36,15 @@ const baseInp = {
 
 function Inp({ readOnly, style, isMobile, ...props }) {
   const ro = readOnly
-    ? { background: 'linear-gradient(135deg,#f1f5f9,#e8edf5)', color: '#94a3b8', cursor: 'not-allowed', borderColor: 'rgba(148,163,184,0.2)', boxShadow: 'none' }
+    ? { background: 'linear-gradient(135deg,#e2e8f0,#d8e0ec)', color: '#94a3b8', cursor: 'not-allowed', borderColor: 'rgba(148,163,184,0.2)', boxShadow: 'none' }
     : {};
   return (
     <input
       readOnly={readOnly}
       {...props}
       style={{ ...baseInp, ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null), ...ro, ...style }}
-      onFocus={e => { if (!readOnly) { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#fafbff'; } }}
-      onBlur={e => { e.target.style.borderColor = ro.borderColor || FIELD_BORDER_COLOR; e.target.style.background = ro.background || '#ffffff'; e.target.style.boxShadow = ro.boxShadow || FIELD_SHADOW; }}
+      onFocus={e => { if (!readOnly) { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#eef2ff'; } }}
+      onBlur={e => { e.target.style.borderColor = ro.borderColor || FIELD_BORDER_COLOR; e.target.style.background = ro.background || '#f1f5f9'; e.target.style.boxShadow = ro.boxShadow || FIELD_SHADOW; }}
     />
   );
 }
@@ -91,7 +91,7 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
             ...baseInp,
             fontSize: MOBILE_INPUT_FONT_SIZE,
             cursor: disabled ? 'not-allowed' : 'pointer',
-            background: disabled ? 'linear-gradient(135deg,#f1f5f9,#e8edf5)' : '#ffffff',
+            background: disabled ? 'linear-gradient(135deg,#e2e8f0,#d8e0ec)' : '#f1f5f9',
             color: disabled ? '#94a3b8' : hasValue ? '#1e293b' : '#94a3b8',
             paddingRight: '3rem',
             fontWeight: hasValue ? 600 : 400,
@@ -129,10 +129,10 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           gap: '0.6rem',
           cursor: disabled ? 'not-allowed' : 'pointer',
           background: disabled
-            ? 'linear-gradient(135deg,#f1f5f9,#e8edf5)'
+            ? 'linear-gradient(135deg,#e2e8f0,#d8e0ec)'
             : open
-              ? '#fafbff'
-              : '#ffffff',
+              ? '#eef2ff'
+              : '#f1f5f9',
           color: disabled ? '#94a3b8' : hasValue ? '#1e293b' : '#94a3b8',
           paddingLeft: FIELD_PADDING_X,
           paddingRight: '0.65rem',
@@ -257,8 +257,8 @@ function Textarea({ style, isMobile, ...props }) {
         height: 'auto', padding: '0.65rem 0.85rem', resize: 'vertical', lineHeight: 1.6,
         ...style,
       }}
-      onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#fafbff'; }}
-      onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = '#ffffff'; e.target.style.boxShadow = FIELD_SHADOW; }}
+      onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#eef2ff'; }}
+      onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = '#f1f5f9'; e.target.style.boxShadow = FIELD_SHADOW; }}
     />
   );
 }
@@ -282,8 +282,8 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
           WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none',
           colorScheme: 'light',
         }}
-        onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#fafbff'; }}
-        onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = '#ffffff'; e.target.style.boxShadow = FIELD_SHADOW; }}
+        onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#eef2ff'; }}
+        onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = '#f1f5f9'; e.target.style.boxShadow = FIELD_SHADOW; }}
         onClick={e => e.currentTarget.showPicker?.()}
       />
       <div style={{
@@ -370,21 +370,19 @@ function ResultBanner({ doc, isMobile, loading, onCopy, onDownload, onDuplicate,
           ><Copy size={13} /></button>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', flexDirection: isMobile ? 'column' : 'row' }}>
-          {[
-            { label: 'Buat Baru', icon: <Plus size={13} />, onClick: onNew, bg: '#ffffff', color: '#4f46e5', shadow: '0 4px 12px rgba(0,0,0,0.15)' },
-            { label: 'Duplikat', icon: <Copy size={13} />, onClick: onDuplicate, bg: 'rgba(255,255,255,0.15)', color: '#fff', border: true },
-            { label: 'Download .docx', icon: <Download size={13} />, onClick: onDownload, bg: 'linear-gradient(135deg,#10b981,#059669)', color: '#fff', shadow: '0 4px 14px rgba(16,185,129,0.35)' },
-          ].map(({ label, icon, onClick, bg, color, border, shadow }) => (
-            <button key={label} type="button" onClick={onClick}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 700, borderRadius: '0.6rem', border: border ? '1px solid rgba(255,255,255,0.25)' : 'none', background: bg, color, cursor: 'pointer', fontFamily: 'inherit', boxShadow: shadow ?? 'none', backdropFilter: border ? 'blur(4px)' : undefined }}>
-              {icon}{label}
-            </button>
-          ))}
-          <button type="submit" onClick={onSave} disabled={loading}
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.5rem 1rem', fontSize: '0.8rem', fontWeight: 700, borderRadius: '0.6rem', border: '1px solid rgba(255,255,255,0.25)', background: 'rgba(255,255,255,0.15)', color: '#fff', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.6 : 1, fontFamily: 'inherit', backdropFilter: 'blur(4px)' }}>
+          <Btn type="button" onClick={onNew} style={{ background: '#ffffff', color: token.blue, border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+            <Plus size={13} />Buat Baru
+          </Btn>
+          <Btn type="button" onClick={onDuplicate} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
+            <Copy size={13} />Duplikat
+          </Btn>
+          <Btn type="button" variant="success" onClick={onDownload}>
+            <Download size={13} />Download .docx
+          </Btn>
+          <Btn type="submit" onClick={onSave} disabled={loading} style={{ background: 'rgba(255,255,255,0.15)', color: '#fff', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(4px)' }}>
             {loading ? <RefreshCw size={13} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={13} />}
             Simpan
-          </button>
+          </Btn>
         </div>
       </div>
     </div>
@@ -511,23 +509,18 @@ export default function FormView({
             />
           ) : (
             <div style={{ display: 'flex', justifyContent: isMobile ? 'stretch' : 'center', marginTop: '2rem' }}>
-              <button
+              <Btn
                 type="submit"
+                variant="primary"
                 disabled={loading}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                  padding: '0.75rem 2.5rem', fontSize: '0.9rem', fontWeight: 700,
-                  borderRadius: '0.75rem', border: 'none',
-                  background: loading ? 'linear-gradient(135deg,#a5b4fc,#818cf8)' : 'linear-gradient(135deg,#4f46e5 0%,#6366f1 50%,#818cf8 100%)',
-                  color: '#fff', cursor: loading ? 'not-allowed' : 'pointer',
-                  boxShadow: loading ? 'none' : '0 8px 24px rgba(99,102,241,0.35)',
-                  fontFamily: 'inherit',
-                  transition: `transform 150ms ${EASE}, box-shadow 150ms ${EASE}`,
+                  justifyContent: 'center',
+                  padding: '0.75rem 2.5rem',
+                  fontSize: '0.9rem',
+                  borderRadius: '0.75rem',
                   width: isMobile ? '100%' : 'auto',
-                  letterSpacing: '0.01em',
+                  boxShadow: loading ? 'none' : '0 8px 24px rgba(26,42,87,0.30)',
                 }}
-                onMouseEnter={e => { if (!loading) { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 14px 32px rgba(99,102,241,0.42)'; } }}
-                onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = loading ? 'none' : '0 8px 24px rgba(99,102,241,0.35)'; }}
               >
                 {loading
                   ? <><RefreshCw size={17} style={{ animation: 'spin 1s linear infinite' }} /> Memproses...</>
@@ -535,7 +528,7 @@ export default function FormView({
                     ? <><Save size={17} /> Simpan Perubahan</>
                     : <><Plus size={17} /> Generate Nomor Baru</>
                 }
-              </button>
+              </Btn>
             </div>
           )}
         </form>
