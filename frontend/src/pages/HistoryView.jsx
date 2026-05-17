@@ -603,7 +603,7 @@ function HistoryView({
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflow: isMobile ? 'visible' : 'hidden',
+      overflow: 'visible',
     }}>
       {editDoc && (
         <EditModal

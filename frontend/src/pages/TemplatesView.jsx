@@ -143,7 +143,7 @@ function TemplatesView({
       display: 'flex',
       flexDirection: 'column',
       boxSizing: 'border-box',
-      overflow: isMobile ? 'visible' : 'hidden',
+      overflow: 'visible',
     }}>
 
       {showNote && <NoteModal onClose={() => setShowNote(false)} isMobile={isMobile} />}
