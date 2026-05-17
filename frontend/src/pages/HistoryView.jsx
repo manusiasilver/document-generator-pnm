@@ -624,7 +624,7 @@ function HistoryView({
         />
       )}
 
-      <div style={{ ...card, padding: isMobile ? '0.75rem' : '1rem', borderRadius: isMobile ? '1rem' : '1.2rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.98) 100%)', border: '1px solid rgba(26,42,87,0.10)', boxShadow: '0 24px 48px rgba(17,38,75,0.08)' }}>
+      <div style={{ ...card, padding: isMobile ? '0.75rem' : '1rem', borderRadius: isMobile ? '1rem' : '1.25rem', flex: isMobile ? '0 0 auto' : 1, display: 'flex', flexDirection: 'column', minHeight: isMobile ? 'auto' : 0, overflow: isMobile ? 'visible' : 'hidden', background: 'linear-gradient(180deg, rgba(255,255,255,0.99) 0%, rgba(248,250,255,0.98) 100%)', border: '1.5px solid rgba(26,42,87,0.10)', boxShadow: '0 4px 6px rgba(26,42,87,0.04), 0 12px 32px rgba(26,42,87,0.10), 0 32px 64px rgba(26,42,87,0.09)' }}>
 
         {/* ── Filter Bar ── */}
         <div style={{
