@@ -357,7 +357,7 @@ function App() {
           style={{
             position: 'relative',
             minHeight: 0,
-            ...((activePage === 'history' || activePage === 'templates') ? { overflowY: 'hidden', padding: 0 } : {}),
+            ...((activePage === 'history' || activePage === 'templates') ? { overflowY: 'hidden' } : {}),
           }}
         >
           <BackgroundMain position="absolute" zIndex={0} />

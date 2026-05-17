@@ -11,10 +11,10 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 const MOBILE_INPUT_FONT_SIZE = '16px';
 const FIELD_HEIGHT = '2.75rem';
 const FIELD_PADDING_X = '0.95rem';
-const FIELD_BORDER_COLOR = 'rgba(99,102,241,0.15)';
-const FIELD_SHADOW = '0 2px 8px rgba(99,102,241,0.06), inset 0 1px 0 rgba(255,255,255,0.9)';
-const FOCUS_COLOR = '#6366f1';
-const FOCUS_SHADOW = '0 0 0 3px rgba(99,102,241,0.18), 0 2px 8px rgba(99,102,241,0.12)';
+const FIELD_BORDER_COLOR = 'rgba(26,42,87,0.12)';
+const FIELD_SHADOW = '0 2px 8px rgba(26,42,87,0.06), inset 0 1px 0 rgba(255,255,255,0.9)';
+const FOCUS_COLOR = '#2d4a8c';
+const FOCUS_SHADOW = '0 0 0 3px rgba(26,42,87,0.15), 0 2px 8px rgba(26,42,87,0.10)';
 
 /* ─── Primitives ─────────────────────────────────────────────── */
 
@@ -43,7 +43,7 @@ function Inp({ readOnly, style, isMobile, ...props }) {
       readOnly={readOnly}
       {...props}
       style={{ ...baseInp, ...(isMobile ? { fontSize: MOBILE_INPUT_FONT_SIZE } : null), ...ro, ...style }}
-      onFocus={e => { if (!readOnly) { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#eef2ff'; } }}
+      onFocus={e => { if (!readOnly) { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#f0f4fa'; } }}
       onBlur={e => { e.target.style.borderColor = ro.borderColor || FIELD_BORDER_COLOR; e.target.style.background = ro.background || '#f1f5f9'; e.target.style.boxShadow = ro.boxShadow || FIELD_SHADOW; }}
     />
   );
@@ -131,7 +131,7 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           background: disabled
             ? 'linear-gradient(135deg,#e2e8f0,#d8e0ec)'
             : open
-              ? '#eef2ff'
+              ? '#f0f4fa'
               : '#f1f5f9',
           color: disabled ? '#94a3b8' : hasValue ? '#1e293b' : '#94a3b8',
           paddingLeft: FIELD_PADDING_X,
@@ -153,17 +153,17 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           background: disabled
             ? 'rgba(148,163,184,0.1)'
             : open
-              ? 'linear-gradient(135deg,#6366f1,#818cf8)'
+              ? 'linear-gradient(135deg,#1a2a57,#2d4a8c)'
               : hasValue
-                ? 'linear-gradient(135deg,#eef2ff,#e0e7ff)'
+                ? 'linear-gradient(135deg,#eef1f9,#dde3ef)'
                 : 'linear-gradient(135deg,#f8fafc,#f1f5f9)',
-          border: open ? 'none' : `1px solid ${hasValue ? 'rgba(99,102,241,0.2)' : 'rgba(148,163,184,0.18)'}`,
-          boxShadow: open ? '0 4px 12px rgba(99,102,241,0.3)' : 'none',
+          border: open ? 'none' : `1px solid ${hasValue ? 'rgba(26,42,87,0.2)' : 'rgba(148,163,184,0.18)'}`,
+          boxShadow: open ? '0 4px 12px rgba(26,42,87,0.25)' : 'none',
           transition: `all 200ms ${EASE}`,
         }}>
           <svg
             width="12" height="12" viewBox="0 0 24 24" fill="none"
-            stroke={open ? '#ffffff' : hasValue ? '#6366f1' : '#94a3b8'}
+            stroke={open ? '#ffffff' : hasValue ? '#2d4a8c' : '#94a3b8'}
             strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"
             style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: `transform 220ms ${EASE}` }}
           >
@@ -182,7 +182,7 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
           zIndex: 50,
           borderRadius: '0.9rem',
           background: '#ffffff',
-          border: '1.5px solid rgba(99,102,241,0.15)',
+          border: '1.5px solid rgba(26,42,87,0.10)',
           boxShadow: '0 16px 40px rgba(15,23,42,0.14), 0 4px 12px rgba(99,102,241,0.10)',
           overflow: 'hidden',
           animation: `dropIn 180ms ${EASE} both`,
@@ -210,18 +210,18 @@ function Sel({ children, style, disabled, isMobile, ...props }) {
                       minHeight: '2.5rem', padding: '0.55rem 0.75rem',
                       border: 'none', borderRadius: '0.65rem',
                       background: isSelected
-                        ? 'linear-gradient(135deg,#6366f1,#818cf8)'
+                        ? 'linear-gradient(135deg,#1a2a57,#2d4a8c)'
                         : isHov && !opt.disabled
-                          ? 'linear-gradient(135deg,#eef2ff,#e0e7ff)'
+                          ? 'linear-gradient(135deg,#eef1f9,#dde3ef)'
                           : 'transparent',
-                      color: opt.disabled ? '#cbd5e1' : isSelected ? '#ffffff' : isHov ? '#4f46e5' : '#334155',
+                      color: opt.disabled ? '#cbd5e1' : isSelected ? '#ffffff' : isHov ? '#2d4a8c' : '#334155',
                       fontSize: '0.86rem',
                       fontWeight: isSelected ? 700 : isHov ? 600 : 500,
                       textAlign: 'left',
                       cursor: opt.disabled ? 'not-allowed' : 'pointer',
                       fontFamily: 'inherit',
                       transition: `background 140ms ${EASE}, color 140ms ${EASE}`,
-                      boxShadow: isSelected ? '0 4px 12px rgba(99,102,241,0.28)' : 'none',
+                      boxShadow: isSelected ? '0 4px 12px rgba(26,42,87,0.25)' : 'none',
                     }}
                   >
                     {/* Check icon */}
@@ -257,7 +257,7 @@ function Textarea({ style, isMobile, ...props }) {
         height: 'auto', padding: '0.65rem 0.85rem', resize: 'vertical', lineHeight: 1.6,
         ...style,
       }}
-      onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#eef2ff'; }}
+      onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#f0f4fa'; }}
       onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = '#f1f5f9'; e.target.style.boxShadow = FIELD_SHADOW; }}
     />
   );
@@ -282,18 +282,18 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
           WebkitAppearance: 'none', MozAppearance: 'none', appearance: 'none',
           colorScheme: 'light',
         }}
-        onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#eef2ff'; }}
+        onFocus={e => { e.target.style.borderColor = FOCUS_COLOR; e.target.style.boxShadow = FOCUS_SHADOW; e.target.style.background = '#f0f4fa'; }}
         onBlur={e => { e.target.style.borderColor = FIELD_BORDER_COLOR; e.target.style.background = '#f1f5f9'; e.target.style.boxShadow = FIELD_SHADOW; }}
         onClick={e => e.currentTarget.showPicker?.()}
       />
       <div style={{
         position: 'absolute', top: '50%', right: '0.7rem', transform: 'translateY(-50%)',
         width: '1.75rem', height: '1.75rem', borderRadius: '0.55rem',
-        background: value ? 'linear-gradient(135deg,#6366f1,#818cf8)' : 'linear-gradient(135deg,#f8fafc,#f1f5f9)',
+        background: value ? 'linear-gradient(135deg,#1a2a57,#2d4a8c)' : 'linear-gradient(135deg,#f8fafc,#f1f5f9)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         pointerEvents: 'none',
         border: value ? 'none' : '1px solid rgba(148,163,184,0.18)',
-        boxShadow: value ? '0 4px 10px rgba(99,102,241,0.25)' : 'none',
+        boxShadow: value ? '0 4px 10px rgba(26,42,87,0.25)' : 'none',
         transition: `all 180ms ${EASE}`,
       }}>
         <CalendarDays size={13} color={value ? '#ffffff' : '#94a3b8'} />
@@ -305,7 +305,7 @@ function DatePicker({ name, value, onChange, required, isMobile }) {
 function Field({ label, required, children }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
-      <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#6366f1' }}>
+      <span style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.07em', textTransform: 'uppercase', color: '#2d4a8c' }}>
         {label}{required && <span style={{ color: '#f43f5e', marginLeft: 3 }}>*</span>}
       </span>
       {children}
@@ -343,13 +343,13 @@ function Grid({ cols, isMobile, children }) {
 function ResultBanner({ doc, isMobile, loading, onCopy, onDownload, onDuplicate, onSave, onNew }) {
   return (
     <div style={{
-      background: 'linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%)',
+      background: 'linear-gradient(135deg, #1a2a57 0%, #2d4a8c 60%, #3a5fa8 100%)',
       borderRadius: '1rem',
       padding: isMobile ? '1.25rem 1rem' : '1.5rem',
       color: '#fff',
       position: 'relative',
       overflow: 'hidden',
-      boxShadow: '0 20px 50px rgba(99,102,241,0.30)',
+      boxShadow: '0 20px 50px rgba(26,42,87,0.30)',
       marginTop: '2rem',
       animation: `fUp 480ms ${EASE} both`,
     }}>
@@ -422,14 +422,14 @@ export default function FormView({
         flex: '0 0 auto',
         animation: `fUp 600ms ${EASE} both`,
         background: 'linear-gradient(180deg,rgba(255,255,255,0.99) 0%,rgba(248,250,255,0.98) 100%)',
-        border: '1.5px solid rgba(99,102,241,0.10)',
-        boxShadow: '0 8px 32px rgba(99,102,241,0.07), 0 2px 8px rgba(15,23,42,0.04)',
+        border: '1.5px solid rgba(26,42,87,0.10)',
+        boxShadow: '0 4px 6px rgba(26,42,87,0.04), 0 12px 32px rgba(26,42,87,0.10), 0 32px 64px rgba(26,42,87,0.09)',
         overflow: 'hidden',
       }}>
         <form onSubmit={hSubmit}>
 
           {/* ── Perusahaan ── */}
-          <SectionDivider icon={Building2} label="Perusahaan" accent="#6366f1" />
+          <SectionDivider icon={Building2} label="Perusahaan" accent="#1a2a57" />
           <Grid cols="1fr 1fr 1fr" isMobile={isMobile}>
             <Field label="Pilih Perusahaan">
               <Sel name="company" value={formData.company} onChange={hChange} disabled={!!editingDoc} isMobile={isMobile}>
@@ -455,7 +455,7 @@ export default function FormView({
           </Grid>
 
           {/* ── Judul ── */}
-          <SectionDivider icon={FileText} label="Judul Dokumen" accent="#3b82f6" />
+          <SectionDivider icon={FileText} label="Judul Dokumen" accent="#2d4a8c" />
           <Field label="Judul Dokumen" required>
             <Inp type="text" name="judul_dokumen" value={formData.judul_dokumen} onChange={hChange} placeholder="Contoh: Perjanjian Kerja Sama Pemasaran..." required isMobile={isMobile} />
           </Field>
